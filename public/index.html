@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Q&A Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Class Q&A: CS 101</h1>
+            <p>Session: Week 1 - Variables and Loops</p>
+        </header>
+
+        <section class="submit-section">
+            <h2>Ask a Question</h2>
+            <p class="subtitle">Your question will be submitted anonymously to the instructor.</p>
+            
+            <form id="question-form">
+                <textarea id="question-text" rows="4" placeholder="What's on your mind?..." required></textarea>
+
+                <div class="tags-container">
+                    <label>Select a Tag (Optional):</label>
+                    <select id="question-tag">
+                        <option value="None">None</option>
+                        <option value="Urgent">Urgent</option>
+                        <option value="Clarification">Clarification</option>
+                        <option value="Exam-Related">Exam-Related</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="submit-btn">Submit Question</button>
+            </form>
+            
+            <div id="status-message"></div>
+        </section>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
