@@ -8,9 +8,9 @@
 body {
     background-color: #f4f7f6;
     color: #333;
-    display: flex;
-    justify-content: center;
-    padding: 40px 20px;
+    /* We removed display: flex so the navbar stays at the top! */
+    margin: 0; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .container {
@@ -138,4 +138,159 @@ textarea:focus {
     border-radius: 12px;
     font-size: 0.8em;
     font-weight: bold;
+}
+
+/* Upvote Button Styles */
+.feed-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    display: flex;
+    gap: 15px;
+}
+
+.upvote-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.upvote-btn {
+    background: none;
+    border: 2px solid #cbd5e1;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 1.2em;
+    color: #7f8c8d;
+    transition: all 0.2s;
+}
+
+.upvote-btn:hover {
+    border-color: #3498db;
+    color: #3498db;
+    background-color: #ebf5fb;
+}
+
+.upvote-count {
+    font-weight: bold;
+    margin-top: 5px;
+    color: #2c3e50;
+}
+
+.question-body {
+    flex-grow: 1;
+}
+
+/* ========================================== */
+/* UI REDESIGN STYLES                         */
+/* ========================================== */
+
+/* The Navbar */
+.navbar {
+    background-color: #2c3e50;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    margin-bottom: 30px;
+}
+
+.nav-logo {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    margin-left: 20px;
+    font-weight: 500;
+}
+
+.nav-links a:hover {
+    color: #3498db;
+}
+
+/* The Layout Grid */
+/* UPDATE YOUR LAYOUT CONTAINER RULE TO ADD THE PADDING BACK */
+.layout-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 20px; /* Moved the padding here so the navbar touches the edges */
+}
+
+.two-column-grid {
+    display: flex;
+    gap: 30px; /* Space between the two columns */
+    align-items: flex-start; /* Keeps columns at their natural height */
+}
+
+/* Individual Panels (White boxes) */
+.panel {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    flex: 1; /* Makes both columns take up exactly 50% of the space */
+}
+
+/* The Scrollable Feed */
+.scrollable-feed {
+    max-height: 400px; /* Stops the box from growing infinitely */
+    overflow-y: auto; /* Adds the vertical scrollbar */
+    padding-right: 10px;
+}
+
+/* Make the scrollbar look pretty */
+.scrollable-feed::-webkit-scrollbar {
+    width: 8px;
+}
+.scrollable-feed::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 4px;
+}
+
+/* ========================================== */
+/* MULTI-TAG TOGGLE SYSTEM STYLES             */
+/* ========================================== */
+.tag-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+/* The unselected, gray state */
+.tag-toggle {
+    padding: 6px 15px;
+    border-radius: 20px;
+    border: 2px solid #cbd5e1;
+    background: white;
+    cursor: pointer;
+    font-weight: bold;
+    color: #7f8c8d;
+    transition: all 0.2s;
+}
+
+/* Selected states mapping directly to your requested colors! */
+.tag-toggle.selected[data-value="Urgent"], .tag-badge[data-tag="Urgent"] {
+    background-color: #e74c3c;
+    border-color: #e74c3c;
+    color: white;
+}
+
+.tag-toggle.selected[data-value="Clarification"], .tag-badge[data-tag="Clarification"] {
+    background-color: #2ecc71;
+    border-color: #2ecc71;
+    color: white;
+}
+
+.tag-toggle.selected[data-value="Exam-Related"], .tag-badge[data-tag="Exam-Related"] {
+    background-color: #f39c12;
+    border-color: #f39c12;
+    color: white;
 }

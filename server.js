@@ -61,13 +61,14 @@ app.post('/api/questions', profanityFilter, async (req, res) => {
         // 3. Grab the auto-generated ID of the question we just inserted
         const newQuestionId = questionResult.insertId;
 
-        // 4. If the student selected a tag, insert it into the Tags table 
-        // linked to the question ID we just generated!
-        if (tag_name !== 'None') {
-            await pool.execute(
-                `INSERT INTO Tags (question_id, tag_name) VALUES (?, ?)`,
-                [newQuestionId, tag_name]
-            );
+        // 4. Loop through the array of tags and save every single one!
+        if (tags && tags.length > 0) {
+            for (const tag of tags) {
+                await pool.execute(
+                    `INSERT INTO Tags (question_id, tag_name) VALUES (?, ?)`,
+                    [newQuestionId, tag]
+                );
+            }
         }
 
         // 5. Send a success message back to the frontend
@@ -80,24 +81,26 @@ app.post('/api/questions', profanityFilter, async (req, res) => {
 });
 
 // ==========================================
-// API ROUTE: Fetch All Questions for a Session
+// API ROUTE: Fetch All Questions + Upvotes
 // ==========================================
 app.get('/api/questions/:sessionId', async (req, res) => {
-    // Grab the session ID from the URL (e.g., /api/questions/1)
     const { sessionId } = req.params;
 
     try {
-        // Query the database: Get the question details AND the tag name (if one exists)
-        // We order by timestamp DESC so the newest questions appear at the top!
+        // UPGRADE: We added a subquery to count the 'Upvote' rows in the Interactions table!
+        // We also changed ORDER BY so the most upvoted questions float to the top of the feed.
         const [questions] = await pool.execute(`
-            SELECT q.question_id, q.content, q.timestamp, q.status, t.tag_name 
+            SELECT 
+                q.question_id, q.content, q.timestamp, q.status, 
+                GROUP_CONCAT(t.tag_name) AS tags,
+                (SELECT COUNT(*) FROM Interactions i WHERE i.question_id = q.question_id AND i.interaction_type = 'Upvote') AS upvotes
             FROM Questions q
             LEFT JOIN Tags t ON q.question_id = t.question_id
             WHERE q.session_id = ?
-            ORDER BY q.timestamp DESC
+            GROUP BY q.question_id
+            ORDER BY upvotes DESC, q.timestamp DESC
         `, [sessionId]);
 
-        // Send the array of questions back to the frontend
         res.status(200).json(questions);
 
     } catch (error) {
@@ -106,7 +109,40 @@ app.get('/api/questions/:sessionId', async (req, res) => {
     }
 });
 
+// ==========================================
+// API ROUTE: Toggle Upvote (Add or Remove)
+// ==========================================
+app.post('/api/questions/:questionId/upvote', async (req, res) => {
+    const { questionId } = req.params;
+    const { user_id } = req.body;
 
+    try {
+        // 1. Check if the student has already upvoted this specific question
+        const [existingUpvote] = await pool.execute(
+            `SELECT * FROM Interactions WHERE question_id = ? AND user_id = ? AND interaction_type = 'Upvote'`,
+            [questionId, user_id]
+        );
+
+        if (existingUpvote.length > 0) {
+            // 2. The upvote exists! So we delete it (Remove Upvote)
+            await pool.execute(
+                `DELETE FROM Interactions WHERE question_id = ? AND user_id = ? AND interaction_type = 'Upvote'`,
+                [questionId, user_id]
+            );
+            return res.status(200).json({ message: 'Upvote removed' });
+        } else {
+            // 3. The upvote does NOT exist! So we insert it (Add Upvote)
+            await pool.execute(
+                `INSERT INTO Interactions (question_id, user_id, interaction_type) VALUES (?, ?, 'Upvote')`,
+                [questionId, user_id]
+            );
+            return res.status(200).json({ message: 'Upvote added' });
+        }
+    } catch (error) {
+        console.error('❌ Error toggling upvote:', error);
+        res.status(500).json({ error: 'Failed to process upvote.' });
+    }
+});
 
 // Start the server and listen on the port defined in our .env file (3000)
 const PORT = process.env.PORT || 3000;

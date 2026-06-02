@@ -7,35 +7,52 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
+    <nav class="navbar">
+        <div class="nav-logo">📘 ClassQ&A</div>
+        <div class="nav-links">
+            <a href="#">Home</a>
+            <a href="#">My Classes</a>
+            <a href="#">Settings</a>
+        </div>
+    </nav>
+
+    <div class="layout-container">
         <header>
-            <h1>Class Q&A: CS 101</h1>
+            <h1>CS 101: Intro to Programming</h1>
             <p>Session: Week 1 - Variables and Loops</p>
         </header>
 
-        <section class="submit-section">
-            <h2>Ask a Question</h2>
-            <p class="subtitle">Your question will be submitted anonymously to the instructor.</p>
+        <div class="two-column-grid">
             
-            <form id="question-form">
-                <textarea id="question-text" rows="4" placeholder="What's on your mind?..." required></textarea>
+            <section class="submit-section panel">
+                <h2>Ask a Question</h2>
+                <p class="subtitle">Submit anonymously to the instructor.</p>
+                <form id="question-form">
+                    <textarea id="question-text" rows="4" placeholder="What's on your mind?..." required></textarea>
+                    <div class="tags-container">
+                        <label>Select Tags (Optional):</label>
+                        <div id="tag-buttons" class="tag-buttons">
+                            <button type="button" class="tag-toggle" data-value="Urgent">Urgent</button>
+                            <button type="button" class="tag-toggle" data-value="Clarification">Clarification</button>
+                            <button type="button" class="tag-toggle" data-value="Exam-Related">Exam-Related</button>
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn">Submit Question</button>
+                </form>
+                <div id="status-message"></div>
+            </section>
 
-                <div class="tags-container">
-                    <label>Select a Tag (Optional):</label>
-                    <select id="question-tag">
-                        <option value="None">None</option>
-                        <option value="Urgent">Urgent</option>
-                        <option value="Clarification">Clarification</option>
-                        <option value="Exam-Related">Exam-Related</option>
-                    </select>
+            <section class="live-feed-section panel">
+                <h2>Live Class Feed</h2>
+                <p class="subtitle">Upvote questions you want answered.</p>
+                <div id="student-feed-container" class="scrollable-feed">
+                    <p>Loading class feed...</p>
                 </div>
+            </section>
 
-                <button type="submit" class="submit-btn">Submit Question</button>
-            </form>
-            
-            <div id="status-message"></div>
-        </section>
+        </div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
