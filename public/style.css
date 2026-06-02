@@ -20,6 +20,7 @@ body {
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     width: 100%;
     max-width: 600px;
+    margin: 0 auto; /* THE FIX: This forces the box to center itself perfectly! */
 }
 
 header {
@@ -292,5 +293,23 @@ textarea:focus {
 .tag-toggle.selected[data-value="Exam-Related"], .tag-badge[data-tag="Exam-Related"] {
     background-color: #f39c12;
     border-color: #f39c12;
+    color: white;
+}
+
+
+/* Instructor Dashboard: Mark Answered Button */
+.mark-answered-btn {
+    background-color: #f8f9fa;
+    color: #27ae60;
+    border: 1px solid #27ae60;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.mark-answered-btn:hover {
+    background-color: #27ae60;
     color: white;
 }

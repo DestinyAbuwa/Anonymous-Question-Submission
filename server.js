@@ -45,23 +45,21 @@ const profanityFilter = (req, res, next) => {
 };
 
 // ==========================================
-// API ROUTE: Submit a New Question
+// API ROUTE: Submit a New Question (FIXED)
 // ==========================================
 app.post('/api/questions', profanityFilter, async (req, res) => {
-    // 1. Unpack the data sent from the frontend script.js
-    const { user_id, session_id, content, tag_name } = req.body;
+    // THE FIX: We changed 'tag_name' to 'tags' here so the Waiter knows what to grab!
+    const { user_id, session_id, content, tags } = req.body;
 
     try {
-        // 2. Insert the main question into the Questions table
         const [questionResult] = await pool.execute(
             `INSERT INTO Questions (user_id, session_id, content) VALUES (?, ?, ?)`,
             [user_id, session_id, content]
         );
 
-        // 3. Grab the auto-generated ID of the question we just inserted
         const newQuestionId = questionResult.insertId;
 
-        // 4. Loop through the array of tags and save every single one!
+        // Loop through the array of tags and save every single one!
         if (tags && tags.length > 0) {
             for (const tag of tags) {
                 await pool.execute(
@@ -71,7 +69,6 @@ app.post('/api/questions', profanityFilter, async (req, res) => {
             }
         }
 
-        // 5. Send a success message back to the frontend
         res.status(201).json({ message: 'Question successfully submitted!' });
 
     } catch (error) {
@@ -96,7 +93,7 @@ app.get('/api/questions/:sessionId', async (req, res) => {
                 (SELECT COUNT(*) FROM Interactions i WHERE i.question_id = q.question_id AND i.interaction_type = 'Upvote') AS upvotes
             FROM Questions q
             LEFT JOIN Tags t ON q.question_id = t.question_id
-            WHERE q.session_id = ?
+            WHERE q.session_id = ? AND q.status = 'Pending'
             GROUP BY q.question_id
             ORDER BY upvotes DESC, q.timestamp DESC
         `, [sessionId]);
@@ -143,6 +140,23 @@ app.post('/api/questions/:questionId/upvote', async (req, res) => {
         res.status(500).json({ error: 'Failed to process upvote.' });
     }
 });
+
+// ==========================================
+// API ROUTE: Mark Question as Answered
+// ==========================================
+app.patch('/api/questions/:questionId/answer', async (req, res) => {
+    const { questionId } = req.params;
+    try {
+        // Change the status from 'Pending' to 'Answered'
+        await pool.execute(`UPDATE Questions SET status = 'Answered' WHERE question_id = ?`, [questionId]);
+        res.status(200).json({ message: 'Question marked as answered!' });
+    } catch (error) {
+        console.error('❌ Error updating status:', error);
+        res.status(500).json({ error: 'Failed to update question status.' });
+    }
+});
+
+
 
 // Start the server and listen on the port defined in our .env file (3000)
 const PORT = process.env.PORT || 3000;
