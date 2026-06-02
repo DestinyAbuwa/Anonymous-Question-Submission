@@ -26,7 +26,7 @@ document.getElementById('question-form').addEventListener('submit', async functi
 
     // 2. Grab the exact text and tag the student selected from the HTML elements
     const content = document.getElementById('question-text').value;
-    const tag = document.getElementById('question-tag').value;
+
     const statusMessage = document.getElementById('status-message');
 
     // Show a quick loading state
@@ -54,7 +54,6 @@ document.getElementById('question-form').addEventListener('submit', async functi
         if (response.ok) {
             // Success! Clear the text box and show a green message
             document.getElementById('question-text').value = '';
-            document.getElementById('question-tag').value = 'None';
             
             // Visually turn off all tag buttons and empty the array after submission
             selectedTags = [];

@@ -21,12 +21,6 @@ async function fetchQuestions() {
             const card = document.createElement('div');
             card.className = 'question-card';
 
-            const timeString = new Date(q.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            
-            const tagHTML = (q.tag_name && q.tag_name !== 'None') 
-                ? `<span class="tag-badge">${q.tag_name}</span>` 
-                : '';
-
             // 1. Convert the timestamp
             const timeString = new Date(q.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             
