@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - ClassQ&A</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="layout-container" style="max-width: 500px;">
+        <section class="panel" style="text-align: center;">
+            <h2>Create an Account</h2>
+            <p class="subtitle">Join your class to start asking questions.</p>
+            
+            <form id="register-form" style="text-align: left; margin-top: 20px;">
+                <div style="margin-bottom: 15px;">
+                    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Email</label>
+                    <input type="email" id="reg-email" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 5px;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Password</label>
+                    <input type="password" id="reg-password" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 5px;">
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="font-weight: bold; display: block; margin-bottom: 5px;">I am a...</label>
+                    <select id="reg-role" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 5px;">
+                        <option value="Student">Student</option>
+                        <option value="Instructor">Instructor</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="submit-btn">Register</button>
+            </form>
+            
+            <div id="reg-status" style="margin-top: 15px; font-weight: bold;"></div>
+            
+            <p style="margin-top: 20px; font-size: 0.9em;">Already have an account? <a href="login.html" style="color: #3498db;">Log in here</a>.</p>
+        </section>
+    </div>
+
+    <script src="register.js"></script>
+</body>
+</html>

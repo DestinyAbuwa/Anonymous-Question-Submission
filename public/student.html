@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Q&A Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo">📘 ClassQ&A</div>
+        <div class="nav-links">
+            <a href="home.html">Home</a> <a href="index.html">Dashboard</a>
+            
+            <button id="theme-toggle" class="theme-btn">🌙</button>
+            
+            <a href="#" id="logout-btn" style="color: #e74c3c; font-weight: bold; margin-left: 20px;">Logout</a>
+        </div>
+    </nav>
+
+    <div class="layout-container">
+        <header>
+            <h1>CS 101: Intro to Programming</h1>
+            <p>Session: Week 1 - Variables and Loops</p>
+        </header>
+
+        <div class="two-column-grid">
+            
+            <section class="submit-section panel">
+                <h2>Ask a Question</h2>
+                <p class="subtitle">Submit anonymously to the instructor.</p>
+                <form id="question-form">
+                    <textarea id="question-text" rows="4" placeholder="What's on your mind?..." required></textarea>
+                    <div class="tags-container">
+                        <label>Select Tags (Optional):</label>
+                        <div id="tag-buttons" class="tag-buttons">
+                            <button type="button" class="tag-toggle" data-value="Urgent">Urgent</button>
+                            <button type="button" class="tag-toggle" data-value="Clarification">Clarification</button>
+                            <button type="button" class="tag-toggle" data-value="Exam-Related">Exam-Related</button>
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn">Submit Question</button>
+                </form>
+                <div id="status-message"></div>
+            </section>
+
+            <section class="live-feed-section panel">
+                <h2>Live Class Feed</h2>
+                <p class="subtitle">Upvote questions you want answered.</p>
+                <div id="student-feed-container" class="scrollable-feed">
+                    <p>Loading class feed...</p>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="student.js"></script>
+</body>
+</html>

@@ -313,3 +313,112 @@ textarea:focus {
     background-color: #27ae60;
     color: white;
 }
+
+
+/* ========================================== */
+/* DARK MODE OVERRIDES & NAVBAR BUTTON        */
+/* ========================================== */
+
+.theme-btn {
+    background: none;
+    border: none;
+    font-size: 1.2em;
+    cursor: pointer;
+    margin-left: 15px;
+    transition: transform 0.2s;
+}
+
+.theme-btn:hover {
+    transform: scale(1.1);
+}
+
+/* When the body has the 'dark-mode' class, these rules take over! */
+body.dark-mode {
+    background-color: #1a202c;
+    color: #e2e8f0;
+}
+
+body.dark-mode .panel, 
+body.dark-mode .feed-card {
+    background-color: #2d3748;
+    border-color: #4a5568;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+body.dark-mode header h1, 
+body.dark-mode .question-content, 
+body.dark-mode .upvote-count {
+    color: #f7fafc; /* Bright white text for readability */
+}
+
+body.dark-mode .navbar {
+    background-color: #111827;
+    border-bottom: 1px solid #374151;
+}
+
+body.dark-mode textarea {
+    background-color: #4a5568;
+    color: white;
+    border-color: #718096;
+}
+
+body.dark-mode .tag-toggle {
+    background-color: #2d3748;
+    color: #a0aec0;
+    border-color: #4a5568;
+}
+
+/* ========================================== */
+/* CANVAS-STYLE CLASS HUB STYLES              */
+/* ========================================== */
+
+.class-grid {
+    display: grid;
+    /* This automatically makes the cards wrap nicely on smaller screens! */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
+}
+
+.class-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden; /* Keeps the colored header image inside the rounded corners */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.class-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+}
+
+.class-card-header {
+    height: 100px;
+    background: linear-gradient(135deg, #3498db, #2c3e50); /* A cool blue gradient header */
+}
+
+.class-card-body {
+    padding: 20px;
+}
+
+.class-card-body h3 {
+    margin-bottom: 5px;
+    color: #2c3e50;
+}
+
+.class-card-body p {
+    color: #7f8c8d;
+    font-size: 0.9em;
+}
+
+/* Dark Mode Overrides for the Cards */
+body.dark-mode .class-card {
+    background-color: #2d3748;
+    border-color: #4a5568;
+}
+body.dark-mode .class-card-body h3 {
+    color: #f7fafc;
+}

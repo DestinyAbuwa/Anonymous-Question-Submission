@@ -3,56 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Q&A Dashboard</title>
+    <title>ClassQ&A - Anonymous Student Engagement</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* A few specific styles just for the landing page */
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 40px;
+        }
+        .hero h1 { font-size: 3em; margin-bottom: 15px; color: white; }
+        .hero p { font-size: 1.2em; max-width: 600px; margin: 0 auto 30px auto; color: #e2e8f0; }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        .feature-card { text-align: center; padding: 20px; }
+        .feature-icon { font-size: 3em; margin-bottom: 15px; }
+    </style>
 </head>
 <body>
     <nav class="navbar">
         <div class="nav-logo">📘 ClassQ&A</div>
         <div class="nav-links">
-            <a href="#">Home</a>
-            <a href="#">My Classes</a>
-            <a href="#">Settings</a>
+            <a href="login.html" style="font-weight: bold;">Log In</a>
+            <a href="register.html" class="submit-btn" style="padding: 8px 15px; text-decoration: none; margin-left: 15px;">Sign Up</a>
         </div>
     </nav>
 
     <div class="layout-container">
-        <header>
-            <h1>CS 101: Intro to Programming</h1>
-            <p>Session: Week 1 - Variables and Loops</p>
-        </header>
+        <section class="hero">
+            <h1>Never hesitate to ask.</h1>
+            <p>An anonymous question submission platform designed to improve classroom engagement, eliminate anxiety, and help instructors identify exactly where students are stuck.</p>
+            <div>
+                <a href="register.html" class="submit-btn" style="display: inline-block; width: auto; padding: 12px 30px; text-decoration: none; background-color: #2ecc71;">Get Started for Free</a>
+            </div>
+        </section>
 
-        <div class="two-column-grid">
-            
-            <section class="submit-section panel">
-                <h2>Ask a Question</h2>
-                <p class="subtitle">Submit anonymously to the instructor.</p>
-                <form id="question-form">
-                    <textarea id="question-text" rows="4" placeholder="What's on your mind?..." required></textarea>
-                    <div class="tags-container">
-                        <label>Select Tags (Optional):</label>
-                        <div id="tag-buttons" class="tag-buttons">
-                            <button type="button" class="tag-toggle" data-value="Urgent">Urgent</button>
-                            <button type="button" class="tag-toggle" data-value="Clarification">Clarification</button>
-                            <button type="button" class="tag-toggle" data-value="Exam-Related">Exam-Related</button>
-                        </div>
-                    </div>
-                    <button type="submit" class="submit-btn">Submit Question</button>
-                </form>
-                <div id="status-message"></div>
-            </section>
-
-            <section class="live-feed-section panel">
-                <h2>Live Class Feed</h2>
-                <p class="subtitle">Upvote questions you want answered.</p>
-                <div id="student-feed-container" class="scrollable-feed">
-                    <p>Loading class feed...</p>
-                </div>
-            </section>
-
-        </div>
+        <section class="feature-grid">
+            <div class="panel feature-card">
+                <div class="feature-icon">🕵️</div>
+                <h3>100% Anonymous</h3>
+                <p class="subtitle" style="margin-top: 10px;">Students submit questions to the live feed without fear of judgment. Only the system knows who you are.</p>
+            </div>
+            <div class="panel feature-card">
+                <div class="feature-icon">👍</div>
+                <h3>Live Upvoting</h3>
+                <p class="subtitle" style="margin-top: 10px;">Have the exact same question as a classmate? Upvote it to push it to the top of the instructor's queue.</p>
+            </div>
+            <div class="panel feature-card">
+                <div class="feature-icon">🛡️</div>
+                <h3>Smart Moderation</h3>
+                <p class="subtitle" style="margin-top: 10px;">Built-in AI profanity filtering keeps the classroom environment professional and focused on learning.</p>
+            </div>
+        </section>
     </div>
-
-    <script src="script.js"></script>
 </body>
 </html>

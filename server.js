@@ -5,6 +5,7 @@ const cors = require('cors');
 // Import our database connection pool
 const pool = require('./config/db');
 
+const bcrypt = require('bcrypt');
 
 // Import our secret variables (so we can use process.env.PORT)
 require('dotenv').config();
@@ -156,6 +157,77 @@ app.patch('/api/questions/:questionId/answer', async (req, res) => {
     }
 });
 
+// ==========================================
+// API ROUTE: User Registration
+// ==========================================
+app.post('/api/register', async (req, res) => {
+    // 1. Grab the exact fields matching your Users table schema
+    const { email, password, role } = req.body;
+
+    try {
+        // 2. The Scrambler: Hash the password. 
+        // The '10' represents "salt rounds" (how intensely to scramble it)
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // 3. Save the new user to the database using the scrambled password!
+        const [result] = await pool.execute(
+            `INSERT INTO Users (email, password_hash, role) VALUES (?, ?, ?)`,
+            [email, hashedPassword, role || 'Student'] // Default to Student if no role provided
+        );
+
+        res.status(201).json({ message: 'User registered successfully!' });
+
+    } catch (error) {
+        // ER_DUP_ENTRY means they tried to use an email that is already taken
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(400).json({ error: 'Email already exists. Please log in.' });
+        }
+        
+        console.error('❌ Error registering user:', error);
+        res.status(500).json({ error: 'Failed to register user.' });
+    }
+});
+
+// ==========================================
+// API ROUTE: User Login
+// ==========================================
+app.post('/api/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        // 1. Ask the database if this email exists
+        const [users] = await pool.execute(`SELECT * FROM Users WHERE email = ?`, [email]);
+
+        // If the array is empty, the email isn't in our database
+        if (users.length === 0) {
+            return res.status(401).json({ error: 'Invalid email or password.' });
+        }
+
+        // 2. Grab the specific user's data from the array
+        const user = users[0];
+
+        // 3. The Scrambler Check: Compare the typed password to the hashed database password
+        const passwordsMatch = await bcrypt.compare(password, user.password_hash);
+
+        if (!passwordsMatch) {
+            return res.status(401).json({ error: 'Invalid email or password.' });
+        }
+
+        // 4. Success! (In Phase 3, we will add the digital ID badge here)
+        res.status(200).json({ 
+            message: 'Login successful!',
+            user: {
+                user_id: user.user_id,
+                email: user.email,
+                role: user.role
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ Error during login:', error);
+        res.status(500).json({ error: 'Failed to process login.' });
+    }
+});
 
 
 // Start the server and listen on the port defined in our .env file (3000)

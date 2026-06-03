@@ -165,3 +165,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // 3. Start the process immediately when the page loads
 loadStudentFeed();
+
+// ==========================================
+// NAVBAR LOGIC: Logout & Dark Mode
+// ==========================================
+
+// 1. Handle Logout
+document.getElementById('logout-btn')?.addEventListener('click', (event) => {
+    event.preventDefault();
+    // In Phase 3, we will add code here to destroy the user's digital ID badge
+    window.location.href = 'login.html';
+});
+
+// 2. Handle Dark Mode Toggle
+const themeToggle = document.getElementById('theme-toggle');
+if (themeToggle) {
+    // Check if the user previously saved a dark mode preference in their browser
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark-mode');
+        themeToggle.textContent = '☀️'; // Switch icon to sun
+    }
+
+    // Listen for the click
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        
+        // If it is now dark mode, save that preference and change the icon
+        if (document.body.classList.contains('dark-mode')) {
+            localStorage.setItem('theme', 'dark');
+            themeToggle.textContent = '☀️';
+        } else {
+            // Otherwise, save light mode and change it back to the moon
+            localStorage.setItem('theme', 'light');
+            themeToggle.textContent = '🌙';
+        }
+    });
+}
