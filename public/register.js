@@ -1,3 +1,20 @@
+
+let selectedRole = 'Student'; // Default to student
+
+// Attach a listener to both role buttons
+document.querySelectorAll('.role-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        // Remove the blue 'active' style from all buttons
+        document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+        
+        // Add the blue 'active' style ONLY to the one we just clicked
+        btn.classList.add('active');
+        
+        // Save the choice in our variable
+        selectedRole = btn.getAttribute('data-role');
+    });
+});
+
 document.getElementById('register-form').addEventListener('submit', async (event) => {
     // 1. Stop the page from refreshing
     event.preventDefault();
@@ -6,7 +23,7 @@ document.getElementById('register-form').addEventListener('submit', async (event
 
     const email = document.getElementById('reg-email').value;
     const password = document.getElementById('reg-password').value;
-    const role = document.getElementById('reg-role').value;
+    const role = selectedRole;
     
     const statusDiv = document.getElementById('reg-status');
     statusDiv.textContent = "Creating account...";

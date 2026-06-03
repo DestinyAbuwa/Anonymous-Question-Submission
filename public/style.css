@@ -296,6 +296,18 @@ textarea:focus {
     color: white;
 }
 
+/* Add this right below your .tag-toggle rule! */
+.tag-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    background-color: #f8fafc;
+}
+
+/* Make sure the colored tags get a slight brightness pop when hovered */
+.tag-toggle.selected:hover {
+    filter: brightness(1.1);
+}
+
 
 /* Instructor Dashboard: Mark Answered Button */
 .mark-answered-btn {
@@ -421,4 +433,34 @@ body.dark-mode .class-card {
 }
 body.dark-mode .class-card-body h3 {
     color: #f7fafc;
+}
+
+/* ========================================== */
+/* ROLE SELECTION BUTTONS (REGISTRATION)      */
+/* ========================================== */
+.role-selector {
+    display: flex;
+    gap: 15px;
+}
+.role-btn {
+    flex: 1;
+    padding: 15px;
+    border: 2px solid #cbd5e1;
+    border-radius: 8px;
+    background: white;
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #7f8c8d;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.role-btn:hover {
+    border-color: #3498db;
+    background-color: #f8fafc;
+}
+.role-btn.active {
+    border-color: #3498db;
+    background-color: #ebf5fb;
+    color: #2c3e50;
+    box-shadow: 0 2px 5px rgba(52, 152, 219, 0.2);
 }

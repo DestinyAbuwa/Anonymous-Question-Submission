@@ -22,11 +22,11 @@
                     <input type="password" id="reg-password" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 5px;">
                 </div>
                 <div style="margin-bottom: 20px;">
-                    <label style="font-weight: bold; display: block; margin-bottom: 5px;">I am a...</label>
-                    <select id="reg-role" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 5px;">
-                        <option value="Student">Student</option>
-                        <option value="Instructor">Instructor</option>
-                    </select>
+                    <label style="font-weight: bold; display: block; margin-bottom: 10px;">I am a...</label>
+                    <div class="role-selector">
+                        <button type="button" class="role-btn active" data-role="Student">👨‍🎓 Student</button>
+                        <button type="button" class="role-btn" data-role="Instructor">👨‍🏫 Instructor</button>
+                    </div>
                 </div>
                 
                 <button type="submit" class="submit-btn">Register</button>
