@@ -5,16 +5,44 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* ========================================== */
+/* GLOBAL COLOR VARIABLES                     */
+/* ========================================== */
+:root {
+    --bg-color: #f4f7f6;
+    --text-color: #333333;
+    --panel-bg: #ffffff;
+    --border-color: #e2e8f0;
+    --navbar-bg: #2c3e50;
+    --navbar-text: #ffffff;
+    --input-bg: #ffffff;
+    --heading-color: #2c3e50;
+    --muted-text: #7f8c8d;
+}
+
+[data-theme="dark"] {
+    --bg-color: #1a202c;
+    --text-color: #e2e8f0;
+    --panel-bg: #2d3748;
+    --border-color: #4a5568;
+    --navbar-bg: #111827;
+    --navbar-text: #f7fafc;
+    --input-bg: #4a5568;
+    --heading-color: #f7fafc;
+    --muted-text: #a0aec0;
+}
+
 body {
-    background-color: #f4f7f6;
-    color: #333;
-    /* We removed display: flex so the navbar stays at the top! */
+    background-color: var(--bg-color);
+    color: var(--text-color);
     margin: 0; 
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth fade effect! */
 }
 
 .container {
-    background: white;
+    background-color: var(--panel-bg);
+    border: 1px solid var(--border-color);
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
@@ -30,11 +58,11 @@ header {
 }
 
 header h1 {
-    color: #2c3e50;
+    color: var(--heading-color);
 }
 
 header p {
-    color: #7f8c8d;
+    color: var(--muted-text);
     font-weight: 500;
     margin-top: 5px;
 }
@@ -44,15 +72,17 @@ header p {
 }
 
 .subtitle {
-    color: #7f8c8d;
+    color: var(--muted-text);
     font-size: 0.9em;
     margin-bottom: 15px;
 }
 
-textarea {
+textarea, input, select {
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
     width: 100%;
     padding: 15px;
-    border: 1px solid #cbd5e1;
     border-radius: 8px;
     resize: vertical; /* Lets the user drag the text box down to make it bigger */
     font-size: 1em;
@@ -123,12 +153,12 @@ textarea:focus {
     align-items: center;
     margin-bottom: 10px;
     font-size: 0.9em;
-    color: #7f8c8d;
+    color: var(--muted-text);
 }
 
 .question-content {
     font-size: 1.1em;
-    color: #2c3e50;
+    color: var(--heading-color);
     font-weight: 500;
 }
 
@@ -143,8 +173,8 @@ textarea:focus {
 
 /* Upvote Button Styles */
 .feed-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background-color: var(--panel-bg);
+    border: 1px solid var(--border-color);
     padding: 15px;
     margin-bottom: 15px;
     border-radius: 8px;
@@ -166,7 +196,7 @@ textarea:focus {
     padding: 5px 10px;
     cursor: pointer;
     font-size: 1.2em;
-    color: #7f8c8d;
+    color: var(--muted-text);
     transition: all 0.2s;
 }
 
@@ -179,7 +209,7 @@ textarea:focus {
 .upvote-count {
     font-weight: bold;
     margin-top: 5px;
-    color: #2c3e50;
+    color: var(--heading-color);
 }
 
 .question-body {
@@ -192,12 +222,12 @@ textarea:focus {
 
 /* The Navbar */
 .navbar {
-    background-color: #2c3e50;
+    background-color: var(--navbar-bg);
+    color: var(--navbar-text);
     padding: 15px 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    color: white;
     margin-bottom: 30px;
 }
 
@@ -233,7 +263,8 @@ textarea:focus {
 
 /* Individual Panels (White boxes) */
 .panel {
-    background: white;
+    background-color: var(--panel-bg);
+    border: 1px solid var(--border-color);
     padding: 25px;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
@@ -344,41 +375,6 @@ textarea:focus {
     transform: scale(1.1);
 }
 
-/* When the body has the 'dark-mode' class, these rules take over! */
-body.dark-mode {
-    background-color: #1a202c;
-    color: #e2e8f0;
-}
-
-body.dark-mode .panel, 
-body.dark-mode .feed-card {
-    background-color: #2d3748;
-    border-color: #4a5568;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-}
-
-body.dark-mode header h1, 
-body.dark-mode .question-content, 
-body.dark-mode .upvote-count {
-    color: #f7fafc; /* Bright white text for readability */
-}
-
-body.dark-mode .navbar {
-    background-color: #111827;
-    border-bottom: 1px solid #374151;
-}
-
-body.dark-mode textarea {
-    background-color: #4a5568;
-    color: white;
-    border-color: #718096;
-}
-
-body.dark-mode .tag-toggle {
-    background-color: #2d3748;
-    color: #a0aec0;
-    border-color: #4a5568;
-}
 
 /* ========================================== */
 /* CANVAS-STYLE CLASS HUB STYLES              */
@@ -393,8 +389,8 @@ body.dark-mode .tag-toggle {
 }
 
 .class-card {
-    background: white;
-    border: 1px solid #e2e8f0;
+    background-color: var(--panel-bg);
+    border: 1px solid var(--border-color);
     border-radius: 10px;
     overflow: hidden; /* Keeps the colored header image inside the rounded corners */
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
@@ -418,22 +414,14 @@ body.dark-mode .tag-toggle {
 
 .class-card-body h3 {
     margin-bottom: 5px;
-    color: #2c3e50;
+    color: var(--heading-color);
 }
 
 .class-card-body p {
-    color: #7f8c8d;
+    color: var(--muted-text);
     font-size: 0.9em;
 }
 
-/* Dark Mode Overrides for the Cards */
-body.dark-mode .class-card {
-    background-color: #2d3748;
-    border-color: #4a5568;
-}
-body.dark-mode .class-card-body h3 {
-    color: #f7fafc;
-}
 
 /* ========================================== */
 /* ROLE SELECTION BUTTONS (REGISTRATION)      */
@@ -450,7 +438,7 @@ body.dark-mode .class-card-body h3 {
     background: white;
     font-weight: bold;
     font-size: 1.1em;
-    color: #7f8c8d;
+    color: var(--muted-text);
     cursor: pointer;
     transition: all 0.2s;
 }
@@ -461,6 +449,6 @@ body.dark-mode .class-card-body h3 {
 .role-btn.active {
     border-color: #3498db;
     background-color: #ebf5fb;
-    color: #2c3e50;
+    color: var(--heading-color);
     box-shadow: 0 2px 5px rgba(52, 152, 219, 0.2);
 }

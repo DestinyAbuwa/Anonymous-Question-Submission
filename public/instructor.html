@@ -1,12 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Instructor Dashboard</title>
     <link rel="stylesheet" href="style.css">
+    <script src="theme.js"></script>
 </head>
+
 <body>
+    <nav class="navbar">
+        <div class="nav-logo">📘 ClassQ&A</div>
+        <div class="nav-links">
+            <a href="home.html">Home</a> <a href="index.html">Dashboard</a>
+
+            <button id="theme-toggle" class="theme-btn">🌙</button>
+
+            <a href="#" id="logout-btn" style="color: #e74c3c; font-weight: bold; margin-left: 20px;">Logout</a>
+        </div>
+    </nav>
+
     <div class="container dashboard-container">
         <header>
             <h1>Instructor Dashboard</h1>
@@ -15,7 +29,7 @@
 
         <section class="questions-section">
             <h2>Student Questions</h2>
-            
+
             <div id="questions-container">
                 <p class="subtitle">Loading questions...</p>
             </div>
@@ -24,4 +38,5 @@
 
     <script src="instructor.js"></script>
 </body>
+
 </html>
