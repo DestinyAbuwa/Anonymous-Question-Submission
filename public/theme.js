@@ -31,3 +31,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+function logout() {
+    // Delete the ID badge from the browser
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    // Send them back to the public homepage
+    window.location.href = 'index.html';
+}

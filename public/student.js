@@ -35,18 +35,18 @@ document.getElementById('question-form').addEventListener('submit', async functi
 
     try {
         // 3. Fire the data to our backend server using the Fetch API!
-        // (We will build this exact '/api/questions' route in the next step)
+        const token = localStorage.getItem('token'); // Grab the badge
+
         const response = await fetch('/api/questions', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` // Show the badge to the Waiter!
             },
             body: JSON.stringify({
-                // Hardcoding our dummy student and active lecture session for testing
-                user_id: 2,       
                 session_id: 1,    
                 content: content,
-                tags: selectedTags // NEW: We are sending the whole array now!
+                tags: selectedTags
             })
         });
 
@@ -139,16 +139,28 @@ async function loadStudentFeed() {
 // 2. The Kitchen Ticket: Send the upvote toggle to the database
 async function handleUpvote(questionId) {
     try {
+        // Grab the digital ID badge from the browser
+        const token = localStorage.getItem('token');
+
         const response = await fetch(`/api/questions/${questionId}/upvote`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user_id: 2 }) // Hardcoded student
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` // Show the badge to the Waiter!
+            }
+            // Notice we COMPLETELY deleted the "body: JSON.stringify(...)" line! 
+            // The backend security guard figures out who we are from the token.
         });
 
         if (response.ok) {
             // Because the backend now handles toggling on/off, 
             // we just reload the feed to show the updated number!
             loadStudentFeed(); 
+        } else {
+            // If they aren't logged in or the badge is expired, log the error
+            const data = await response.json();
+            console.error("Upvote failed:", data.error);
+            alert("Your session expired. Please log in again.");
         }
     } catch (error) {
         console.error("Error upvoting:", error);
@@ -165,39 +177,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // 3. Start the process immediately when the page loads
 loadStudentFeed();
-
-// ==========================================
-// NAVBAR LOGIC: Logout & Dark Mode
-// ==========================================
-
-// 1. Handle Logout
-document.getElementById('logout-btn')?.addEventListener('click', (event) => {
-    event.preventDefault();
-    // In Phase 3, we will add code here to destroy the user's digital ID badge
-    window.location.href = 'login.html';
-});
-
-// 2. Handle Dark Mode Toggle
-const themeToggle = document.getElementById('theme-toggle');
-if (themeToggle) {
-    // Check if the user previously saved a dark mode preference in their browser
-    if (localStorage.getItem('theme') === 'dark') {
-        document.body.classList.add('dark-mode');
-        themeToggle.textContent = '☀️'; // Switch icon to sun
-    }
-
-    // Listen for the click
-    themeToggle.addEventListener('click', () => {
-        document.body.classList.toggle('dark-mode');
-        
-        // If it is now dark mode, save that preference and change the icon
-        if (document.body.classList.contains('dark-mode')) {
-            localStorage.setItem('theme', 'dark');
-            themeToggle.textContent = '☀️';
-        } else {
-            // Otherwise, save light mode and change it back to the moon
-            localStorage.setItem('theme', 'light');
-            themeToggle.textContent = '🌙';
-        }
-    });
-}

@@ -52,11 +52,35 @@ const profanityFilter = (req, res, next) => {
 };
 
 // ==========================================
+// MIDDLEWARE: JWT Security Guard
+// ==========================================
+const authenticateToken = (req, res, next) => {
+    // 1. Look for the badge in the headers
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1]; // Format is "Bearer <token>"
+
+    if (!token) return res.status(401).json({ error: 'Access denied. Please log in.' });
+
+    // 2. Verify the badge is real and hasn't expired
+    jwt.verify(token, JWT_SECRET, (err, user) => {
+        if (err) return res.status(403).json({ error: 'Invalid or expired token.' });
+        
+        // 3. Attach the user's data (like their user_id) to the request!
+        req.user = user;
+        next(); // Let them pass
+    });
+};
+
+// ==========================================
 // API ROUTE: Submit a New Question (FIXED)
 // ==========================================
-app.post('/api/questions', profanityFilter, async (req, res) => {
-    // THE FIX: We changed 'tag_name' to 'tags' here so the Waiter knows what to grab!
-    const { user_id, session_id, content, tags } = req.body;
+// Notice we added 'authenticateToken' right before 'profanityFilter'
+app.post('/api/questions', authenticateToken, profanityFilter, async (req, res) => {
+    // Look! We don't grab user_id from req.body anymore! We grab it from the secure badge.
+    const user_id = req.user.user_id; 
+    const { session_id, content, tags } = req.body;
+    
+    // ... the rest of your database insertion code stays exactly the same!
 
     try {
         const [questionResult] = await pool.execute(
@@ -116,9 +140,11 @@ app.get('/api/questions/:sessionId', async (req, res) => {
 // ==========================================
 // API ROUTE: Toggle Upvote (Add or Remove)
 // ==========================================
-app.post('/api/questions/:questionId/upvote', async (req, res) => {
+app.post('/api/questions/:questionId/upvote', authenticateToken, async (req, res) => {
     const { questionId } = req.params;
-    const { user_id } = req.body;
+    const user_id = req.user.user_id; // Securely pulled from the badge!
+    
+    // ... the rest of the upvote logic stays exactly the same!
 
     try {
         // 1. Check if the student has already upvoted this specific question
