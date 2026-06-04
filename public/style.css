@@ -18,6 +18,7 @@
     --input-bg: #ffffff;
     --heading-color: #2c3e50;
     --muted-text: #7f8c8d;
+    --active-btn-bg: #ebf5fb;
 }
 
 [data-theme="dark"] {
@@ -30,6 +31,7 @@
     --input-bg: #4a5568;
     --heading-color: #f7fafc;
     --muted-text: #a0aec0;
+    --active-btn-bg: #1e3a8a;
 }
 
 body {
@@ -433,9 +435,9 @@ textarea:focus {
 .role-btn {
     flex: 1;
     padding: 15px;
-    border: 2px solid #cbd5e1;
+    border: 2px solid var(--border-color);
     border-radius: 8px;
-    background: white;
+    background-color: var(--panel-bg);
     font-weight: bold;
     font-size: 1.1em;
     color: var(--muted-text);
@@ -448,7 +450,7 @@ textarea:focus {
 }
 .role-btn.active {
     border-color: #3498db;
-    background-color: #ebf5fb;
+    background-color: var(--active-btn-bg);
     color: var(--heading-color);
     box-shadow: 0 2px 5px rgba(52, 152, 219, 0.2);
 }

@@ -1,3 +1,9 @@
+
+const jwt = require('jsonwebtoken');
+
+// We need a secret key to sign our badges. In production, this goes in your .env file!
+const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-class-qa-key';
+
 // server.js
 const express = require('express');
 const cors = require('cors');
@@ -213,9 +219,17 @@ app.post('/api/login', async (req, res) => {
             return res.status(401).json({ error: 'Invalid email or password.' });
         }
 
-        // 4. Success! (In Phase 3, we will add the digital ID badge here)
+        // 4. Success! Create the JWT (The Digital ID Badge)
+        const token = jwt.sign(
+            { user_id: user.user_id, role: user.role, username: user.username },
+            JWT_SECRET,
+            { expiresIn: '24h' } // Badge expires in 24 hours
+        );
+
+        // 5. Success! (In Phase 3, we will add the digital ID badge here)
         res.status(200).json({ 
             message: 'Login successful!',
+            token: token, // Include the JWT in the response
             user: {
                 user_id: user.user_id,
                 email: user.email,
