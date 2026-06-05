@@ -2,7 +2,7 @@
 const jwt = require('jsonwebtoken');
 
 // We need a secret key to sign our badges. In production, this goes in your .env file!
-const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-class-qa-key';
+const JWT_SECRET = process.env.JWT_SECRET; //|| 'super-secret-class-qa-key';
 
 // server.js
 const express = require('express');
@@ -190,35 +190,43 @@ app.patch('/api/questions/:questionId/answer', async (req, res) => {
 });
 
 // ==========================================
-// API ROUTE: User Registration
+// API ROUTE: User Registration (WITH AUTO-LOGIN)
 // ==========================================
 app.post('/api/register', async (req, res) => {
-    // 1. Grab the exact fields matching your Users table schema
     const { email, password, role } = req.body;
+    const finalRole = role || 'Student';
 
     try {
-        // 2. The Scrambler: Hash the password. 
-        // The '10' represents "salt rounds" (how intensely to scramble it)
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // 3. Save the new user to the database using the scrambled password!
         const [result] = await pool.execute(
             `INSERT INTO Users (email, password_hash, role) VALUES (?, ?, ?)`,
-            [email, hashedPassword, role || 'Student'] // Default to Student if no role provided
+            [email, hashedPassword, finalRole]
         );
 
-        res.status(201).json({ message: 'User registered successfully!' });
+        // NEW: Generate the ID badge immediately!
+        const token = jwt.sign(
+            { user_id: result.insertId, role: finalRole, email: email },
+            JWT_SECRET,
+            { expiresIn: '24h' }
+        );
+
+        // Send the badge back just like the login route does
+        res.status(201).json({ 
+            message: 'Account created securely!',
+            token: token,
+            role: finalRole
+        });
 
     } catch (error) {
-        // ER_DUP_ENTRY means they tried to use an email that is already taken
         if (error.code === 'ER_DUP_ENTRY') {
             return res.status(400).json({ error: 'Email already exists. Please log in.' });
         }
-        
         console.error('❌ Error registering user:', error);
         res.status(500).json({ error: 'Failed to register user.' });
     }
 });
+
 
 // ==========================================
 // API ROUTE: User Login
@@ -271,7 +279,7 @@ app.post('/api/login', async (req, res) => {
 
 
 // Start the server and listen on the port defined in our .env file (3000)
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT; //|| 3000;
 
 app.listen(PORT, () => {
     console.log(`🚀 Server is officially listening on http://localhost:${PORT}`);
