@@ -1,21 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Check who is logged in
-    const userRole = localStorage.getItem('userRole');
-    const userId = localStorage.getItem('userId');
+    // 1. Check for the EXACT keys we saved during login ('token' and 'role')
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
 
-    // If they aren't logged in, kick them back to the login page!
-    if (!userRole || !userId) {
-        window.location.href = 'login.html';
+    // If either the badge or the role is missing, kick them back to auth!
+    if (!token || !role) {
+        window.location.href = 'auth.html';
         return;
     }
 
     // 2. Personalize the welcome message
-    document.getElementById('welcome-message').textContent = `Welcome back, ${userRole}!`;
+    document.getElementById('welcome-message').textContent = `Welcome back, ${role}!`;
 
-    // 3. For now, we will hardcode a single test class (CS 101) 
-    // Later, we will fetch this list from the database based on their Enrollments!
+    // 3. Hardcoded test class
     const classGrid = document.getElementById('class-grid');
-    
+
     const card = document.createElement('div');
     card.className = 'class-card';
     card.innerHTML = `
@@ -26,16 +25,14 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
     `;
 
-    // 4. THE SMART ROUTER: Where do they go when they click the card?
+    // 4. THE SMART ROUTER
     card.addEventListener('click', () => {
-        if (userRole === 'Instructor') {
-            window.location.href = 'instructor.html'; // Send teachers to the moderation view
+        if (role === 'Instructor') {
+            window.location.href = 'instructor.html';
         } else {
-            window.location.href = 'student.html'; // Send students to the Q&A view
+            window.location.href = 'student.html';
         }
     });
 
     classGrid.appendChild(card);
 });
-
-// (You should also copy your Dark Mode and Logout logic from script.js into this file later so the navbar works here too!)

@@ -23,11 +23,11 @@ async function fetchQuestions() {
 
             // 1. Convert the timestamp
             const timeString = new Date(q.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            
+
             // 2. Build the HTML for potentially multiple tags
             let tagsHTML = '';
             if (q.tags) {
-                const tagsArray = q.tags.split(','); 
+                const tagsArray = q.tags.split(',');
                 tagsArray.forEach(tag => {
                     // Reusing the same data-tag attribute so your new CSS colors apply!
                     tagsHTML += `<span class="tag-badge" data-tag="${tag}">${tag}</span> `;
@@ -75,7 +75,7 @@ async function markAsAnswered(questionId) {
 
         if (response.ok) {
             // Immediately reload the dashboard so the answered question disappears!
-            fetchQuestions(); 
+            fetchQuestions();
         }
     } catch (error) {
         console.error("Error marking as answered:", error);

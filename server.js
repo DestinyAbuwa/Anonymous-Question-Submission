@@ -1,3 +1,5 @@
+// Import our secret variables (so we can use process.env.PORT)
+require('dotenv').config();
 
 const jwt = require('jsonwebtoken');
 
@@ -13,8 +15,6 @@ const pool = require('./config/db');
 
 const bcrypt = require('bcrypt');
 
-// Import our secret variables (so we can use process.env.PORT)
-require('dotenv').config();
 
 // Initialize the Express app
 const app = express();
@@ -38,7 +38,7 @@ const Filter = require('bad-words');
 const textFilter = new Filter();
 
 // You can still add your own custom words to its massive dictionary!
-textFilter.addWords('heck', 'darn', 'shoot'); 
+textFilter.addWords('heck', 'darn', 'shoot');
 
 const profanityFilter = (req, res, next) => {
     const { content } = req.body;
@@ -64,7 +64,7 @@ const authenticateToken = (req, res, next) => {
     // 2. Verify the badge is real and hasn't expired
     jwt.verify(token, JWT_SECRET, (err, user) => {
         if (err) return res.status(403).json({ error: 'Invalid or expired token.' });
-        
+
         // 3. Attach the user's data (like their user_id) to the request!
         req.user = user;
         next(); // Let them pass
@@ -77,9 +77,9 @@ const authenticateToken = (req, res, next) => {
 // Notice we added 'authenticateToken' right before 'profanityFilter'
 app.post('/api/questions', authenticateToken, profanityFilter, async (req, res) => {
     // Look! We don't grab user_id from req.body anymore! We grab it from the secure badge.
-    const user_id = req.user.user_id; 
+    const user_id = req.user.user_id;
     const { session_id, content, tags } = req.body;
-    
+
     // ... the rest of your database insertion code stays exactly the same!
 
     try {
@@ -143,7 +143,7 @@ app.get('/api/questions/:sessionId', async (req, res) => {
 app.post('/api/questions/:questionId/upvote', authenticateToken, async (req, res) => {
     const { questionId } = req.params;
     const user_id = req.user.user_id; // Securely pulled from the badge!
-    
+
     // ... the rest of the upvote logic stays exactly the same!
 
     try {
@@ -212,7 +212,7 @@ app.post('/api/register', async (req, res) => {
         );
 
         // Send the badge back just like the login route does
-        res.status(201).json({ 
+        res.status(201).json({
             message: 'Account created securely!',
             token: token,
             role: finalRole
@@ -261,7 +261,7 @@ app.post('/api/login', async (req, res) => {
         );
 
         // 5. Success! (In Phase 3, we will add the digital ID badge here)
-        res.status(200).json({ 
+        res.status(200).json({
             message: 'Login successful!',
             token: token, // Include the JWT in the response
             user: {
@@ -278,8 +278,8 @@ app.post('/api/login', async (req, res) => {
 });
 
 
-// Start the server and listen on the port defined in our .env file (3000)
-const PORT = process.env.PORT; //|| 3000;
+// Start the server and listen on the port defined in our .env file (4000)
+const PORT = process.env.PORT; //|| 4000;
 
 app.listen(PORT, () => {
     console.log(`🚀 Server is officially listening on http://localhost:${PORT}`);

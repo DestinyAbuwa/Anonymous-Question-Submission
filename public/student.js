@@ -6,21 +6,21 @@ document.querySelectorAll('.tag-toggle').forEach(button => {
     button.addEventListener('click', () => {
         // Visually turn the color on/off
         button.classList.toggle('selected');
-        
+
         const tag = button.getAttribute('data-value');
 
         // If it's already in our list, remove it. If it isn't, add it!
         if (selectedTags.includes(tag)) {
-            selectedTags = selectedTags.filter(t => t !== tag); 
+            selectedTags = selectedTags.filter(t => t !== tag);
         } else {
-            selectedTags.push(tag); 
+            selectedTags.push(tag);
         }
     });
 });
 
 // Wait for the student to click the "Submit Question" button
-document.getElementById('question-form').addEventListener('submit', async function(event) {
-    
+document.getElementById('question-form').addEventListener('submit', async function (event) {
+
     // 1. Prevent the default HTML behavior (which is to refresh the entire page)
     event.preventDefault();
 
@@ -44,7 +44,7 @@ document.getElementById('question-form').addEventListener('submit', async functi
                 'Authorization': `Bearer ${token}` // Show the badge to the Waiter!
             },
             body: JSON.stringify({
-                session_id: 1,    
+                session_id: 1,
                 content: content,
                 tags: selectedTags
             })
@@ -54,14 +54,14 @@ document.getElementById('question-form').addEventListener('submit', async functi
         if (response.ok) {
             // Success! Clear the text box and show a green message
             document.getElementById('question-text').value = '';
-            
+
             // Visually turn off all tag buttons and empty the array after submission
             selectedTags = [];
             document.querySelectorAll('.tag-toggle').forEach(btn => btn.classList.remove('selected'));
 
             statusMessage.textContent = "✅ Question submitted successfully!";
             statusMessage.style.color = "#27ae60"; // Professional green
-            
+
             // Automatically hide the success message after 3 seconds
             setTimeout(() => {
                 statusMessage.textContent = "";
@@ -69,7 +69,7 @@ document.getElementById('question-form').addEventListener('submit', async functi
         } else {
             // NEW: Parse the exact error message sent by our profanity filter
             const errorData = await response.json();
-            
+
             // Display the specific warning from the server
             statusMessage.textContent = "❌ " + (errorData.error || "Failed to submit question.");
             statusMessage.style.color = "#e74c3c"; // Red
@@ -105,12 +105,12 @@ async function loadStudentFeed() {
         questions.forEach(q => {
             const card = document.createElement('div');
             card.className = 'feed-card';
-            
+
             // Build the HTML for potentially multiple tags!
             let tagsHTML = '';
             if (q.tags) {
                 // The backend will send them grouped together like "Urgent,Exam-Related"
-                const tagsArray = q.tags.split(','); 
+                const tagsArray = q.tags.split(',');
                 tagsArray.forEach(tag => {
                     tagsHTML += `<span class="tag-badge" data-tag="${tag}">${tag}</span> `;
                 });
@@ -144,7 +144,7 @@ async function handleUpvote(questionId) {
 
         const response = await fetch(`/api/questions/${questionId}/upvote`, {
             method: 'POST',
-            headers: { 
+            headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}` // Show the badge to the Waiter!
             }
@@ -155,7 +155,7 @@ async function handleUpvote(questionId) {
         if (response.ok) {
             // Because the backend now handles toggling on/off, 
             // we just reload the feed to show the updated number!
-            loadStudentFeed(); 
+            loadStudentFeed();
         } else {
             // If they aren't logged in or the badge is expired, log the error
             const data = await response.json();
@@ -170,9 +170,9 @@ async function handleUpvote(questionId) {
 // 3. Start the process and SET THE AUTO-REFRESH TIMER
 document.addEventListener('DOMContentLoaded', () => {
     loadStudentFeed(); // Load immediately on opening
-    
+
     // Refresh the feed automatically every 5 seconds (5000ms)
-    setInterval(loadStudentFeed, 5000); 
+    setInterval(loadStudentFeed, 5000);
 });
 
 // 3. Start the process immediately when the page loads

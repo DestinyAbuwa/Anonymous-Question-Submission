@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,16 +9,38 @@
     <script src="theme.js"></script>
     <style>
         /* A little custom CSS just for the toggle tabs */
-        .auth-tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid var(--border-color); }
-        .auth-tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: bold; color: var(--muted-text); transition: 0.2s; }
-        .auth-tab.active { color: #3498db; border-bottom: 3px solid #3498db; margin-bottom: -2px; }
-        .hidden-form { display: none; }
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .auth-tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            color: var(--muted-text);
+            transition: 0.2s;
+        }
+
+        .auth-tab.active {
+            color: #3498db;
+            border-bottom: 3px solid #3498db;
+            margin-bottom: -2px;
+        }
+
+        .hidden-form {
+            display: none;
+        }
     </style>
 </head>
+
 <body>
     <div class="layout-container" style="max-width: 450px;">
         <section class="panel">
-            
+
             <div class="auth-tabs">
                 <div class="auth-tab active" id="tab-login">Log In</div>
                 <div class="auth-tab" id="tab-register">Sign Up</div>
@@ -26,14 +49,16 @@
             <form id="form-login">
                 <h2 style="margin-bottom: 5px;">Welcome Back</h2>
                 <p class="subtitle">Enter your credentials to access your dashboard.</p>
-                
+
                 <div style="margin-bottom: 15px; margin-top: 20px;">
                     <label style="font-weight: bold; display: block; margin-bottom: 5px;">Email</label>
-                    <input type="email" id="login-email" required style="width: 100%; padding: 10px; border-radius: 5px;">
+                    <input type="email" id="login-email" required
+                        style="width: 100%; padding: 10px; border-radius: 5px;">
                 </div>
                 <div style="margin-bottom: 20px;">
                     <label style="font-weight: bold; display: block; margin-bottom: 5px;">Password</label>
-                    <input type="password" id="login-password" required style="width: 100%; padding: 10px; border-radius: 5px;">
+                    <input type="password" id="login-password" required
+                        style="width: 100%; padding: 10px; border-radius: 5px;">
                 </div>
                 <button type="submit" class="submit-btn">Log In</button>
             </form>
@@ -48,7 +73,8 @@
                 </div>
                 <div style="margin-bottom: 15px;">
                     <label style="font-weight: bold; display: block; margin-bottom: 5px;">Password</label>
-                    <input type="password" id="reg-password" required style="width: 100%; padding: 10px; border-radius: 5px;">
+                    <input type="password" id="reg-password" required
+                        style="width: 100%; padding: 10px; border-radius: 5px;">
                 </div>
                 <div style="margin-bottom: 20px;">
                     <label style="font-weight: bold; display: block; margin-bottom: 10px;">I am a...</label>
@@ -66,4 +92,5 @@
 
     <script src="auth.js"></script>
 </body>
+
 </html>

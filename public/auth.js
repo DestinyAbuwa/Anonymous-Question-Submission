@@ -35,24 +35,24 @@ document.querySelectorAll('.role-btn').forEach(btn => {
 async function handleAuth(url, bodyData, loadingMsg) {
     statusDiv.textContent = loadingMsg;
     statusDiv.style.color = "#7f8c8d";
-    
+
     try {
         const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(bodyData)
         });
-        
+
         const data = await response.json();
-        
+
         if (response.ok) {
             statusDiv.textContent = "✅ " + data.message;
             statusDiv.style.color = "#27ae60";
-            
+
             // Save the ID Badge
             localStorage.setItem('token', data.token);
             localStorage.setItem('role', data.role);
-            
+
             // Auto-Route
             setTimeout(() => {
                 if (data.role === 'Instructor') {

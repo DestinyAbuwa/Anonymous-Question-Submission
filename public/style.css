@@ -37,9 +37,10 @@
 body {
     background-color: var(--bg-color);
     color: var(--text-color);
-    margin: 0; 
+    margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth fade effect! */
+    transition: background-color 0.3s ease, color 0.3s ease;
+    /* Smooth fade effect! */
 }
 
 .container {
@@ -47,10 +48,11 @@ body {
     border: 1px solid var(--border-color);
     padding: 30px;
     border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 600px;
-    margin: 0 auto; /* THE FIX: This forces the box to center itself perfectly! */
+    margin: 0 auto;
+    /* THE FIX: This forces the box to center itself perfectly! */
 }
 
 header {
@@ -79,14 +81,17 @@ header p {
     margin-bottom: 15px;
 }
 
-textarea, input, select {
+textarea,
+input,
+select {
     background-color: var(--input-bg);
     color: var(--text-color);
     border: 1px solid var(--border-color);
     width: 100%;
     padding: 15px;
     border-radius: 8px;
-    resize: vertical; /* Lets the user drag the text box down to make it bigger */
+    resize: vertical;
+    /* Lets the user drag the text box down to make it bigger */
     font-size: 1em;
     margin-bottom: 15px;
 }
@@ -136,17 +141,19 @@ textarea:focus {
 /* ========================================== */
 
 .dashboard-container {
-    max-width: 800px; /* Make the dashboard a bit wider than the student form */
+    max-width: 800px;
+    /* Make the dashboard a bit wider than the student form */
 }
 
 .question-card {
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-left: 5px solid #3498db; /* A nice blue accent line on the left */
+    border-left: 5px solid #3498db;
+    /* A nice blue accent line on the left */
     padding: 15px 20px;
     margin-bottom: 15px;
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .question-header {
@@ -165,7 +172,8 @@ textarea:focus {
 }
 
 .tag-badge {
-    background-color: #f39c12; /* Warning orange */
+    background-color: #f39c12;
+    /* Warning orange */
     color: white;
     padding: 4px 10px;
     border-radius: 12px;
@@ -254,13 +262,16 @@ textarea:focus {
 .layout-container {
     max-width: 1000px;
     margin: 0 auto;
-    padding: 40px 20px; /* Moved the padding here so the navbar touches the edges */
+    padding: 40px 20px;
+    /* Moved the padding here so the navbar touches the edges */
 }
 
 .two-column-grid {
     display: flex;
-    gap: 30px; /* Space between the two columns */
-    align-items: flex-start; /* Keeps columns at their natural height */
+    gap: 30px;
+    /* Space between the two columns */
+    align-items: flex-start;
+    /* Keeps columns at their natural height */
 }
 
 /* Individual Panels (White boxes) */
@@ -269,14 +280,17 @@ textarea:focus {
     border: 1px solid var(--border-color);
     padding: 25px;
     border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    flex: 1; /* Makes both columns take up exactly 50% of the space */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    /* Makes both columns take up exactly 50% of the space */
 }
 
 /* The Scrollable Feed */
 .scrollable-feed {
-    max-height: 400px; /* Stops the box from growing infinitely */
-    overflow-y: auto; /* Adds the vertical scrollbar */
+    max-height: 400px;
+    /* Stops the box from growing infinitely */
+    overflow-y: auto;
+    /* Adds the vertical scrollbar */
     padding-right: 10px;
 }
 
@@ -284,6 +298,7 @@ textarea:focus {
 .scrollable-feed::-webkit-scrollbar {
     width: 8px;
 }
+
 .scrollable-feed::-webkit-scrollbar-thumb {
     background-color: #cbd5e1;
     border-radius: 4px;
@@ -311,19 +326,22 @@ textarea:focus {
 }
 
 /* Selected states mapping directly to your requested colors! */
-.tag-toggle.selected[data-value="Urgent"], .tag-badge[data-tag="Urgent"] {
+.tag-toggle.selected[data-value="Urgent"],
+.tag-badge[data-tag="Urgent"] {
     background-color: #e74c3c;
     border-color: #e74c3c;
     color: white;
 }
 
-.tag-toggle.selected[data-value="Clarification"], .tag-badge[data-tag="Clarification"] {
+.tag-toggle.selected[data-value="Clarification"],
+.tag-badge[data-tag="Clarification"] {
     background-color: #2ecc71;
     border-color: #2ecc71;
     color: white;
 }
 
-.tag-toggle.selected[data-value="Exam-Related"], .tag-badge[data-tag="Exam-Related"] {
+.tag-toggle.selected[data-value="Exam-Related"],
+.tag-badge[data-tag="Exam-Related"] {
     background-color: #f39c12;
     border-color: #f39c12;
     color: white;
@@ -332,7 +350,7 @@ textarea:focus {
 /* Add this right below your .tag-toggle rule! */
 .tag-toggle:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     background-color: #f8fafc;
 }
 
@@ -394,20 +412,22 @@ textarea:focus {
     background-color: var(--panel-bg);
     border: 1px solid var(--border-color);
     border-radius: 10px;
-    overflow: hidden; /* Keeps the colored header image inside the rounded corners */
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    overflow: hidden;
+    /* Keeps the colored header image inside the rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .class-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
 }
 
 .class-card-header {
     height: 100px;
-    background: linear-gradient(135deg, #3498db, #2c3e50); /* A cool blue gradient header */
+    background: linear-gradient(135deg, #3498db, #2c3e50);
+    /* A cool blue gradient header */
 }
 
 .class-card-body {
@@ -432,6 +452,7 @@ textarea:focus {
     display: flex;
     gap: 15px;
 }
+
 .role-btn {
     flex: 1;
     padding: 15px;
@@ -444,10 +465,12 @@ textarea:focus {
     cursor: pointer;
     transition: all 0.2s;
 }
+
 .role-btn:hover {
     border-color: #3498db;
     background-color: #f8fafc;
 }
+
 .role-btn.active {
     border-color: #3498db;
     background-color: var(--active-btn-bg);
