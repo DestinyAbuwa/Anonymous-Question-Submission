@@ -246,10 +246,18 @@ textarea:focus {
     font-weight: bold;
 }
 
+.nav-links {
+    display: flex;
+    align-items: center; /* This perfectly centers the text and the moon button vertically! */
+    gap: 20px;           /* This creates even spacing between all your links */
+}
+
+/* If you have any 'margin-left' styles inline on your HTML <a> tags, 
+   you can delete them now because the 'gap' property handles the spacing! */
+
 .nav-links a {
     color: white;
     text-decoration: none;
-    margin-left: 20px;
     font-weight: 500;
 }
 

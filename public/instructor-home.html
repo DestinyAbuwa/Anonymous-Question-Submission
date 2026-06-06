@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instructor Dashboard - ClassQ&A</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="theme.js"></script>
+</head>
+<body>
+    <header class="navbar">
+        <div class="nav-logo">📘 ClassQ&A - Instructor</div>
+        <div class="nav-links">
+            <a href="instructor-home.html">My Classes</a>
+            <!-- This will eventually trigger a popup to generate a code! -->
+            <a href="#" style="color: #27ae60; font-weight: bold;">+ Create Class</a>
+            <a href="#" onclick="logout()">Log Out</a>
+            <button id="theme-toggle" class="theme-btn" style="background:none; border:none; color:inherit; cursor:pointer; display:flex; align-items:center;"></button>
+        </div>
+    </header>
+
+    <div class="layout-container">
+        <section class="panel">
+            <h2 id="welcome-message" style="margin-bottom: 5px;">Instructor Dashboard</h2>
+            <p class="subtitle">Manage your classes and active Q&A sessions.</p>
+
+            <div id="class-grid" class="class-grid" style="margin-top: 25px; display: grid; gap: 15px; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">
+                <!-- Hardcoded test class for now -->
+                <div class="class-card" onclick="window.location.href='instructor.html'">
+                    <div class="class-card-header" style="height: 80px; background: linear-gradient(135deg, #27ae60, #2ecc71); border-radius: 8px 8px 0 0;"></div>
+                    <div class="class-card-body" style="padding: 15px;">
+                        <h3>CS 101: Intro to Programming</h3>
+                        <p>Manage Live Session</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- We will create instructor-home.js later to fetch real classes from the DB -->
+</body>
+</html>

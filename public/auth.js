@@ -53,12 +53,15 @@ async function handleAuth(url, bodyData, loadingMsg) {
             localStorage.setItem('token', data.token);
             localStorage.setItem('role', data.role);
 
-            // Auto-Route
+            // Auto-Route with bulletproof case-insensitivity
             setTimeout(() => {
-                if (data.role === 'Instructor') {
-                    window.location.href = 'instructor.html';
+                // Force the role to lowercase and remove accidental spaces
+                const safeRole = data.role.trim().toLowerCase(); 
+                
+                if (safeRole === 'instructor') {
+                    window.location.href = 'instructor-home.html'; // New Instructor Hub!
                 } else {
-                    window.location.href = 'home.html';
+                    window.location.href = 'student-home.html';            // Student Hub!
                 }
             }, 500);
         } else {
