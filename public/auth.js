@@ -48,20 +48,20 @@ async function handleAuth(url, bodyData, loadingMsg) {
         if (response.ok) {
             statusDiv.textContent = "✅ " + data.message;
             statusDiv.style.color = "#27ae60";
-
+            
             // Save the ID Badge
             localStorage.setItem('token', data.token);
             localStorage.setItem('role', data.role);
-
-            // Auto-Route with bulletproof case-insensitivity
+            
+            // Bulletproof Routing
             setTimeout(() => {
-                // Force the role to lowercase and remove accidental spaces
-                const safeRole = data.role.trim().toLowerCase(); 
+                // Force the role to lowercase to avoid case-sensitive bugs
+                const safeRole = String(data.role || '').trim().toLowerCase();
                 
                 if (safeRole === 'instructor') {
-                    window.location.href = 'instructor-home.html'; // New Instructor Hub!
+                    window.location.href = 'instructor-home.html'; // To Instructor Hub
                 } else {
-                    window.location.href = 'student-home.html';            // Student Hub!
+                    window.location.href = 'student-home.html';    // To Student Hub
                 }
             }, 500);
         } else {

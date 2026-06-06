@@ -265,6 +265,27 @@ textarea:focus {
     color: #3498db;
 }
 
+/* ========================================== */
+/* NAVBAR BUTTONS                             */
+/* ========================================== */
+.nav-signup-btn {
+    background-color: #3498db;
+    color: white;
+    padding: 8px 18px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    white-space: nowrap; /* Prevents text from breaking onto a new line */
+    transition: background-color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-signup-btn:hover {
+    background-color: #2980b9;
+}
+
 /* The Layout Grid */
 /* UPDATE YOUR LAYOUT CONTAINER RULE TO ADD THE PADDING BACK */
 .layout-container {
@@ -393,10 +414,13 @@ textarea:focus {
 .theme-btn {
     background: none;
     border: none;
-    font-size: 1.2em;
+    color: inherit;
     cursor: pointer;
-    margin-left: 15px;
-    transition: transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
 }
 
 .theme-btn:hover {
