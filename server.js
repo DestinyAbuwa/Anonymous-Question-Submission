@@ -235,45 +235,41 @@ app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        // 1. Ask the database if this email exists
-        const [users] = await pool.execute(`SELECT * FROM Users WHERE email = ?`, [email]);
-
-        // If the array is empty, the email isn't in our database
-        if (users.length === 0) {
-            return res.status(401).json({ error: 'Invalid email or password.' });
+        // 1. Get the user
+        const [rows] = await pool.execute('SELECT * FROM Users WHERE email = ?', [email]);
+        
+        if (rows.length === 0) {
+            return res.status(401).json({ error: 'User not found.' });
         }
 
-        // 2. Grab the specific user's data from the array
-        const user = users[0];
+        const user = rows[0];
 
-        // 3. The Scrambler Check: Compare the typed password to the hashed database password
-        const passwordsMatch = await bcrypt.compare(password, user.password_hash);
+        // 2. Debug: Check if role actually exists in the DB response
+        console.log("Database user object:", user); 
 
-        if (!passwordsMatch) {
-            return res.status(401).json({ error: 'Invalid email or password.' });
+        // 3. Verify Password
+        const match = await bcrypt.compare(password, user.password_hash);
+        if (!match) {
+            return res.status(401).json({ error: 'Invalid password.' });
         }
 
-        // 4. Success! Create the JWT (The Digital ID Badge)
+        // 4. Generate Token (Ensure JWT_SECRET is loaded from .env)
         const token = jwt.sign(
-            { user_id: user.user_id, role: user.role, username: user.username },
-            JWT_SECRET,
-            { expiresIn: '24h' } // Badge expires in 24 hours
+            { user_id: user.user_id, role: user.role, email: user.email },
+            process.env.JWT_SECRET, // Make sure this isn't undefined!
+            { expiresIn: '24h' }
         );
 
-        // 5. Success! (In Phase 3, we will add the digital ID badge here)
-        res.status(200).json({
+        // 5. Send Response
+        res.status(200).json({ 
             message: 'Login successful!',
-            token: token, // Include the JWT in the response
-            user: {
-                user_id: user.user_id,
-                email: user.email,
-                role: user.role
-            }
+            token: token,
+            role: user.role // Verify this is actually sending the data
         });
 
     } catch (error) {
-        console.error('❌ Error during login:', error);
-        res.status(500).json({ error: 'Failed to process login.' });
+        console.error('❌ Login Error:', error); // THIS WILL SHOW THE REAL ERROR IN THE TERMINAL
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 

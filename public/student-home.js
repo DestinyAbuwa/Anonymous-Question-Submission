@@ -1,31 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const role = localStorage.getItem('role'); // This is now guaranteed lowercase
+    const role = localStorage.getItem('role');
     const token = localStorage.getItem('token');
 
-    // If no token, redirect to login
+    // 1. Basic Auth Guard
     if (!token || !role) {
         window.location.href = 'auth.html';
         return;
     }
 
-    // Role-specific landing page protection
-    const path = window.location.pathname;
-    
-    // If an instructor is on the student page, bounce them to the instructor page
-    if (path.includes('student-home.html') && role === 'instructor') {
+    // 2. Role Enforcement (If they are an instructor, send them to the correct hub)
+    if (role === 'instructor') {
         window.location.href = 'instructor-home.html';
         return;
     }
-    
-    // If a student is on the instructor page, bounce them to the student page
-    if (path.includes('instructor-home.html') && role === 'student') {
-        window.location.href = 'student-home.html';
-        return;
-    }
 
-    // Welcome message
-    const welcomeMsg = document.getElementById('welcome-message');
-    if (welcomeMsg) {
-        welcomeMsg.textContent = `Welcome back, ${role.charAt(0).toUpperCase() + role.slice(1)}!`;
-    }
+    // Now you can safely write Student-only code here
+    document.getElementById('welcome-message').textContent = `Welcome, Student!`;
 });
