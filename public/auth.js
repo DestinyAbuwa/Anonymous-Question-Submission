@@ -34,7 +34,6 @@ document.querySelectorAll('.role-btn').forEach(btn => {
 // 3. Centralized Auth Handler
 async function handleAuth(url, bodyData, loadingMsg) {
     statusDiv.textContent = loadingMsg;
-    statusDiv.style.color = "#7f8c8d";
 
     try {
         const response = await fetch(url, {
@@ -46,31 +45,27 @@ async function handleAuth(url, bodyData, loadingMsg) {
         const data = await response.json();
 
         if (response.ok) {
-            statusDiv.textContent = "✅ " + data.message;
-            statusDiv.style.color = "#27ae60";
-            
-            // Save the ID Badge
+            // CRITICAL FIX: Ensure 'role' is stored exactly as 'role'
             localStorage.setItem('token', data.token);
-            localStorage.setItem('role', data.role);
-            
-            // Bulletproof Routing
+            // Inside auth.js, inside the response.ok block
+            localStorage.setItem('role', data.role.toLowerCase()); // Force lowercase here!
+
+            statusDiv.textContent = "✅ Success! Redirecting...";
+
             setTimeout(() => {
-                // Force the role to lowercase to avoid case-sensitive bugs
-                const safeRole = String(data.role || '').trim().toLowerCase();
-                
-                if (safeRole === 'instructor') {
-                    window.location.href = 'instructor-home.html'; // To Instructor Hub
+                // Ensure we are comparing the string correctly
+                const role = String(data.role).toLowerCase();
+                if (role === 'instructor') {
+                    window.location.href = 'instructor-home.html';
                 } else {
-                    window.location.href = 'student-home.html';    // To Student Hub
+                    window.location.href = 'student-home.html';
                 }
-            }, 500);
+            }, 800);
         } else {
-            statusDiv.textContent = "❌ " + data.error;
-            statusDiv.style.color = "#e74c3c";
+            statusDiv.textContent = "❌ " + (data.error || "Login failed");
         }
     } catch (error) {
-        statusDiv.textContent = "❌ Failed to connect to server.";
-        statusDiv.style.color = "#e74c3c";
+        statusDiv.textContent = "❌ Server error.";
     }
 }
 
