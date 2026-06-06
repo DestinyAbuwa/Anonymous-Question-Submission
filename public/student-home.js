@@ -17,3 +17,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // Now you can safely write Student-only code here
     document.getElementById('welcome-message').textContent = `Welcome, Student!`;
 });
+
+// Inside student-home.js
+async function joinClass(joinCode) {
+    const userId = localStorage.getItem('userId'); 
+
+    const response = await fetch('/api/join-class', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            user_id: userId, 
+            join_code: joinCode 
+        })
+    });
+    // The backend will handle inserting into the Enrollments table
+}
+
+

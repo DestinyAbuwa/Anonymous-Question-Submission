@@ -49,6 +49,7 @@ async function handleAuth(url, bodyData, loadingMsg) {
             localStorage.setItem('token', data.token);
             // Inside auth.js, inside the response.ok block
             localStorage.setItem('role', data.role.toLowerCase()); // Force lowercase here!
+            localStorage.setItem('userId', data.user_id); // Save it here
 
             statusDiv.textContent = "✅ Success! Redirecting...";
 

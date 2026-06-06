@@ -237,7 +237,7 @@ app.post('/api/login', async (req, res) => {
     try {
         // 1. Get the user
         const [rows] = await pool.execute('SELECT * FROM Users WHERE email = ?', [email]);
-        
+
         if (rows.length === 0) {
             return res.status(401).json({ error: 'User not found.' });
         }
@@ -245,7 +245,7 @@ app.post('/api/login', async (req, res) => {
         const user = rows[0];
 
         // 2. Debug: Check if role actually exists in the DB response
-        console.log("Database user object:", user); 
+        console.log("Database user object:", user);
 
         // 3. Verify Password
         const match = await bcrypt.compare(password, user.password_hash);
@@ -261,10 +261,11 @@ app.post('/api/login', async (req, res) => {
         );
 
         // 5. Send Response
-        res.status(200).json({ 
+        res.status(200).json({
             message: 'Login successful!',
             token: token,
-            role: user.role // Verify this is actually sending the data
+            role: user.role,
+            user_id: user.user_id // Add this!
         });
 
     } catch (error) {
@@ -273,6 +274,60 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
+// 1. Instructor creates a class (SECURE)
+app.post('/api/create-class', authenticateToken, async (req, res) => {
+    const { class_name } = req.body; // No longer taking instructor_id from body!
+    const instructor_id = req.user.user_id; // Take it from the secure token
+    const join_code = Math.random().toString(36).substring(2, 8).toUpperCase();
+
+    try {
+        await pool.execute(
+            'INSERT INTO Classes (class_name, instructor_id, join_code) VALUES (?, ?, ?)',
+            [class_name, instructor_id, join_code]
+        );
+        res.status(201).json({ message: 'Class created!', join_code });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Database error creating class.' });
+    }
+});
+
+// 2. Student joins a class (SECURE + ENROLLMENT LOGIC)
+app.post('/api/join-class', authenticateToken, async (req, res) => {
+    const { join_code } = req.body;
+    const user_id = req.user.user_id; // Take it from the secure token
+
+    try {
+        // Find the class first
+        const [classes] = await pool.execute('SELECT class_id FROM Classes WHERE join_code = ?', [join_code]);
+        if (classes.length === 0) return res.status(404).json({ error: 'Invalid code.' });
+
+        const class_id = classes[0].class_id;
+
+        // NOW: Actually insert into your Enrollments table
+        await pool.execute('INSERT IGNORE INTO Enrollments (user_id, class_id) VALUES (?, ?)', [user_id, class_id]);
+
+        res.status(200).json({ message: 'Joined class!', class_id });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Database error joining class.' });
+    }
+});
+
+// Fetch classes for the Instructor
+app.get('/api/my-classes', authenticateToken, async (req, res) => {
+    const [classes] = await pool.execute('SELECT * FROM Classes WHERE instructor_id = ?', [req.user.user_id]);
+    res.json(classes);
+});
+
+// Fetch classes for the Student
+app.get('/api/enrolled-classes', authenticateToken, async (req, res) => {
+    const [classes] = await pool.execute(`
+        SELECT c.* FROM Classes c 
+        JOIN Enrollments e ON c.class_id = e.class_id 
+        WHERE e.user_id = ?`, [req.user.user_id]);
+    res.json(classes);
+});
 
 // Start the server and listen on the port defined in our .env file (4000)
 const PORT = process.env.PORT; //|| 4000;
