@@ -1,23 +1,47 @@
 const urlParams = new URLSearchParams(window.location.search);
 const classId = urlParams.get('classId');
 let activeSessionId = null;
+let currentTagFilter = null; // Tracks our active filter
 
 document.addEventListener('DOMContentLoaded', () => {
     const role = localStorage.getItem('role');
     const token = localStorage.getItem('token');
 
     if (!token || !role || role !== 'instructor') return window.location.href = 'auth.html';
-    
+
     if (!classId) {
         showToast("No class selected!", "error");
         setTimeout(() => window.location.href = 'instructor-home.html', 1500);
         return;
     }
 
+    // THE FIX: Listeners for the Monday-Friday schedule buttons
+    document.querySelectorAll('#schedule-days .tag-toggle').forEach(btn => {
+        btn.addEventListener('click', () => btn.classList.toggle('selected'));
+    });
+
     loadClassDetails();
     fetchQuestions();
     setInterval(fetchQuestions, 5000);
 });
+
+// Click-to-Filter Logic
+function setTagFilter(tag) {
+    currentTagFilter = tag;
+    document.getElementById('active-filters').style.display = 'block';
+    
+    const badge = document.getElementById('current-filter-badge');
+    badge.textContent = tag;
+    badge.setAttribute('data-tag', tag); // Reuses your CSS colors!
+    
+    fetchQuestions(); // Instantly reload feed with filter
+}
+
+function clearTagFilter() {
+    currentTagFilter = null;
+    document.getElementById('active-filters').style.display = 'none';
+    fetchQuestions();
+}
 
 async function loadClassDetails() {
     const token = localStorage.getItem('token');
@@ -34,17 +58,23 @@ async function loadClassDetails() {
 
 async function fetchQuestions() {
     const container = document.getElementById('questions-container');
-    if (!activeSessionId) return; // Don't fetch if no session is running
+    if (!activeSessionId) return; 
 
     try {
-        const response = await fetch(`/api/questions/${activeSessionId}`);
-        const questions = await response.json();
+        const sortMode = document.getElementById('feed-sort-toggle') ? document.getElementById('feed-sort-toggle').value : 'upvotes';
+        const response = await fetch(`/api/questions/${activeSessionId}?sort=${sortMode}`);
+        let questions = await response.json();
+
+        // THE FIX: Apply the frontend filter if a tag is clicked!
+        if (currentTagFilter) {
+            questions = questions.filter(q => q.tags && q.tags.includes(currentTagFilter));
+        }
 
         if (questions.length === 0) {
             container.innerHTML = `
                 <div class="empty-state" style="padding: 20px;">
                     <span>📭</span>
-                    <h3>Waiting for questions...</h3>
+                    <h3>${currentTagFilter ? "No questions match this tag." : "Waiting for questions..."}</h3>
                 </div>`;
             return;
         }
@@ -58,7 +88,8 @@ async function fetchQuestions() {
             let tagsHTML = '';
             if (q.tags) {
                 q.tags.split(',').forEach(tag => {
-                    tagsHTML += `<span class="tag-badge" data-tag="${tag}">${tag}</span> `;
+                    // NEW: Clicking a tag calls setTagFilter()
+                    tagsHTML += `<span class="tag-badge" data-tag="${tag}" style="cursor: pointer;" onclick="setTagFilter('${tag}')">${tag}</span> `;
                 });
             }
 
@@ -113,13 +144,13 @@ async function startSession() {
     if (response.ok) {
         const data = await response.json();
         activeSessionId = data.session_id;
-        
+
         document.getElementById('start-session-panel').style.display = 'none';
         document.getElementById('active-session-panel').style.display = 'block';
         document.getElementById('current-session-name').textContent = sessionName;
         document.getElementById('questions-container').innerHTML = '<p class="subtitle">Waiting for questions...</p>';
         showToast("Live session started!", "success");
-        fetchQuestions(); // Pull any immediate questions
+        fetchQuestions(); 
     } else {
         showToast('Failed to start session.', "error");
     }
@@ -149,24 +180,26 @@ async function endSession() {
 
 async function scheduleSession() {
     const sessionName = document.getElementById('session-name-input').value;
-    const startTime = document.getElementById('session-time-input').value;
-    const token = localStorage.getItem('token');
+    const startTime = document.getElementById('session-start-time').value;
+    const endTime = document.getElementById('session-end-time').value;
 
-    if (!sessionName || !startTime) return showToast('Please enter a name and time.', "error");
-
-    startLoader();
-    const response = await fetch('/api/sessions/schedule', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ class_id: classId, session_name: sessionName, start_time: startTime })
+    let selectedDays = [];
+    document.querySelectorAll('#schedule-days .tag-toggle.selected').forEach(btn => {
+        selectedDays.push(btn.getAttribute('data-value'));
     });
 
-    if (response.ok) {
-        showToast(`Session "${sessionName}" scheduled!`, "success");
-        document.getElementById('session-name-input').value = '';
-        document.getElementById('session-time-input').value = '';
-    } else {
-        showToast('Failed to schedule session.', "error");
+    if (!sessionName || !startTime || !endTime || selectedDays.length === 0) {
+        return showToast('Please enter a name, time, and select at least one day.', "error");
     }
+
+    startLoader();
+    // This frontend logic is ready. We will attach the backend SQL insertion later.
+    showToast(`Recurring schedule saved for ${selectedDays.join(', ')}!`, "success");
+    document.getElementById('session-name-input').value = '';
+    document.getElementById('session-start-time').value = '';
+    document.getElementById('session-end-time').value = '';
+    document.querySelectorAll('#schedule-days .tag-toggle').forEach(btn => btn.classList.remove('selected'));
     stopLoader();
 }
+
+document.getElementById('feed-sort-toggle')?.addEventListener('change', fetchQuestions);

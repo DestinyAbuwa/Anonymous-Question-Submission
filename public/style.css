@@ -357,6 +357,7 @@ textarea:focus {
     transition: all 0.2s;
 }
 
+
 /* Selected states mapping directly to your requested colors! */
 .tag-toggle.selected[data-value="Urgent"],
 .tag-badge[data-tag="Urgent"] {
@@ -391,6 +392,12 @@ textarea:focus {
     filter: brightness(1.1);
 }
 
+/* Generic selected state for Schedule Day buttons */
+#schedule-days .tag-toggle.selected {
+    background-color: #3498db;
+    border-color: #3498db;
+    color: white;
+}
 
 /* Instructor Dashboard: Mark Answered Button */
 .mark-answered-btn {

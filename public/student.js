@@ -5,7 +5,7 @@ const classId = urlParams.get('classId');
 document.addEventListener('DOMContentLoaded', () => {
     loadClassDetails();
     checkActiveSession();
-    loadStudentFeed(); 
+    loadStudentFeed();
     setInterval(() => {
         checkActiveSession();
         loadStudentFeed();
@@ -31,28 +31,28 @@ async function checkActiveSession() {
         const response = await fetch(`/api/classes/${classId}/active-session`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        
+
         const questionText = document.getElementById('question-text');
         const submitBtn = document.getElementById('submit-question-btn');
-        const sessionInfo = document.getElementById('session-info'); 
+        const sessionInfo = document.getElementById('session-info');
 
         if (response.ok) {
             const data = await response.json();
             if (data.active) {
                 currentSessionId = data.session.session_id;
-                if(questionText) questionText.disabled = false;
-                if(submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = '1'; }
-                if(questionText) questionText.placeholder = "What's on your mind?...";
-                if(sessionInfo) {
+                if (questionText) questionText.disabled = false;
+                if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = '1'; }
+                if (questionText) questionText.placeholder = "What's on your mind?...";
+                if (sessionInfo) {
                     sessionInfo.innerHTML = `🟢 Live Session: <strong>${data.session.session_name}</strong>`;
                     sessionInfo.style.color = '#27ae60';
                 }
             } else {
                 currentSessionId = null;
-                if(questionText) questionText.disabled = true;
-                if(submitBtn) { submitBtn.disabled = true; submitBtn.style.opacity = '0.5'; }
-                if(questionText) questionText.placeholder = "Questions are paused. Waiting for instructor...";
-                if(sessionInfo) {
+                if (questionText) questionText.disabled = true;
+                if (submitBtn) { submitBtn.disabled = true; submitBtn.style.opacity = '0.5'; }
+                if (questionText) questionText.placeholder = "Questions are paused. Waiting for instructor...";
+                if (sessionInfo) {
                     sessionInfo.textContent = "No active session. Questions are currently disabled.";
                     sessionInfo.style.color = '#e74c3c';
                 }
@@ -77,7 +77,7 @@ document.querySelectorAll('.tag-toggle').forEach(button => {
 document.getElementById('question-form').addEventListener('submit', async function (event) {
     event.preventDefault();
     const content = document.getElementById('question-text').value;
-    const token = localStorage.getItem('token'); 
+    const token = localStorage.getItem('token');
 
     startLoader();
     try {
@@ -92,7 +92,7 @@ document.getElementById('question-form').addEventListener('submit', async functi
             selectedTags = [];
             document.querySelectorAll('.tag-toggle').forEach(btn => btn.classList.remove('selected'));
             showToast("Question submitted successfully!", "success");
-            loadStudentFeed(); 
+            loadStudentFeed();
         } else {
             const errorData = await response.json();
             showToast(errorData.error || "Failed to submit question.", "error");
@@ -108,7 +108,9 @@ async function loadStudentFeed() {
     if (!currentSessionId) return;
 
     try {
-        const response = await fetch(`/api/questions/${currentSessionId}`);
+        // Inside loadStudentFeed()
+        const sortMode = document.getElementById('feed-sort-toggle') ? document.getElementById('feed-sort-toggle').value : 'upvotes';
+        const response = await fetch(`/api/questions/${currentSessionId}?sort=${sortMode}`);
         const questions = await response.json();
 
         if (questions.length === 0) {
@@ -120,7 +122,7 @@ async function loadStudentFeed() {
             return;
         }
 
-        container.innerHTML = ''; 
+        container.innerHTML = '';
         questions.forEach(q => {
             const card = document.createElement('div');
             card.className = 'feed-card';
@@ -167,3 +169,7 @@ async function handleUpvote(questionId) {
     }
     stopLoader();
 }
+
+document.getElementById('feed-sort-toggle')?.addEventListener('change', loadStudentFeed);
+
+

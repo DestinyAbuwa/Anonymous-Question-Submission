@@ -120,14 +120,20 @@ app.post('/api/questions', authenticateToken, profanityFilter, async (req, res) 
 });
 
 // ==========================================
-// API ROUTE: Fetch All Questions + Upvotes
+// API ROUTE: Fetch All Questions + Upvotes (NOW WITH SORTING)
 // ==========================================
 app.get('/api/questions/:sessionId', async (req, res) => {
     const { sessionId } = req.params;
+    // Grab the sort query parameter (defaults to 'upvotes' if none provided)
+    const sortMode = req.query.sort || 'upvotes';
+
+    // Dynamically change the SQL ORDER BY clause based on the toggle
+    let orderClause = 'ORDER BY upvotes DESC, q.timestamp DESC';
+    if (sortMode === 'recent') {
+        orderClause = 'ORDER BY q.timestamp DESC';
+    }
 
     try {
-        // UPGRADE: We added a subquery to count the 'Upvote' rows in the Interactions table!
-        // We also changed ORDER BY so the most upvoted questions float to the top of the feed.
         const [questions] = await pool.execute(`
             SELECT 
                 q.question_id, q.content, q.timestamp, q.status, 
@@ -137,11 +143,10 @@ app.get('/api/questions/:sessionId', async (req, res) => {
             LEFT JOIN Tags t ON q.question_id = t.question_id
             WHERE q.session_id = ? AND q.status = 'Pending'
             GROUP BY q.question_id
-            ORDER BY upvotes DESC, q.timestamp DESC
+            ${orderClause}
         `, [sessionId]);
 
         res.status(200).json(questions);
-
     } catch (error) {
         console.error('❌ Error fetching questions:', error);
         res.status(500).json({ error: 'Failed to retrieve questions from the database.' });
