@@ -43,8 +43,9 @@ CREATE TABLE Sessions (
     class_id INT NOT NULL,
     session_name VARCHAR(255) NOT NULL,
     is_active BOOLEAN DEFAULT TRUE,
-    start_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-    end_time DATETIME,
+    start_time TIME,
+    end_time TIME,
+    recurring_days VARCHAR(50),
     FOREIGN KEY (class_id) REFERENCES Classes(class_id)
 );
 
@@ -53,6 +54,7 @@ CREATE TABLE Questions (
     user_id INT NOT NULL,
     session_id INT NOT NULL, -- Changed from class_id to tie directly to the lecture
     content TEXT NOT NULL,
+    is_pinned BOOLEAN DEFAULT FALSE,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     status ENUM('Pending', 'Displayed', 'Answered', 'Rejected') DEFAULT 'Pending', -- Replaced boolean for more flexibility
     FOREIGN KEY (user_id) REFERENCES Users(user_id),

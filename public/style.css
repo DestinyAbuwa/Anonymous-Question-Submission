@@ -682,7 +682,19 @@ textarea:focus {
     color: inherit;
 }
 
-@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
 
 /* ========================================== */
 /* PHASE 5: UI & UX POLISH                    */
@@ -694,16 +706,25 @@ textarea:focus {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* 2. Animated Network Loading Bar */
 #top-loader {
     position: fixed;
-    top: 0; left: 0; 
+    top: 0;
+    left: 0;
     height: 4px;
-    background: #2ecc71; /* Green loading bar */
+    background: #2ecc71;
+    /* Green loading bar */
     width: 0;
     z-index: 10000;
     transition: width 0.4s ease, opacity 0.4s ease;
@@ -727,25 +748,54 @@ textarea:focus {
     border-radius: 8px;
     color: white;
     font-weight: bold;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     animation: slideInRight 0.3s ease-out forwards;
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.toast.success { background-color: #27ae60; border-left: 5px solid #1e8449; }
-.toast.error { background-color: #e74c3c; border-left: 5px solid #c0392b; }
-.toast.info { background-color: #3498db; border-left: 5px solid #2980b9; }
-.toast-fade-out { animation: fadeOutRight 0.3s ease-in forwards; }
+.toast.success {
+    background-color: #27ae60;
+    border-left: 5px solid #1e8449;
+}
+
+.toast.error {
+    background-color: #e74c3c;
+    border-left: 5px solid #c0392b;
+}
+
+.toast.info {
+    background-color: #3498db;
+    border-left: 5px solid #2980b9;
+}
+
+.toast-fade-out {
+    animation: fadeOutRight 0.3s ease-in forwards;
+}
 
 @keyframes slideInRight {
-    from { transform: translateX(120%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
+    from {
+        transform: translateX(120%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
+
 @keyframes fadeOutRight {
-    from { transform: translateX(0); opacity: 1; }
-    to { transform: translateX(120%); opacity: 0; }
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateX(120%);
+        opacity: 0;
+    }
 }
 
 /* 4. Skeleton Loaders */
@@ -760,8 +810,13 @@ textarea:focus {
 }
 
 @keyframes skeletonLoading {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
 }
 
 /* Modern Empty State */
@@ -769,11 +824,77 @@ textarea:focus {
     text-align: center;
     padding: 40px 20px;
     color: var(--muted-text);
-    grid-column: 1 / -1; /* Spans the whole grid */
+    grid-column: 1 / -1;
+    /* Spans the whole grid */
 }
+
 .empty-state span {
     font-size: 3em;
     display: block;
     margin-bottom: 15px;
     opacity: 0.5;
+}
+
+/* Phase 6: Pinned & Live Question Styles */
+.question-card.pinned,
+.feed-card.pinned {
+    border-left: 5px solid #f39c12;
+    background-color: #fffdf7;
+}
+
+.live-badge {
+    background: #e74c3c;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    animation: glowPulse 2s infinite;
+    margin-right: 10px;
+}
+
+.live-badge::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+}
+
+@keyframes glowPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 8px rgba(231, 76, 60, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(231, 76, 60, 0);
+    }
+}
+
+.action-btn {
+    background: none;
+    border: 1px solid #ccc;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.action-btn:hover {
+    background: #f1f2f6;
+}
+
+.action-btn.active-live {
+    background: #e74c3c;
+    color: white;
+    border-color: #e74c3c;
 }

@@ -16,10 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Now you can safely write Instructor-only code here
     document.getElementById('welcome-message').textContent = `Welcome, Instructor!`;
-    loadClasses(); // Load the cards immediately!
+    loadClasses(); // Load the cards with active session indicators
 });
 
-// 1. Update loadClasses() to use the Loader and Skeletons
+// 1. Load classes and fetch active sessions to enrich them
 async function loadClasses() {
     const grid = document.getElementById('class-grid');
     // Show skeleton loaders before the data arrives
@@ -28,14 +28,45 @@ async function loadClasses() {
     startLoader(); // Start the top progress bar
 
     const token = localStorage.getItem('token');
-    const response = await fetch('/api/my-classes', {
-        headers: { 'Authorization': `Bearer ${token}` }
-    });
+    
+    try {
+        // Fetch classes
+        const classResponse = await fetch('/api/my-classes', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
 
-    if (response.ok) {
-        const classes = await response.json();
-        renderClasses(classes);
-    } else {
+        if (!classResponse.ok) {
+            showToast('Failed to load classes.', 'error');
+            grid.innerHTML = '';
+            stopLoader();
+            return;
+        }
+
+        const classes = await classResponse.json();
+
+        // Fetch active sessions
+        let activeSessions = [];
+        try {
+            const sessionsResponse = await fetch('/api/instructor/active-sessions', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (sessionsResponse.ok) {
+                activeSessions = await sessionsResponse.json();
+            }
+        } catch (error) {
+            console.error('Error fetching active sessions:', error);
+        }
+
+        // Build a map of class_id -> active session for quick lookup
+        const activeSessionMap = {};
+        activeSessions.forEach(session => {
+            activeSessionMap[session.class_id] = session;
+        });
+
+        renderClasses(classes, activeSessionMap);
+    } catch (error) {
+        console.error('Error in loadClasses:', error);
         showToast('Failed to load classes.', 'error');
         grid.innerHTML = '';
     }
@@ -43,8 +74,8 @@ async function loadClasses() {
     stopLoader(); // Finish the progress bar
 }
 
-// 2. Update renderClasses() to use the Modern Empty State
-function renderClasses(classes) {
+// 2. Render class cards with optional active session button
+function renderClasses(classes, activeSessionMap = {}) {
     const grid = document.getElementById('class-grid');
     grid.innerHTML = ''; 
 
@@ -61,16 +92,40 @@ function renderClasses(classes) {
     classes.forEach(c => {
         const card = document.createElement('div');
         card.className = 'class-card';
-        card.onclick = () => window.location.href = `instructor.html?classId=${c.class_id}`;
-        card.innerHTML = `
+        
+        const activeSession = activeSessionMap[c.class_id];
+        
+        // Build the card content
+        let cardContent = `
             <div class="class-card-header">
                 <h3>${c.class_name}</h3>
             </div>
             <div class="class-card-body">
-                <p>Status: <span style="color:#27ae60; font-weight:bold;">Active</span></p>
                 <div class="join-code-badge">Code: ${c.join_code}</div>
-            </div>
         `;
+
+        // Add continue button if there's an active session
+        if (activeSession) {
+            cardContent += `
+                <div style="background: rgba(46, 204, 113, 0.1); border: 2px solid #27ae60; padding: 12px; border-radius: 8px; margin-top: 12px;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+                        <span style="font-size: 1.2em; animation: pulse 1s infinite;">🔴</span>
+                        <span style="color: #27ae60; font-weight: bold; font-size: 0.9em;">LIVE: ${activeSession.session_name}</span>
+                    </div>
+                    <button 
+                        onclick="event.stopPropagation(); window.location.href = 'instructor.html?classId=${c.class_id}'"
+                        style="width: 100%; padding: 10px; background: #27ae60; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.95em;">
+                        Continue Session →
+                    </button>
+                </div>
+            `;
+        } else {
+            // Default click behavior for cards without active sessions
+            card.onclick = () => window.location.href = `instructor.html?classId=${c.class_id}`;
+        }
+
+        cardContent += '</div>';
+        card.innerHTML = cardContent;
         grid.appendChild(card);
     });
 }
@@ -78,7 +133,6 @@ function renderClasses(classes) {
 // Modal Logic
 function showCreateModal() { document.getElementById('create-class-modal').style.display = 'flex'; }
 function hideCreateModal() { document.getElementById('create-class-modal').style.display = 'none'; }
-
 
 // Create logic (Auto-refreshes the grid without reloading the page!)
 // 3. Update handleCreateClass() to use Toast Notifications instead of alerts

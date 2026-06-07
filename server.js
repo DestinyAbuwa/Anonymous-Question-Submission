@@ -120,36 +120,88 @@ app.post('/api/questions', authenticateToken, profanityFilter, async (req, res) 
 });
 
 // ==========================================
-// API ROUTE: Fetch All Questions + Upvotes (NOW WITH SORTING)
+// API ROUTE: Fetch All Questions (UPDATED WITH PIN SORTING)
 // ==========================================
 app.get('/api/questions/:sessionId', async (req, res) => {
     const { sessionId } = req.params;
-    // Grab the sort query parameter (defaults to 'upvotes' if none provided)
     const sortMode = req.query.sort || 'upvotes';
 
-    // Dynamically change the SQL ORDER BY clause based on the toggle
-    let orderClause = 'ORDER BY upvotes DESC, q.timestamp DESC';
+    // Pinned questions ALWAYS float to the absolute top, followed by the selected sort
+    let orderClause = 'ORDER BY q.is_pinned DESC, upvotes DESC, q.timestamp DESC';
     if (sortMode === 'recent') {
-        orderClause = 'ORDER BY q.timestamp DESC';
+        orderClause = 'ORDER BY q.is_pinned DESC, q.timestamp DESC';
     }
 
     try {
         const [questions] = await pool.execute(`
             SELECT 
-                q.question_id, q.content, q.timestamp, q.status, 
+                q.question_id, q.content, q.timestamp, q.status, q.is_pinned,
                 GROUP_CONCAT(t.tag_name) AS tags,
                 (SELECT COUNT(*) FROM Interactions i WHERE i.question_id = q.question_id AND i.interaction_type = 'Upvote') AS upvotes
             FROM Questions q
             LEFT JOIN Tags t ON q.question_id = t.question_id
-            WHERE q.session_id = ? AND q.status = 'Pending'
+            WHERE q.session_id = ? AND (q.status = 'Pending' OR q.status = 'Displayed')
             GROUP BY q.question_id
             ${orderClause}
         `, [sessionId]);
 
         res.status(200).json(questions);
     } catch (error) {
-        console.error('❌ Error fetching questions:', error);
-        res.status(500).json({ error: 'Failed to retrieve questions from the database.' });
+        res.status(500).json({ error: 'Failed to retrieve questions.' });
+    }
+});
+
+// ==========================================
+// API ROUTE: Schedule a Future Session (SQL HOOKED UP)
+// ==========================================
+app.post('/api/sessions/schedule', authenticateToken, async (req, res) => {
+    const { class_id, session_name, start_time, end_time, recurring_days } = req.body;
+
+    try {
+        const [authCheck] = await pool.execute(
+            'SELECT * FROM Classes WHERE class_id = ? AND instructor_id = ?',
+            [class_id, req.user.user_id]
+        );
+
+        if (authCheck.length === 0) return res.status(403).json({ error: 'Unauthorized.' });
+
+        // SQL INSERTION READY!
+        await pool.execute(
+            'INSERT INTO Sessions (class_id, session_name, is_active, start_time, end_time, recurring_days) VALUES (?, ?, FALSE, ?, ?, ?)',
+            [class_id, session_name, start_time, end_time, recurring_days]
+        );
+
+        res.status(201).json({ message: 'Session scheduled successfully!' });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to schedule session.' });
+    }
+});
+
+// ==========================================
+// API ROUTE: Toggle "Answering Live"
+// ==========================================
+app.patch('/api/questions/:questionId/live', authenticateToken, async (req, res) => {
+    const { questionId } = req.params;
+    const { status } = req.body; // 'Displayed' or 'Pending'
+    try {
+        await pool.execute(`UPDATE Questions SET status = ? WHERE question_id = ?`, [status, questionId]);
+        res.status(200).json({ message: 'Live status updated!' });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to update status.' });
+    }
+});
+
+// ==========================================
+// API ROUTE: Toggle "Pin"
+// ==========================================
+app.patch('/api/questions/:questionId/pin', authenticateToken, async (req, res) => {
+    const { questionId } = req.params;
+    try {
+        // Flips the boolean from true to false, or false to true
+        await pool.execute(`UPDATE Questions SET is_pinned = NOT is_pinned WHERE question_id = ?`, [questionId]);
+        res.status(200).json({ message: 'Pin toggled!' });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to toggle pin.' });
     }
 });
 
@@ -475,6 +527,26 @@ app.get('/api/classes/:classId/active-session', authenticateToken, async (req, r
     } catch (error) {
         console.error('❌ Error fetching active session:', error);
         res.status(500).json({ error: 'Failed to retrieve active session.' });
+    }
+});
+
+// ==========================================
+// API ROUTE: Get Active Sessions for Instructor
+// ==========================================
+app.get('/api/instructor/active-sessions', authenticateToken, async (req, res) => {
+    try {
+        const [activeSessions] = await pool.execute(`
+            SELECT s.session_id, s.session_name, s.class_id, c.class_name, c.join_code 
+            FROM Sessions s
+            JOIN Classes c ON s.class_id = c.class_id
+            WHERE c.instructor_id = ? AND s.is_active = TRUE
+            ORDER BY s.session_id DESC
+        `, [req.user.user_id]);
+        
+        res.status(200).json(activeSessions);
+    } catch (error) {
+        console.error('❌ Error fetching active sessions:', error);
+        res.status(500).json({ error: 'Failed to retrieve active sessions.' });
     }
 });
 

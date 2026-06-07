@@ -125,21 +125,31 @@ async function loadStudentFeed() {
         container.innerHTML = '';
         questions.forEach(q => {
             const card = document.createElement('div');
-            card.className = 'feed-card';
+            card.className = `feed-card ${q.is_pinned ? 'pinned' : ''}`;
+
             let tagsHTML = '';
             if (q.tags) {
                 q.tags.split(',').forEach(tag => {
                     tagsHTML += `<span class="tag-badge" data-tag="${tag}">${tag}</span> `;
                 });
             }
+
+            const isLive = q.status === 'Displayed';
+            const liveBadge = isLive ? `<div class="live-badge">Answering Live</div>` : '';
+            const pinIcon = q.is_pinned ? `<span style="color:#f39c12; font-size:1.2em; margin-right:5px;">📌</span>` : '';
+
             card.innerHTML = `
                 <div class="upvote-column">
                     <button class="upvote-btn" onclick="handleUpvote(${q.question_id})">▲</button>
                     <span class="upvote-count">${q.upvotes || 0}</span>
                 </div>
                 <div class="question-body">
-                    <div class="question-header">${tagsHTML}</div>
-                    <div class="question-content">${q.content}</div>
+                    <div class="question-header">
+                        <div>${pinIcon} ${tagsHTML}</div>
+                    </div>
+                    <div class="question-content" style="margin-top: 5px;">
+                        ${liveBadge} ${q.content}
+                    </div>
                 </div>
             `;
             container.appendChild(card);

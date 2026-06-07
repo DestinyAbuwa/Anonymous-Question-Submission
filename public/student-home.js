@@ -5,7 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!token || !role) return window.location.href = 'auth.html';
     if (role === 'instructor') return window.location.href = 'instructor-home.html';
 
-    loadEnrolledClasses(); 
+    document.getElementById('welcome-message').textContent = `Welcome, Student!`;
+    loadEnrolledClasses();
 });
 
 async function loadEnrolledClasses() {
@@ -77,7 +78,7 @@ async function handleJoinClass() {
     if (response.ok) {
         hideJoinModal();
         codeInput.value = '';
-        loadEnrolledClasses(); 
+        loadEnrolledClasses();
         showToast("Successfully joined class!", "success");
     } else {
         const data = await response.json();
