@@ -11,19 +11,23 @@
 
 <body>
     <nav class="navbar">
-        <div class="nav-logo">📘 ClassQ&A - Student</div>
+        <!-- Links back to index.html -->
+        <a href="index.html" class="nav-logo-link">📘 ClassQ&A</a>
+
         <div class="nav-links">
 
-            <a href="#" onclick="logout()">Log Out</a>
+
             <button id="theme-toggle" class="theme-btn"
                 style="background:none; border:none; color:inherit; cursor:pointer; display:flex; align-items:center;"></button>
+            <div class="nav-divider"></div>
+            <button onclick="logout()" class="nav-logout-btn">Log Out</button>
         </div>
     </nav>
 
     <div class="layout-container">
         <header style="display: flex; justify-content: space-between; align-items: flex-end;">
             <div>
-                <h1>My Classes</h1>
+                <h1>Student Dashboard</h1>
                 <p class="subtitle" id="welcome-message">Loading user...</p>
             </div>
             <button class="submit-btn" style="width: auto; padding: 10px 20px;" onclick="showJoinModal()">+ Join
@@ -34,14 +38,19 @@
         </div>
     </div>
 
-    <!-- Place this right before your closing </body> tag -->
     <div id="join-class-modal" class="modal-overlay">
         <div class="modal-content">
             <h3 style="margin-top:0; color:#2c3e50;">Join a Class</h3>
             <p style="color:#7f8c8d; font-size:0.9rem;">Enter the 6-character code provided by your instructor.</p>
-            <input type="text" id="join-code-input" placeholder="e.g., A1B2C3" style="text-transform: uppercase;">
-            <button onclick="handleJoinClass()" class="btn-primary">Join Class</button>
-            <button onclick="hideJoinModal()" class="btn-secondary">Cancel</button>
+
+            <!-- WRAP IN A FORM AND USE onsubmit -->
+            <form onsubmit="event.preventDefault(); handleJoinClass();">
+                <input type="text" id="join-code-input" placeholder="e.g., A1B2C3" style="text-transform: uppercase;"
+                    required>
+                <button type="submit" class="btn-primary">Join Class</button>
+                <button type="button" onclick="hideJoinModal()" class="btn-secondary">Cancel</button>
+            </form>
+
         </div>
     </div>
 

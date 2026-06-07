@@ -11,20 +11,20 @@
 
 <body>
     <nav class="navbar">
-        <div class="nav-logo">📘 ClassQ&A - Student</div>
+        <a href="index.html" class="nav-logo-link">📘 ClassQ&A</a>
         <div class="nav-links">
-            <a href="student-home.html">My Classes</a>
-            <a href="#" style="color: #3498db; font-weight: bold;">+ Join Class</a>
-            <a href="#" onclick="logout()">Log Out</a>
+            <a href="student-home.html">My Dashboard</a>
             <button id="theme-toggle" class="theme-btn"
                 style="background:none; border:none; color:inherit; cursor:pointer; display:flex; align-items:center;"></button>
+            <div class="nav-divider"></div>
+            <button onclick="logout()" class="nav-logout-btn">Log Out</button>
         </div>
     </nav>
 
     <div class="layout-container">
         <header>
-            <h1>CS 101: Intro to Programming</h1>
-            <p>Session: Week 1 - Variables and Loops</p>
+            <h1 id="class-title">Loading Class...</h1>
+            <p id="session-info">Waiting for instructor to start a session...</p>
         </header>
 
         <div class="two-column-grid">

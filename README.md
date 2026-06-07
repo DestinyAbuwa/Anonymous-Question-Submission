@@ -28,6 +28,8 @@ An Anonymous Question Submission platform to improve classroom engagement betwee
 - [ ] Click-to-Filter Tags
 - [ ] "Answering Live" Glowing Badge for active questions
 - [ ] Pinned Questions (Instructor feature)
+- [ ] Real-Time WebSockets (Socket.io)
+- [ ] Password Reset Flow
 
 **Phase 7: Instructor Power Tools**
 - [ ] CSV Data Export (Download session analytics)

@@ -62,7 +62,7 @@ function renderClasses(classes) {
 // Modal Logic
 function showCreateModal() { document.getElementById('create-class-modal').style.display = 'flex'; }
 function hideCreateModal() { document.getElementById('create-class-modal').style.display = 'none'; }
-function logout() { localStorage.clear(); window.location.href = 'auth.html'; }
+
 
 // Create logic (Auto-refreshes the grid without reloading the page!)
 async function handleCreateClass() {

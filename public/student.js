@@ -167,13 +167,31 @@ async function handleUpvote(questionId) {
     }
 }
 
-// 3. Start the process and SET THE AUTO-REFRESH TIMER
-document.addEventListener('DOMContentLoaded', () => {
-    loadStudentFeed(); // Load immediately on opening
+// Extract classId from URL
+const urlParams = new URLSearchParams(window.location.search);
+const classId = urlParams.get('classId');
 
-    // Refresh the feed automatically every 5 seconds (5000ms)
+async function loadClassDetails() {
+    if (!classId) return;
+    const token = localStorage.getItem('token');
+    
+    const response = await fetch(`/api/classes/${classId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (response.ok) {
+        const classData = await response.json();
+        document.getElementById('class-title').textContent = classData.class_name;
+    }
+}
+
+// Ensure loadClassDetails is called when the page loads!
+document.addEventListener('DOMContentLoaded', () => {
+    loadClassDetails();
+    loadStudentFeed(); 
     setInterval(loadStudentFeed, 5000);
 });
+
 
 // 3. Start the process immediately when the page loads
 loadStudentFeed();

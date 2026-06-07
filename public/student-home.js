@@ -59,7 +59,7 @@ function renderClasses(classes) {
 
 function showJoinModal() { document.getElementById('join-class-modal').style.display = 'flex'; }
 function hideJoinModal() { document.getElementById('join-class-modal').style.display = 'none'; }
-function logout() { localStorage.clear(); window.location.href = 'auth.html'; }
+
 
 async function handleJoinClass() {
     const codeInput = document.getElementById('join-code-input');

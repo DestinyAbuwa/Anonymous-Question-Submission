@@ -168,10 +168,7 @@ async function scheduleSession() {
     }
 }
 
-function logout() {
-    localStorage.clear();
-    window.location.href = 'auth.html';
-}
+
 
 // Extract the classId from the URL (e.g., instructor.html?classId=5)
 const urlParams = new URLSearchParams(window.location.search);

@@ -644,3 +644,36 @@ textarea:focus {
 .btn-secondary:hover {
     background: #bdc3c7;
 }
+
+.nav-divider {
+    width: 2px;
+    height: 24px;
+    background-color: var(--border-color);
+    margin: 0 10px;
+}
+
+.nav-logout-btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.nav-logout-btn:hover {
+    background-color: #c0392b;
+}
+
+/* Make the logo a clickable link */
+.nav-logo-link {
+    font-size: 1.5em;
+    font-weight: bold;
+    text-decoration: none;
+    color: inherit;
+}
+
+@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+

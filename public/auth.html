@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,73 +7,68 @@
     <link rel="stylesheet" href="style.css">
     <script src="theme.js"></script>
     <style>
-        /* A little custom CSS just for the toggle tabs */
-        .auth-tabs {
-            display: flex;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        .auth-tab {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-            cursor: pointer;
-            font-weight: bold;
-            color: var(--muted-text);
-            transition: 0.2s;
-        }
-
-        .auth-tab.active {
-            color: #3498db;
-            border-bottom: 3px solid #3498db;
-            margin-bottom: -2px;
-        }
-
-        .hidden-form {
-            display: none;
-        }
+        .auth-tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid var(--border-color); }
+        .auth-tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: bold; color: var(--muted-text); transition: 0.2s; }
+        .auth-tab.active { color: #3498db; border-bottom: 3px solid #3498db; margin-bottom: -2px; }
+        .hidden-form { display: none; }
+        .google-btn { width: 100%; padding: 12px; margin: 15px 0; background-color: var(--panel-bg); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; }
+        .google-btn:hover { background-color: var(--bg-color); }
     </style>
 </head>
-
 <body>
-    <div class="layout-container" style="max-width: 450px;">
+    <div class="layout-container" style="max-width: 450px; margin-top: 5vh;">
         <section class="panel">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h1 style="color: #3498db; font-size: 2.2em; margin-bottom: 5px;">📘 ClassQ&A</h1>
+            </div>
 
             <div class="auth-tabs">
                 <div class="auth-tab active" id="tab-login">Log In</div>
                 <div class="auth-tab" id="tab-register">Sign Up</div>
             </div>
 
+            <!-- Login Form -->
             <form id="form-login">
                 <h2 style="margin-bottom: 5px;">Welcome Back</h2>
                 <p class="subtitle">Enter your credentials to access your dashboard.</p>
 
-                <div style="margin-bottom: 15px; margin-top: 20px;">
+                <button type="button" class="google-btn">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google Logo" style="width: 18px;">
+                    Sign in with Google
+                </button>
+
+                <div style="display: flex; align-items: center; margin: 20px 0;">
+                    <hr style="flex: 1; border: none; border-top: 1px solid var(--border-color);">
+                    <span style="padding: 0 10px; color: var(--muted-text); font-size: 0.9em;">or</span>
+                    <hr style="flex: 1; border: none; border-top: 1px solid var(--border-color);">
+                </div>
+
+                <div style="margin-bottom: 15px;">
                     <label style="font-weight: bold; display: block; margin-bottom: 5px;">Email</label>
-                    <input type="email" id="login-email" required
-                        style="width: 100%; padding: 10px; border-radius: 5px;">
+                    <input type="email" id="login-email" required>
                 </div>
                 <div style="margin-bottom: 20px;">
-                    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Password</label>
-                    <input type="password" id="login-password" required
-                        style="width: 100%; padding: 10px; border-radius: 5px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                        <label style="font-weight: bold; margin: 0;">Password</label>
+                        <a href="#" style="font-size: 0.85em; color: #3498db; text-decoration: none;">Forgot Password?</a>
+                    </div>
+                    <input type="password" id="login-password" required>
                 </div>
                 <button type="submit" class="submit-btn">Log In</button>
             </form>
 
+            <!-- Register Form -->
             <form id="form-register" class="hidden-form">
                 <h2 style="margin-bottom: 5px;">Create an Account</h2>
                 <p class="subtitle">Join your class to start asking questions.</p>
 
                 <div style="margin-bottom: 15px; margin-top: 20px;">
                     <label style="font-weight: bold; display: block; margin-bottom: 5px;">Email</label>
-                    <input type="email" id="reg-email" required style="width: 100%; padding: 10px; border-radius: 5px;">
+                    <input type="email" id="reg-email" required>
                 </div>
                 <div style="margin-bottom: 15px;">
                     <label style="font-weight: bold; display: block; margin-bottom: 5px;">Password</label>
-                    <input type="password" id="reg-password" required
-                        style="width: 100%; padding: 10px; border-radius: 5px;">
+                    <input type="password" id="reg-password" required>
                 </div>
                 <div style="margin-bottom: 20px;">
                     <label style="font-weight: bold; display: block; margin-bottom: 10px;">I am a...</label>
@@ -89,8 +83,6 @@
             <div id="auth-status" style="margin-top: 15px; font-weight: bold; text-align: center;"></div>
         </section>
     </div>
-
     <script src="auth.js"></script>
 </body>
-
 </html>

@@ -42,5 +42,5 @@ document.addEventListener('DOMContentLoaded', () => {
 function logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
-    window.location.href = 'auth.html';
+    window.location.href = 'index.html';
 }

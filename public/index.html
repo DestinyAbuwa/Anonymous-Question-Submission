@@ -54,9 +54,8 @@
     <nav class="navbar">
         <div class="nav-logo">📘 ClassQ&A</div>
         <div class="nav-links">
-            <a href="auth.html" style="font-weight: bold; white-space: nowrap;">Log In</a>
-            <a href="auth.html" class="nav-signup-btn">Sign Up</a>
-            <button id="theme-toggle" class="theme-btn" style="background:none; border:none; color:inherit; cursor:pointer; display:flex; align-items:center;"></button>
+            <button id="theme-toggle" class="theme-btn"
+                style="background:none; border:none; color:inherit; cursor:pointer; display:flex; align-items:center;"></button>
         </div>
     </nav>
 
@@ -93,6 +92,26 @@
             </div>
         </section>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            const role = localStorage.getItem('role');
+
+            // If the user is already logged in, change the buttons to "Go to Dashboard"
+            if (token && role) {
+                const loginLinks = document.querySelectorAll('a[href="auth.html"]');
+                loginLinks.forEach(link => {
+                    link.textContent = 'Go to Dashboard';
+                    link.href = role === 'instructor' ? 'instructor-home.html' : 'student-home.html';
+                    link.style.backgroundColor = '#2ecc71'; // Keep it looking like a primary action
+                    link.style.color = 'white';
+                });
+            }
+        });
+    </script>
+
+
 </body>
 
 </html>
