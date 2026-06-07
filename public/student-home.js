@@ -2,24 +2,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const role = localStorage.getItem('role');
     const token = localStorage.getItem('token');
 
-    // 1. Basic Auth Guard
-    if (!token || !role) {
-        window.location.href = 'auth.html';
-        return;
-    }
+    if (!token || !role) return window.location.href = 'auth.html';
+    if (role === 'instructor') return window.location.href = 'instructor-home.html';
 
-    // 2. Role Enforcement (If they are an instructor, send them to the correct hub)
-    if (role === 'instructor') {
-        window.location.href = 'instructor-home.html';
-        return;
-    }
-
-    // Now you can safely write Student-only code here
-    document.getElementById('welcome-message').textContent = `Welcome, Student!`;
-    loadEnrolledClasses(); // Load the cards immediately!
+    loadEnrolledClasses(); 
 });
 
 async function loadEnrolledClasses() {
+    const grid = document.getElementById('class-grid');
+    // Show skeletons while fetching
+    grid.innerHTML = '<div class="skeleton-box"></div><div class="skeleton-box"></div>';
+    startLoader();
+
     const token = localStorage.getItem('token');
     const response = await fetch('/api/enrolled-classes', {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -28,7 +22,11 @@ async function loadEnrolledClasses() {
     if (response.ok) {
         const classes = await response.json();
         renderClasses(classes);
+    } else {
+        showToast("Failed to load classes.", "error");
+        grid.innerHTML = '';
     }
+    stopLoader();
 }
 
 function renderClasses(classes) {
@@ -36,7 +34,12 @@ function renderClasses(classes) {
     grid.innerHTML = '';
 
     if (classes.length === 0) {
-        grid.innerHTML = '<p style="color: #7f8c8d;">You haven\'t joined any classes yet.</p>';
+        grid.innerHTML = `
+            <div class="empty-state">
+                <span>🎓</span>
+                <h3>No classes yet</h3>
+                <p>Click "+ Join Class" and enter your instructor's code.</p>
+            </div>`;
         return;
     }
 
@@ -45,9 +48,7 @@ function renderClasses(classes) {
         card.className = 'class-card';
         card.onclick = () => window.location.href = `student.html?classId=${c.class_id}`;
         card.innerHTML = `
-            <div class="class-card-header">
-                <h3>${c.class_name}</h3>
-            </div>
+            <div class="class-card-header"><h3>${c.class_name}</h3></div>
             <div class="class-card-body">
                 <p>Instructor ID: ${c.instructor_id}</p>
                 <div class="join-code-badge">Joined</div>
@@ -60,13 +61,13 @@ function renderClasses(classes) {
 function showJoinModal() { document.getElementById('join-class-modal').style.display = 'flex'; }
 function hideJoinModal() { document.getElementById('join-class-modal').style.display = 'none'; }
 
-
 async function handleJoinClass() {
     const codeInput = document.getElementById('join-code-input');
     const token = localStorage.getItem('token');
 
-    if (!codeInput.value) return alert('Please enter a join code.');
+    if (!codeInput.value) return showToast('Please enter a join code.', 'error');
 
+    startLoader();
     const response = await fetch('/api/join-class', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -76,10 +77,11 @@ async function handleJoinClass() {
     if (response.ok) {
         hideJoinModal();
         codeInput.value = '';
-        loadEnrolledClasses(); // Paints the newly joined class instantly!
+        loadEnrolledClasses(); 
+        showToast("Successfully joined class!", "success");
     } else {
         const data = await response.json();
-        alert(data.error || 'Error joining class.');
+        showToast(data.error || 'Error joining class.', "error");
     }
+    stopLoader();
 }
-

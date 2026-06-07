@@ -677,3 +677,96 @@ textarea:focus {
 
 @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
 
+/* ========================================== */
+/* PHASE 5: UI & UX POLISH                    */
+/* ========================================== */
+
+/* 1. CSS Page Transitions */
+.layout-container {
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 2. Animated Network Loading Bar */
+#top-loader {
+    position: fixed;
+    top: 0; left: 0; 
+    height: 4px;
+    background: #2ecc71; /* Green loading bar */
+    width: 0;
+    z-index: 10000;
+    transition: width 0.4s ease, opacity 0.4s ease;
+    box-shadow: 0 0 10px #2ecc71;
+}
+
+/* 3. Toast Notifications */
+#toast-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 9999;
+}
+
+.toast {
+    min-width: 250px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    animation: slideInRight 0.3s ease-out forwards;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.toast.success { background-color: #27ae60; border-left: 5px solid #1e8449; }
+.toast.error { background-color: #e74c3c; border-left: 5px solid #c0392b; }
+.toast.info { background-color: #3498db; border-left: 5px solid #2980b9; }
+.toast-fade-out { animation: fadeOutRight 0.3s ease-in forwards; }
+
+@keyframes slideInRight {
+    from { transform: translateX(120%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+@keyframes fadeOutRight {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(120%); opacity: 0; }
+}
+
+/* 4. Skeleton Loaders */
+.skeleton-box {
+    background: linear-gradient(90deg, var(--panel-bg) 25%, var(--border-color) 50%, var(--panel-bg) 75%);
+    background-size: 200% 100%;
+    animation: skeletonLoading 1.5s infinite;
+    border-radius: 8px;
+    height: 100px;
+    width: 100%;
+    border: 1px solid var(--border-color);
+}
+
+@keyframes skeletonLoading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Modern Empty State */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted-text);
+    grid-column: 1 / -1; /* Spans the whole grid */
+}
+.empty-state span {
+    font-size: 3em;
+    display: block;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}

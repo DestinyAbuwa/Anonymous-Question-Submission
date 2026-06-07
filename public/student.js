@@ -1,11 +1,32 @@
-// At the top of your file
 let currentSessionId = null;
+const urlParams = new URLSearchParams(window.location.search);
+const classId = urlParams.get('classId');
 
-// New function to check session status
+document.addEventListener('DOMContentLoaded', () => {
+    loadClassDetails();
+    checkActiveSession();
+    loadStudentFeed(); 
+    setInterval(() => {
+        checkActiveSession();
+        loadStudentFeed();
+    }, 5000);
+});
+
+async function loadClassDetails() {
+    if (!classId) return;
+    const token = localStorage.getItem('token');
+    const response = await fetch(`/api/classes/${classId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (response.ok) {
+        const classData = await response.json();
+        document.getElementById('class-title').textContent = classData.class_name;
+    }
+}
+
 async function checkActiveSession() {
     if (!classId) return;
     const token = localStorage.getItem('token');
-    
     try {
         const response = await fetch(`/api/classes/${classId}/active-session`, {
             headers: { 'Authorization': `Bearer ${token}` }
@@ -13,48 +34,38 @@ async function checkActiveSession() {
         
         const questionText = document.getElementById('question-text');
         const submitBtn = document.getElementById('submit-question-btn');
-        const sessionInfo = document.getElementById('session-info'); // Assuming you have this from previous steps
+        const sessionInfo = document.getElementById('session-info'); 
 
         if (response.ok) {
             const data = await response.json();
             if (data.active) {
-                // Session is LIVE
                 currentSessionId = data.session.session_id;
-                questionText.disabled = false;
-                submitBtn.disabled = false;
-                submitBtn.style.opacity = '1';
-                questionText.placeholder = "What's on your mind?...";
-                sessionInfo.innerHTML = `🟢 Live Session: <strong>${data.session.session_name}</strong>`;
-                sessionInfo.style.color = '#27ae60';
+                if(questionText) questionText.disabled = false;
+                if(submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = '1'; }
+                if(questionText) questionText.placeholder = "What's on your mind?...";
+                if(sessionInfo) {
+                    sessionInfo.innerHTML = `🟢 Live Session: <strong>${data.session.session_name}</strong>`;
+                    sessionInfo.style.color = '#27ae60';
+                }
             } else {
-                // Session is CLOSED
                 currentSessionId = null;
-                questionText.disabled = true;
-                submitBtn.disabled = true;
-                submitBtn.style.opacity = '0.5';
-                questionText.placeholder = "Questions are paused. Waiting for instructor...";
-                sessionInfo.textContent = "No active session. Questions are currently disabled.";
-                sessionInfo.style.color = '#e74c3c';
+                if(questionText) questionText.disabled = true;
+                if(submitBtn) { submitBtn.disabled = true; submitBtn.style.opacity = '0.5'; }
+                if(questionText) questionText.placeholder = "Questions are paused. Waiting for instructor...";
+                if(sessionInfo) {
+                    sessionInfo.textContent = "No active session. Questions are currently disabled.";
+                    sessionInfo.style.color = '#e74c3c';
+                }
             }
         }
-    } catch (error) {
-        console.error("Failed to check session status", error);
-    }
+    } catch (error) { console.error("Failed to check session status"); }
 }
 
-
-// Keep track of which tags the student clicks
 let selectedTags = [];
-
-// Attach an "ear" to every tag button
 document.querySelectorAll('.tag-toggle').forEach(button => {
     button.addEventListener('click', () => {
-        // Visually turn the color on/off
         button.classList.toggle('selected');
-
         const tag = button.getAttribute('data-value');
-
-        // If it's already in our list, remove it. If it isn't, add it!
         if (selectedTags.includes(tag)) {
             selectedTags = selectedTags.filter(t => t !== tag);
         } else {
@@ -63,188 +74,96 @@ document.querySelectorAll('.tag-toggle').forEach(button => {
     });
 });
 
-// Wait for the student to click the "Submit Question" button
 document.getElementById('question-form').addEventListener('submit', async function (event) {
-
-    // 1. Prevent the default HTML behavior (which is to refresh the entire page)
     event.preventDefault();
-
-    // 2. Grab the exact text and tag the student selected from the HTML elements
     const content = document.getElementById('question-text').value;
+    const token = localStorage.getItem('token'); 
 
-    const statusMessage = document.getElementById('status-message');
-
-    // Show a quick loading state
-    statusMessage.textContent = "Sending...";
-    statusMessage.style.color = "#7f8c8d";
-
+    startLoader();
     try {
-        // 3. Fire the data to our backend server using the Fetch API!
-        const token = localStorage.getItem('token'); // Grab the badge
-
         const response = await fetch('/api/questions', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}` // Show the badge to the Waiter!
-            },
-            body: JSON.stringify({
-                session_id: currentSessionId,
-                content: content,
-                tags: selectedTags
-            })
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ session_id: currentSessionId, content: content, tags: selectedTags })
         });
 
-        // 4. Handle the server's response
         if (response.ok) {
-            // Success! Clear the text box and show a green message
             document.getElementById('question-text').value = '';
-
-            // Visually turn off all tag buttons and empty the array after submission
             selectedTags = [];
             document.querySelectorAll('.tag-toggle').forEach(btn => btn.classList.remove('selected'));
-
-            statusMessage.textContent = "✅ Question submitted successfully!";
-            statusMessage.style.color = "#27ae60"; // Professional green
-
-            // Automatically hide the success message after 3 seconds
-            setTimeout(() => {
-                statusMessage.textContent = "";
-            }, 3000);
+            showToast("Question submitted successfully!", "success");
+            loadStudentFeed(); 
         } else {
-            // NEW: Parse the exact error message sent by our profanity filter
             const errorData = await response.json();
-
-            // Display the specific warning from the server
-            statusMessage.textContent = "❌ " + (errorData.error || "Failed to submit question.");
-            statusMessage.style.color = "#e74c3c"; // Red
+            showToast(errorData.error || "Failed to submit question.", "error");
         }
     } catch (error) {
-        // The server is completely offline or unreachable
-        console.error("Error submitting question:", error);
-        statusMessage.textContent = "❌ Cannot connect to the server.";
-        statusMessage.style.color = "#e74c3c";
+        showToast("Cannot connect to the server.", "error");
     }
+    stopLoader();
 });
 
-// ==========================================
-// UPVOTE FEATURE LOGIC
-// ==========================================
-
-// 1. The Waiter: Fetch the questions and draw them on the screen
 async function loadStudentFeed() {
     const container = document.getElementById('student-feed-container');
+    if (!currentSessionId) return;
+
     try {
-        // Send a GET request to the Waiter for the current session's questions
         const response = await fetch(`/api/questions/${currentSessionId}`);
         const questions = await response.json();
 
-        container.innerHTML = ''; // Clear loading text
-
         if (questions.length === 0) {
-            container.innerHTML = '<p>No questions yet. Be the first to ask!</p>';
+            container.innerHTML = `
+                <div class="empty-state" style="padding: 20px;">
+                    <span>📭</span>
+                    <p>No questions yet. Be the first to ask!</p>
+                </div>`;
             return;
         }
 
-        // Loop through and build the HTML for each question, including the upvote button!
+        container.innerHTML = ''; 
         questions.forEach(q => {
             const card = document.createElement('div');
             card.className = 'feed-card';
-
-            // Build the HTML for potentially multiple tags!
             let tagsHTML = '';
             if (q.tags) {
-                // The backend will send them grouped together like "Urgent,Exam-Related"
-                const tagsArray = q.tags.split(',');
-                tagsArray.forEach(tag => {
+                q.tags.split(',').forEach(tag => {
                     tagsHTML += `<span class="tag-badge" data-tag="${tag}">${tag}</span> `;
                 });
             }
-
-            // Notice how we attach an 'onclick' event directly to the button, 
-            // passing the specific question_id to our handleUpvote function!
             card.innerHTML = `
                 <div class="upvote-column">
                     <button class="upvote-btn" onclick="handleUpvote(${q.question_id})">▲</button>
                     <span class="upvote-count">${q.upvotes || 0}</span>
                 </div>
                 <div class="question-body">
-                    <div class="question-header">
-                        ${tagsHTML} </div>
+                    <div class="question-header">${tagsHTML}</div>
                     <div class="question-content">${q.content}</div>
                 </div>
             `;
             container.appendChild(card);
         });
     } catch (error) {
-        container.innerHTML = '<p style="color:red;">Failed to load feed.</p>';
+        if (container.innerHTML === '' || container.innerHTML.includes('Loading')) {
+            showToast("Failed to sync feed.", "error");
+        }
     }
 }
 
-// 2. The Kitchen Ticket: Send the upvote toggle to the database
 async function handleUpvote(questionId) {
+    const token = localStorage.getItem('token');
+    startLoader();
     try {
-        // Grab the digital ID badge from the browser
-        const token = localStorage.getItem('token');
-
         const response = await fetch(`/api/questions/${questionId}/upvote`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}` // Show the badge to the Waiter!
-            }
-            // Notice we COMPLETELY deleted the "body: JSON.stringify(...)" line! 
-            // The backend security guard figures out who we are from the token.
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
         });
-
         if (response.ok) {
-            // Because the backend now handles toggling on/off, 
-            // we just reload the feed to show the updated number!
             loadStudentFeed();
         } else {
-            // If they aren't logged in or the badge is expired, log the error
-            const data = await response.json();
-            console.error("Upvote failed:", data.error);
-            alert("Your session expired. Please log in again.");
+            showToast("Your session expired. Please log in again.", "error");
         }
     } catch (error) {
-        console.error("Error upvoting:", error);
+        showToast("Error processing upvote.", "error");
     }
+    stopLoader();
 }
-
-// Extract classId from URL
-const urlParams = new URLSearchParams(window.location.search);
-const classId = urlParams.get('classId');
-
-async function loadClassDetails() {
-    if (!classId) return;
-    const token = localStorage.getItem('token');
-    
-    const response = await fetch(`/api/classes/${classId}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-    });
-
-    if (response.ok) {
-        const classData = await response.json();
-        document.getElementById('class-title').textContent = classData.class_name;
-    }
-}
-
-// Ensure loadClassDetails is called when the page loads!
-document.addEventListener('DOMContentLoaded', () => {
-    loadClassDetails();
-    
-    // Check session status and load feed immediately
-    checkActiveSession();
-    loadStudentFeed(); 
-    
-    // Check both the feed and the session status every 5 seconds
-    setInterval(() => {
-        checkActiveSession();
-        loadStudentFeed();
-    }, 5000);
-});
-
-
-// 3. Start the process immediately when the page loads
-loadStudentFeed();

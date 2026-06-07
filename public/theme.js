@@ -44,3 +44,57 @@ function logout() {
     localStorage.removeItem('role');
     window.location.href = 'index.html';
 }
+
+// ==========================================
+// GLOBAL UI COMPONENTS (PHASE 5)
+// ==========================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Inject the loading bar and toast container into the page automatically
+    document.body.insertAdjacentHTML('beforeend', `
+        <div id="top-loader"></div>
+        <div id="toast-container"></div>
+    `);
+});
+
+// Toast Notification Engine
+window.showToast = function(message, type = 'info') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    let icon = '💡';
+    if (type === 'success') icon = '✅';
+    if (type === 'error') icon = '❌';
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+    
+    container.appendChild(toast);
+    
+    // Automatically dismiss after 3.5 seconds
+    setTimeout(() => {
+        toast.classList.add('toast-fade-out');
+        toast.addEventListener('animationend', () => toast.remove());
+    }, 3500);
+};
+
+// Animated Network Loading Bar
+window.startLoader = function() {
+    const loader = document.getElementById('top-loader');
+    if (loader) { 
+        loader.style.opacity = '1'; 
+        loader.style.width = '60%'; 
+    }
+};
+
+window.stopLoader = function() {
+    const loader = document.getElementById('top-loader');
+    if (loader) {
+        loader.style.width = '100%';
+        setTimeout(() => { 
+            loader.style.opacity = '0'; 
+            setTimeout(() => { loader.style.width = '0'; }, 400); // Reset after fade
+        }, 300);
+    }
+};

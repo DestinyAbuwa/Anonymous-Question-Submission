@@ -19,8 +19,14 @@ document.addEventListener('DOMContentLoaded', () => {
     loadClasses(); // Load the cards immediately!
 });
 
-// Fetch and render classes
+// 1. Update loadClasses() to use the Loader and Skeletons
 async function loadClasses() {
+    const grid = document.getElementById('class-grid');
+    // Show skeleton loaders before the data arrives
+    grid.innerHTML = '<div class="skeleton-box"></div><div class="skeleton-box"></div>';
+    
+    startLoader(); // Start the top progress bar
+
     const token = localStorage.getItem('token');
     const response = await fetch('/api/my-classes', {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -29,16 +35,26 @@ async function loadClasses() {
     if (response.ok) {
         const classes = await response.json();
         renderClasses(classes);
+    } else {
+        showToast('Failed to load classes.', 'error');
+        grid.innerHTML = '';
     }
+    
+    stopLoader(); // Finish the progress bar
 }
 
-// Build the UI
+// 2. Update renderClasses() to use the Modern Empty State
 function renderClasses(classes) {
     const grid = document.getElementById('class-grid');
-    grid.innerHTML = ''; // Clear out the hardcoded stuff
+    grid.innerHTML = ''; 
 
     if (classes.length === 0) {
-        grid.innerHTML = '<p style="color: #7f8c8d;">You haven\'t created any classes yet.</p>';
+        grid.innerHTML = `
+            <div class="empty-state">
+                <span>📭</span>
+                <h3>No classes yet</h3>
+                <p>Create a class to generate a join code for your students.</p>
+            </div>`;
         return;
     }
 
@@ -65,12 +81,17 @@ function hideCreateModal() { document.getElementById('create-class-modal').style
 
 
 // Create logic (Auto-refreshes the grid without reloading the page!)
+// 3. Update handleCreateClass() to use Toast Notifications instead of alerts
 async function handleCreateClass() {
     const nameInput = document.getElementById('class-name-input');
     const token = localStorage.getItem('token');
 
-    if (!nameInput.value) return alert('Please enter a class name.');
+    if (!nameInput.value) {
+        return showToast('Please enter a class name.', 'error'); // No more alerts!
+    }
 
+    startLoader();
+    
     const response = await fetch('/api/create-class', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -79,9 +100,12 @@ async function handleCreateClass() {
 
     if (response.ok) {
         hideCreateModal();
-        nameInput.value = ''; // Clear the input
-        loadClasses(); // Re-fetch the database and paint the new card instantly!
+        nameInput.value = ''; 
+        loadClasses(); 
+        showToast('Class created successfully!', 'success'); // Look at that UX!
     } else {
-        alert('Error creating class.');
+        showToast('Error creating class.', 'error');
     }
+    
+    stopLoader();
 }

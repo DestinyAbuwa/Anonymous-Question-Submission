@@ -3,14 +3,12 @@ const tabLogin = document.getElementById('tab-login');
 const tabRegister = document.getElementById('tab-register');
 const formLogin = document.getElementById('form-login');
 const formRegister = document.getElementById('form-register');
-const statusDiv = document.getElementById('auth-status');
 
 tabLogin.addEventListener('click', () => {
     tabLogin.classList.add('active');
     tabRegister.classList.remove('active');
     formLogin.classList.remove('hidden-form');
     formRegister.classList.add('hidden-form');
-    statusDiv.textContent = ''; // Clear old errors
 });
 
 tabRegister.addEventListener('click', () => {
@@ -18,7 +16,6 @@ tabRegister.addEventListener('click', () => {
     tabLogin.classList.remove('active');
     formRegister.classList.remove('hidden-form');
     formLogin.classList.add('hidden-form');
-    statusDiv.textContent = '';
 });
 
 // 2. Role Selector Logic
@@ -32,8 +29,8 @@ document.querySelectorAll('.role-btn').forEach(btn => {
 });
 
 // 3. Centralized Auth Handler
-async function handleAuth(url, bodyData, loadingMsg) {
-    statusDiv.textContent = loadingMsg;
+async function handleAuth(url, bodyData) {
+    startLoader(); // Start the green network bar!
 
     try {
         const response = await fetch(url, {
@@ -45,29 +42,27 @@ async function handleAuth(url, bodyData, loadingMsg) {
         const data = await response.json();
 
         if (response.ok) {
-            // CRITICAL FIX: Ensure 'role' is stored exactly as 'role'
             localStorage.setItem('token', data.token);
-            // Inside auth.js, inside the response.ok block
-            localStorage.setItem('role', data.role.toLowerCase()); // Force lowercase here!
-            localStorage.setItem('userId', data.user_id); // Save it here
+            localStorage.setItem('role', data.role.toLowerCase()); 
+            localStorage.setItem('userId', data.user_id); 
 
-            statusDiv.textContent = "✅ Success! Redirecting...";
 
             setTimeout(() => {
-                // Ensure we are comparing the string correctly
                 const role = String(data.role).toLowerCase();
                 if (role === 'instructor') {
                     window.location.href = 'instructor-home.html';
                 } else {
                     window.location.href = 'student-home.html';
                 }
-            }, 800);
+            }, 500);
         } else {
-            statusDiv.textContent = "❌ " + (data.error || "Login failed");
+            showToast(data.error || "Authentication failed", "error");
         }
     } catch (error) {
-        statusDiv.textContent = "❌ Server error.";
+        showToast("Server connection error.", "error");
     }
+    
+    stopLoader(); // Hide the network bar
 }
 
 // 4. Form Submit Listeners
@@ -75,12 +70,12 @@ formLogin.addEventListener('submit', (e) => {
     e.preventDefault();
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
-    handleAuth('/api/login', { email, password }, "Verifying credentials...");
+    handleAuth('/api/login', { email, password });
 });
 
 formRegister.addEventListener('submit', (e) => {
     e.preventDefault();
     const email = document.getElementById('reg-email').value;
     const password = document.getElementById('reg-password').value;
-    handleAuth('/api/register', { email, password, role: selectedRole }, "Creating account...");
+    handleAuth('/api/register', { email, password, role: selectedRole });
 });
