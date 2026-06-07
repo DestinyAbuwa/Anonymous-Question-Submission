@@ -456,6 +456,22 @@ app.post('/api/sessions/schedule', authenticateToken, async (req, res) => {
     }
 });
 
+// ==========================================
+// API ROUTE: Get Active Session for a Class
+// ==========================================
+app.get('/api/classes/:classId/active-session', authenticateToken, async (req, res) => {
+    try {
+        const [rows] = await pool.execute(
+            'SELECT session_id, session_name FROM Sessions WHERE class_id = ? AND is_active = TRUE ORDER BY start_time DESC LIMIT 1',
+            [req.params.classId]
+        );
+        if (rows.length === 0) return res.status(200).json({ active: false });
+        res.status(200).json({ active: true, session: rows[0] });
+    } catch (error) {
+        console.error('❌ Error fetching active session:', error);
+        res.status(500).json({ error: 'Failed to retrieve active session.' });
+    }
+});
 
 // Start the server and listen on the port defined in our .env file (4000)
 const PORT = process.env.PORT; //|| 4000;

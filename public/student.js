@@ -1,3 +1,48 @@
+// At the top of your file
+let currentSessionId = null;
+
+// New function to check session status
+async function checkActiveSession() {
+    if (!classId) return;
+    const token = localStorage.getItem('token');
+    
+    try {
+        const response = await fetch(`/api/classes/${classId}/active-session`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        const questionText = document.getElementById('question-text');
+        const submitBtn = document.getElementById('submit-question-btn');
+        const sessionInfo = document.getElementById('session-info'); // Assuming you have this from previous steps
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.active) {
+                // Session is LIVE
+                currentSessionId = data.session.session_id;
+                questionText.disabled = false;
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+                questionText.placeholder = "What's on your mind?...";
+                sessionInfo.innerHTML = `🟢 Live Session: <strong>${data.session.session_name}</strong>`;
+                sessionInfo.style.color = '#27ae60';
+            } else {
+                // Session is CLOSED
+                currentSessionId = null;
+                questionText.disabled = true;
+                submitBtn.disabled = true;
+                submitBtn.style.opacity = '0.5';
+                questionText.placeholder = "Questions are paused. Waiting for instructor...";
+                sessionInfo.textContent = "No active session. Questions are currently disabled.";
+                sessionInfo.style.color = '#e74c3c';
+            }
+        }
+    } catch (error) {
+        console.error("Failed to check session status", error);
+    }
+}
+
+
 // Keep track of which tags the student clicks
 let selectedTags = [];
 
@@ -44,7 +89,7 @@ document.getElementById('question-form').addEventListener('submit', async functi
                 'Authorization': `Bearer ${token}` // Show the badge to the Waiter!
             },
             body: JSON.stringify({
-                session_id: 1,
+                session_id: currentSessionId,
                 content: content,
                 tags: selectedTags
             })
@@ -90,8 +135,8 @@ document.getElementById('question-form').addEventListener('submit', async functi
 async function loadStudentFeed() {
     const container = document.getElementById('student-feed-container');
     try {
-        // Send a GET request to the Waiter for Session 1's questions
-        const response = await fetch('/api/questions/1');
+        // Send a GET request to the Waiter for the current session's questions
+        const response = await fetch(`/api/questions/${currentSessionId}`);
         const questions = await response.json();
 
         container.innerHTML = ''; // Clear loading text
@@ -188,8 +233,16 @@ async function loadClassDetails() {
 // Ensure loadClassDetails is called when the page loads!
 document.addEventListener('DOMContentLoaded', () => {
     loadClassDetails();
+    
+    // Check session status and load feed immediately
+    checkActiveSession();
     loadStudentFeed(); 
-    setInterval(loadStudentFeed, 5000);
+    
+    // Check both the feed and the session status every 5 seconds
+    setInterval(() => {
+        checkActiveSession();
+        loadStudentFeed();
+    }, 5000);
 });
 
 
