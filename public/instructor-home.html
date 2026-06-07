@@ -10,52 +10,42 @@
 </head>
 
 <body>
-    <header class="navbar">
+    <nav class="navbar">
         <div class="nav-logo">📘 ClassQ&A - Instructor</div>
         <div class="nav-links">
-            <a href="instructor-home.html">My Classes</a>
-            <!-- This will eventually trigger a popup to generate a code! -->
-            <a href="#" style="color: #27ae60; font-weight: bold;" onclick="showCreateModal()">+ Create Class</a>
             <a href="#" onclick="logout()">Log Out</a>
             <button id="theme-toggle" class="theme-btn"
                 style="background:none; border:none; color:inherit; cursor:pointer; display:flex; align-items:center;"></button>
         </div>
-    </header>
+    </nav>
 
     <div class="layout-container">
-        <section class="panel">
-            <h2 id="welcome-message" style="margin-bottom: 5px;">Instructor Dashboard</h2>
-            <p class="subtitle">Manage your classes and active Q&A sessions.</p>
-
-            <div id="class-grid" class="class-grid"
-                style="margin-top: 25px; display: grid; gap: 15px; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">
-                <!-- Hardcoded test class for now -->
-                <div class="class-card" onclick="window.location.href='instructor.html'">
-                    <div class="class-card-header"
-                        style="height: 80px; background: linear-gradient(135deg, #27ae60, #2ecc71); border-radius: 8px 8px 0 0;">
-                    </div>
-                    <div class="class-card-body" style="padding: 15px;">
-                        <h3>CS 101: Intro to Programming</h3>
-                        <p>Manage Live Session</p>
-                    </div>
-                </div>
+        <!-- Upgraded Header to match Student Dashboard -->
+        <header style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
+            <div>
+                <h1 style="margin-bottom: 5px;">Instructor Dashboard</h1>
+                <p class="subtitle" id="welcome-message">Loading user...</p>
             </div>
-        </section>
+            <!-- Moved the button here! -->
+            <button class="submit-btn" style="width: auto; padding: 10px 20px;" onclick="showCreateModal()">+ Create Class</button>
+        </header>
+
+        <div class="class-grid" id="class-grid">
+            <!-- Dynamic classes load here -->
+        </div>
     </div>
 
     <!-- Create Class Modal -->
-    <div id="create-class-modal"
-        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center;">
-        <div style="background:white; padding:20px; border-radius:8px; width:300px; color:black;">
-            <h3>Create New Class</h3>
-            <input type="text" id="class-name-input" placeholder="Class Name (e.g. CS 101)"
-                style="width:100%; padding:8px; margin:10px 0;">
-            <button onclick="handleCreateClass()"
-                style="width:100%; padding:8px; background:#27ae60; color:white; border:none; cursor:pointer;">Create</button>
-            <button onclick="hideCreateModal()"
-                style="width:100%; padding:8px; margin-top:5px; background:#ccc; border:none; cursor:pointer;">Cancel</button>
+    <div id="create-class-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="margin-top:0; color:#2c3e50;">Create New Class</h3>
+            <p style="color:#7f8c8d; font-size:0.9rem;">Generate a unique code for your students to join.</p>
+            <input type="text" id="class-name-input" placeholder="e.g., CS 101: Intro to Programming">
+            <button onclick="handleCreateClass()" class="btn-primary">Create Class</button>
+            <button onclick="hideCreateModal()" class="btn-secondary">Cancel</button>
         </div>
     </div>
+
     <script src="instructor-home.js"></script>
 </body>
 

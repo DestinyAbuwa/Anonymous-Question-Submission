@@ -83,6 +83,17 @@ app.post('/api/questions', authenticateToken, profanityFilter, async (req, res) 
     // ... the rest of your database insertion code stays exactly the same!
 
     try {
+
+        // Check if the session is actually active
+        const [sessionCheck] = await pool.execute(
+            'SELECT is_active FROM Sessions WHERE session_id = ?',
+            [session_id]
+        );
+
+        if (sessionCheck.length === 0 || sessionCheck[0].is_active === 0) {
+            return res.status(403).json({ error: 'This Q&A session is closed. You can no longer submit questions.' });
+        }
+
         const [questionResult] = await pool.execute(
             `INSERT INTO Questions (user_id, session_id, content) VALUES (?, ?, ?)`,
             [user_id, session_id, content]
@@ -245,7 +256,7 @@ app.post('/api/login', async (req, res) => {
         const user = rows[0];
 
         // 2. Debug: Check if role actually exists in the DB response
-        console.log("Database user object:", user);
+        //console.log("Database user object:", user);
 
         // 3. Verify Password
         const match = await bcrypt.compare(password, user.password_hash);
@@ -314,20 +325,137 @@ app.post('/api/join-class', authenticateToken, async (req, res) => {
     }
 });
 
-// Fetch classes for the Instructor
+// ==========================================
+// API ROUTE: Fetch classes for the Instructor
+// ==========================================
 app.get('/api/my-classes', authenticateToken, async (req, res) => {
-    const [classes] = await pool.execute('SELECT * FROM Classes WHERE instructor_id = ?', [req.user.user_id]);
-    res.json(classes);
+    try {
+        const [classes] = await pool.execute(
+            'SELECT * FROM Classes WHERE instructor_id = ? ORDER BY class_id DESC',
+            [req.user.user_id]
+        );
+        res.status(200).json(classes);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Failed to load classes' });
+    }
 });
 
-// Fetch classes for the Student
+// ==========================================
+// API ROUTE: Fetch classes for the Student
+// ==========================================
 app.get('/api/enrolled-classes', authenticateToken, async (req, res) => {
-    const [classes] = await pool.execute(`
-        SELECT c.* FROM Classes c 
-        JOIN Enrollments e ON c.class_id = e.class_id 
-        WHERE e.user_id = ?`, [req.user.user_id]);
-    res.json(classes);
+    try {
+        const [classes] = await pool.execute(`
+            SELECT c.* FROM Classes c 
+            JOIN Enrollments e ON c.class_id = e.class_id 
+            WHERE e.user_id = ? ORDER BY c.class_id DESC
+        `, [req.user.user_id]);
+        res.status(200).json(classes);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Failed to load enrolled classes' });
+    }
 });
+
+// ==========================================
+// API ROUTE: Start a Live Q&A Session
+// ==========================================
+app.post('/api/sessions/start', authenticateToken, async (req, res) => {
+    const { class_id, session_name } = req.body;
+
+    try {
+        // 1. Verify the user is an instructor for this class (Security Check)
+        const [authCheck] = await pool.execute(
+            'SELECT * FROM Classes WHERE class_id = ? AND instructor_id = ?',
+            [class_id, req.user.user_id]
+        );
+
+        if (authCheck.length === 0) {
+            return res.status(403).json({ error: 'Unauthorized to start a session for this class.' });
+        }
+
+        // 2. Create the new active session
+        const [result] = await pool.execute(
+            'INSERT INTO Sessions (class_id, session_name, is_active) VALUES (?, ?, TRUE)',
+            [class_id, session_name]
+        );
+
+        res.status(201).json({
+            message: 'Session started!',
+            session_id: result.insertId
+        });
+
+    } catch (error) {
+        console.error('❌ Error starting session:', error);
+        res.status(500).json({ error: 'Failed to start session.' });
+    }
+});
+
+// ==========================================
+// API ROUTE: End a Live Q&A Session
+// ==========================================
+app.patch('/api/sessions/:sessionId/end', authenticateToken, async (req, res) => {
+    const { sessionId } = req.params;
+
+    try {
+        // Update the session to inactive and stamp the end time
+        await pool.execute(
+            'UPDATE Sessions SET is_active = FALSE, end_time = CURRENT_TIMESTAMP WHERE session_id = ?',
+            [sessionId]
+        );
+
+        res.status(200).json({ message: 'Session closed successfully. No more questions can be asked.' });
+
+    } catch (error) {
+        console.error('❌ Error closing session:', error);
+        res.status(500).json({ error: 'Failed to close session.' });
+    }
+});
+
+// ==========================================
+// API ROUTE: Get details for a specific class
+// ==========================================
+app.get('/api/classes/:classId', authenticateToken, async (req, res) => {
+    try {
+        const [rows] = await pool.execute('SELECT * FROM Classes WHERE class_id = ?', [req.params.classId]);
+        if (rows.length === 0) return res.status(404).json({ error: 'Class not found.' });
+        res.status(200).json(rows[0]);
+    } catch (error) {
+        console.error('❌ Error fetching class:', error);
+        res.status(500).json({ error: 'Failed to retrieve class details.' });
+    }
+});
+
+// ==========================================
+// API ROUTE: Schedule a Future Session
+// ==========================================
+app.post('/api/sessions/schedule', authenticateToken, async (req, res) => {
+    const { class_id, session_name, start_time } = req.body;
+
+    try {
+        // Verify ownership
+        const [authCheck] = await pool.execute(
+            'SELECT * FROM Classes WHERE class_id = ? AND instructor_id = ?',
+            [class_id, req.user.user_id]
+        );
+
+        if (authCheck.length === 0) return res.status(403).json({ error: 'Unauthorized.' });
+
+        // Insert as inactive initially, with a future start time
+        await pool.execute(
+            'INSERT INTO Sessions (class_id, session_name, is_active, start_time) VALUES (?, ?, FALSE, ?)',
+            [class_id, session_name, start_time]
+        );
+
+        res.status(201).json({ message: 'Session scheduled successfully!' });
+
+    } catch (error) {
+        console.error('❌ Error scheduling session:', error);
+        res.status(500).json({ error: 'Failed to schedule session.' });
+    }
+});
+
 
 // Start the server and listen on the port defined in our .env file (4000)
 const PORT = process.env.PORT; //|| 4000;

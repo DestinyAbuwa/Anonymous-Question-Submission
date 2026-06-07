@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instructor Dashboard</title>
+    <title>Live Session - ClassQ&A</title>
     <link rel="stylesheet" href="style.css">
     <script src="theme.js"></script>
 </head>
@@ -13,25 +13,52 @@
     <nav class="navbar">
         <div class="nav-logo">📘 ClassQ&A - Instructor</div>
         <div class="nav-links">
-            <a href="instructor.html">My Dashboard</a>
-            <a href="#" style="color: #27ae60; font-weight: bold;">+ Create Class</a>
+            <a href="instructor-home.html">My Classes</a>
             <a href="#" onclick="logout()">Log Out</a>
             <button id="theme-toggle" class="theme-btn"
                 style="background:none; border:none; color:inherit; cursor:pointer; display:flex; align-items:center;"></button>
         </div>
     </nav>
 
-    <div class="container dashboard-container">
-        <header>
-            <h1>Instructor Dashboard</h1>
-            <p>Live Q&A for: CS 101 (Week 1)</p>
+    <div class="layout-container">
+        <!-- Dynamic Header -->
+        <header style="margin-bottom: 20px;">
+            <h1 id="class-title">Loading Class...</h1>
+            <p class="subtitle" id="class-join-code">Join Code: ---</p>
         </header>
 
-        <section class="questions-section">
-            <h2>Student Questions</h2>
+        <!-- Session Management Panel -->
+        <section class="panel" style="margin-bottom: 20px; border-left: 4px solid #3498db;">
+            <h2 style="margin-top: 0;">Session Management</h2>
+            
+            <!-- Active Session Controls -->
+            <div id="active-session-panel" style="display: none; background: #e8f8f5; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                <h3 style="color: #27ae60; margin-top: 0;">🟢 Live Now: <span id="current-session-name">---</span></h3>
+                <button onclick="endSession()" class="btn-secondary" style="background: #e74c3c; color: white;">End Live Session</button>
+            </div>
 
+            <!-- Start / Schedule Session Controls -->
+            <div id="start-session-panel" style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
+                <div style="flex: 1; min-width: 200px;">
+                    <label style="font-weight: bold; font-size: 0.9rem;">Session Name (e.g., Week 2: Arrays)</label>
+                    <input type="text" id="session-name-input" placeholder="Session Name" style="width: 100%; padding: 10px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc;">
+                </div>
+                <div style="flex: 1; min-width: 150px;">
+                    <label style="font-weight: bold; font-size: 0.9rem;">Schedule (Optional Start)</label>
+                    <input type="datetime-local" id="session-time-input" style="width: 100%; padding: 10px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc;">
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="startSession()" class="btn-primary" style="padding: 10px 20px;">Start Now</button>
+                    <button onclick="scheduleSession()" class="btn-secondary" style="padding: 10px 20px;">Schedule</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Q&A Feed -->
+        <section class="panel questions-section">
+            <h2>Student Questions</h2>
             <div id="questions-container">
-                <p class="subtitle">Loading questions...</p>
+                <p class="subtitle">Start a session to see questions...</p>
             </div>
         </section>
     </div>
