@@ -43,8 +43,8 @@ async function handleAuth(url, bodyData) {
 
         if (response.ok) {
             localStorage.setItem('token', data.token);
-            localStorage.setItem('role', data.role.toLowerCase()); 
-            localStorage.setItem('userId', data.user_id); 
+            localStorage.setItem('role', data.role.toLowerCase());
+            localStorage.setItem('userId', data.user_id);
 
 
             setTimeout(() => {
@@ -61,7 +61,7 @@ async function handleAuth(url, bodyData) {
     } catch (error) {
         showToast("Server connection error.", "error");
     }
-    
+
     stopLoader(); // Hide the network bar
 }
 
@@ -79,3 +79,39 @@ formRegister.addEventListener('submit', (e) => {
     const password = document.getElementById('reg-password').value;
     handleAuth('/api/register', { email, password, role: selectedRole });
 });
+
+// ==========================================
+// FORGOT PASSWORD LOGIC
+// ==========================================
+function showResetModal() {
+    document.getElementById('forgot-password-modal').style.display = 'flex';
+}
+
+function hideResetModal() {
+    document.getElementById('forgot-password-modal').style.display = 'none';
+}
+
+async function handlePasswordReset() {
+    const email = document.getElementById('reset-email-input').value;
+    if (!email) return showToast('Please enter an email address.', 'error');
+
+    startLoader();
+
+    // We will wire this to a real backend email service (like Nodemailer) later
+    try {
+        const response = await fetch('/api/reset-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        });
+
+        // Even if the email isn't in the database, we show success to prevent email enumeration hacking
+        showToast('If an account exists, a reset link has been sent.', 'success');
+        hideResetModal();
+        document.getElementById('reset-email-input').value = '';
+    } catch (error) {
+        showToast('Failed to send reset link.', 'error');
+    }
+
+    stopLoader();
+}

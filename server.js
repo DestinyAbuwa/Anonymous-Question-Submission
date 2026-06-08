@@ -1,33 +1,37 @@
-// Import our secret variables (so we can use process.env.PORT)
 require('dotenv').config();
-
-const jwt = require('jsonwebtoken');
-
-// We need a secret key to sign our badges. In production, this goes in your .env file!
-const JWT_SECRET = process.env.JWT_SECRET; //|| 'super-secret-class-qa-key';
-
-// server.js
 const express = require('express');
 const cors = require('cors');
-
-// Import our database connection pool
 const pool = require('./config/db');
-
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+// Add this near the top of server.js with your other requires
+const crypto = require('crypto');
 
+// NEW: Import HTTP and Socket.io
+const http = require('http');
+const { Server } = require('socket.io');
 
-// Initialize the Express app
+const JWT_SECRET = process.env.JWT_SECRET;
+
 const app = express();
+// NEW: Wrap Express in an HTTP server
+const server = http.createServer(app);
+// NEW: Initialize Socket.io
+const io = new Server(server, {
+    cors: { origin: "*" } // Allows frontend to connect
+});
 
-// Middleware: Allows our frontend to communicate securely with this backend
 app.use(cors());
-
-// Middleware: Tells the server to automatically understand JSON data sent from the frontend
 app.use(express.json());
-
-
-// Middleware: Serve static files (HTML, CSS, JS) from the 'public' folder
 app.use(express.static('public'));
+
+// NEW: Socket.io Connection Logic
+io.on('connection', (socket) => {
+    // When a user opens a live feed, they join a specific "room" for that session
+    socket.on('joinSession', (sessionId) => {
+        socket.join(sessionId);
+    });
+});
 
 // ==========================================
 // MIDDLEWARE: Advanced Profanity Filter
@@ -74,24 +78,15 @@ const authenticateToken = (req, res, next) => {
 // ==========================================
 // API ROUTE: Submit a New Question (FIXED)
 // ==========================================
-// Notice we added 'authenticateToken' right before 'profanityFilter'
+// --- 1. NEW QUESTION ROUTE ---
 app.post('/api/questions', authenticateToken, profanityFilter, async (req, res) => {
-    // Look! We don't grab user_id from req.body anymore! We grab it from the secure badge.
     const user_id = req.user.user_id;
     const { session_id, content, tags } = req.body;
 
-    // ... the rest of your database insertion code stays exactly the same!
-
     try {
-
-        // Check if the session is actually active
-        const [sessionCheck] = await pool.execute(
-            'SELECT is_active FROM Sessions WHERE session_id = ?',
-            [session_id]
-        );
-
+        const [sessionCheck] = await pool.execute('SELECT is_active FROM Sessions WHERE session_id = ?', [session_id]);
         if (sessionCheck.length === 0 || sessionCheck[0].is_active === 0) {
-            return res.status(403).json({ error: 'This Q&A session is closed. You can no longer submit questions.' });
+            return res.status(403).json({ error: 'This Q&A session is closed.' });
         }
 
         const [questionResult] = await pool.execute(
@@ -99,23 +94,17 @@ app.post('/api/questions', authenticateToken, profanityFilter, async (req, res) 
             [user_id, session_id, content]
         );
 
-        const newQuestionId = questionResult.insertId;
-
-        // Loop through the array of tags and save every single one!
         if (tags && tags.length > 0) {
             for (const tag of tags) {
-                await pool.execute(
-                    `INSERT INTO Tags (question_id, tag_name) VALUES (?, ?)`,
-                    [newQuestionId, tag]
-                );
+                await pool.execute(`INSERT INTO Tags (question_id, tag_name) VALUES (?, ?)`, [questionResult.insertId, tag]);
             }
         }
 
+        // NEW: Tell everyone in this session's room to instantly refresh!
+        io.to(session_id).emit('updateFeed');
         res.status(201).json({ message: 'Question successfully submitted!' });
-
     } catch (error) {
-        console.error('❌ Error saving question:', error);
-        res.status(500).json({ error: 'Failed to save question to the database.' });
+        res.status(500).json({ error: 'Failed to save question.' });
     }
 });
 
@@ -177,85 +166,77 @@ app.post('/api/sessions/schedule', authenticateToken, async (req, res) => {
     }
 });
 
+
+
+// --- 3. HELPER ROUTE FOR INSTRUCTOR ACTIONS (Answer, Pin, Live) ---
+// Add this helper function above your instructor PATCH routes to prevent repeating code
+async function broadcastUpdate(questionId) {
+    const [qData] = await pool.execute('SELECT session_id FROM Questions WHERE question_id = ?', [questionId]);
+    if (qData.length > 0) io.to(qData[0].session_id).emit('updateFeed');
+}
+
+
+// ==========================================
+// API ROUTE: Mark Question as Answered
+// ==========================================
+app.patch('/api/questions/:questionId/answer', authenticateToken, async (req, res) => {
+    await pool.execute(`UPDATE Questions SET status = 'Answered' WHERE question_id = ?`, [req.params.questionId]);
+    await broadcastUpdate(req.params.questionId); // NEW
+    res.status(200).json({ message: 'Question answered!' });
+});
+
+
 // ==========================================
 // API ROUTE: Toggle "Answering Live"
 // ==========================================
 app.patch('/api/questions/:questionId/live', authenticateToken, async (req, res) => {
-    const { questionId } = req.params;
-    const { status } = req.body; // 'Displayed' or 'Pending'
-    try {
-        await pool.execute(`UPDATE Questions SET status = ? WHERE question_id = ?`, [status, questionId]);
-        res.status(200).json({ message: 'Live status updated!' });
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to update status.' });
-    }
+    await pool.execute(`UPDATE Questions SET status = ? WHERE question_id = ?`, [req.body.status, req.params.questionId]);
+    await broadcastUpdate(req.params.questionId); // NEW
+    res.status(200).json({ message: 'Live status updated!' });
 });
 
 // ==========================================
 // API ROUTE: Toggle "Pin"
 // ==========================================
 app.patch('/api/questions/:questionId/pin', authenticateToken, async (req, res) => {
-    const { questionId } = req.params;
-    try {
-        // Flips the boolean from true to false, or false to true
-        await pool.execute(`UPDATE Questions SET is_pinned = NOT is_pinned WHERE question_id = ?`, [questionId]);
-        res.status(200).json({ message: 'Pin toggled!' });
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to toggle pin.' });
-    }
+    await pool.execute(`UPDATE Questions SET is_pinned = NOT is_pinned WHERE question_id = ?`, [req.params.questionId]);
+    await broadcastUpdate(req.params.questionId); // NEW
+    res.status(200).json({ message: 'Pin toggled!' });
 });
+
 
 // ==========================================
 // API ROUTE: Toggle Upvote (Add or Remove)
 // ==========================================
 app.post('/api/questions/:questionId/upvote', authenticateToken, async (req, res) => {
     const { questionId } = req.params;
-    const user_id = req.user.user_id; // Securely pulled from the badge!
-
-    // ... the rest of the upvote logic stays exactly the same!
+    const user_id = req.user.user_id;
 
     try {
-        // 1. Check if the student has already upvoted this specific question
+        // Fetch the session_id so we know which room to broadcast to
+        const [qData] = await pool.execute('SELECT session_id FROM Questions WHERE question_id = ?', [questionId]);
+        const sessionId = qData[0].session_id;
+
         const [existingUpvote] = await pool.execute(
             `SELECT * FROM Interactions WHERE question_id = ? AND user_id = ? AND interaction_type = 'Upvote'`,
             [questionId, user_id]
         );
 
         if (existingUpvote.length > 0) {
-            // 2. The upvote exists! So we delete it (Remove Upvote)
-            await pool.execute(
-                `DELETE FROM Interactions WHERE question_id = ? AND user_id = ? AND interaction_type = 'Upvote'`,
-                [questionId, user_id]
-            );
+            await pool.execute(`DELETE FROM Interactions WHERE question_id = ? AND user_id = ? AND interaction_type = 'Upvote'`, [questionId, user_id]);
+            io.to(sessionId).emit('updateFeed'); // NEW: Broadcast
             return res.status(200).json({ message: 'Upvote removed' });
         } else {
-            // 3. The upvote does NOT exist! So we insert it (Add Upvote)
-            await pool.execute(
-                `INSERT INTO Interactions (question_id, user_id, interaction_type) VALUES (?, ?, 'Upvote')`,
-                [questionId, user_id]
-            );
+            await pool.execute(`INSERT INTO Interactions (question_id, user_id, interaction_type) VALUES (?, ?, 'Upvote')`, [questionId, user_id]);
+            io.to(sessionId).emit('updateFeed'); // NEW: Broadcast
             return res.status(200).json({ message: 'Upvote added' });
         }
     } catch (error) {
-        console.error('❌ Error toggling upvote:', error);
         res.status(500).json({ error: 'Failed to process upvote.' });
     }
 });
 
-// ==========================================
-// API ROUTE: Mark Question as Answered
-// ==========================================
-app.patch('/api/questions/:questionId/answer', async (req, res) => {
-    const { questionId } = req.params;
-    try {
-        // Change the status from 'Pending' to 'Answered'
-        await pool.execute(`UPDATE Questions SET status = 'Answered' WHERE question_id = ?`, [questionId]);
-        res.status(200).json({ message: 'Question marked as answered!' });
-    } catch (error) {
-        console.error('❌ Error updating status:', error);
-        res.status(500).json({ error: 'Failed to update question status.' });
-    }
-});
+
 
 // ==========================================
 // API ROUTE: User Registration (WITH AUTO-LOGIN)
@@ -542,7 +523,7 @@ app.get('/api/instructor/active-sessions', authenticateToken, async (req, res) =
             WHERE c.instructor_id = ? AND s.is_active = TRUE
             ORDER BY s.session_id DESC
         `, [req.user.user_id]);
-        
+
         res.status(200).json(activeSessions);
     } catch (error) {
         console.error('❌ Error fetching active sessions:', error);
@@ -550,9 +531,93 @@ app.get('/api/instructor/active-sessions', authenticateToken, async (req, res) =
     }
 });
 
+
+
+
+// ==========================================
+// API ROUTE: Request Password Reset
+// ==========================================
+app.post('/api/reset-password', async (req, res) => {
+    const { email } = req.body;
+    
+    try {
+        // 1. Generate a secure, random 64-character token
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        
+        // 2. Set expiration for 1 hour from now
+        const expireDate = new Date(Date.now() + 3600000); 
+
+        // 3. Save it to the database
+        const [result] = await pool.execute(
+            'UPDATE Users SET reset_token = ?, reset_expires = ? WHERE email = ?',
+            [resetToken, expireDate, email]
+        );
+
+        if (result.affectedRows > 0) {
+            // SIMULATED EMAIL - In production, use NodeMailer/Resend here
+            console.log('\n=============================================');
+            console.log('🚨 SIMULATED PASSWORD RESET EMAIL 🚨');
+            console.log(`To: ${email}`);
+            console.log(`Link: http://localhost:${PORT}/reset.html?token=${resetToken}`);
+            console.log('=============================================\n');
+        }
+
+        // Security best practice: Always return success even if the email doesn't exist 
+        // to prevent hackers from "guessing" which emails are registered.
+        res.status(200).json({ message: 'If the email exists, a reset link has been sent.' });
+
+    } catch (error) {
+        console.error('❌ Error requesting password reset:', error);
+        res.status(500).json({ error: 'Failed to process request.' });
+    }
+});
+
+// ==========================================
+// API ROUTE: Execute Password Reset
+// ==========================================
+app.post('/api/update-password', async (req, res) => {
+    const { token, newPassword } = req.body;
+
+    try {
+        // 1. Find the user with this token, ensuring it hasn't expired
+        const [users] = await pool.execute(
+            'SELECT user_id FROM Users WHERE reset_token = ? AND reset_expires > NOW()',
+            [token]
+        );
+
+        if (users.length === 0) {
+            return res.status(400).json({ error: 'Invalid or expired reset token.' });
+        }
+
+        // 2. Hash the new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // 3. Update the password and instantly wipe the token so it can't be used again
+        await pool.execute(
+            'UPDATE Users SET password_hash = ?, reset_token = NULL, reset_expires = NULL WHERE user_id = ?',
+            [hashedPassword, users[0].user_id]
+        );
+
+        res.status(200).json({ message: 'Password successfully updated! You can now log in.' });
+
+    } catch (error) {
+        console.error('❌ Error updating password:', error);
+        res.status(500).json({ error: 'Failed to update password.' });
+    }
+});
+
+
+
+
+
+
+
+
+
+
 // Start the server and listen on the port defined in our .env file (4000)
 const PORT = process.env.PORT; //|| 4000;
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`🚀 Server is officially listening on http://localhost:${PORT}`);
 });

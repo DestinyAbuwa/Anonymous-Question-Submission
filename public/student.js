@@ -2,14 +2,21 @@ let currentSessionId = null;
 const urlParams = new URLSearchParams(window.location.search);
 const classId = urlParams.get('classId');
 
+// Initialize the Socket connection
+const socket = io();
+
+// Whenever the server yells 'updateFeed', instantly reload our feed!
+socket.on('updateFeed', () => {
+    if (currentSessionId) {
+        loadStudentFeed();
+    }
+});
+
+
 document.addEventListener('DOMContentLoaded', () => {
     loadClassDetails();
     checkActiveSession();
     loadStudentFeed();
-    setInterval(() => {
-        checkActiveSession();
-        loadStudentFeed();
-    }, 5000);
 });
 
 async function loadClassDetails() {
@@ -40,6 +47,7 @@ async function checkActiveSession() {
             const data = await response.json();
             if (data.active) {
                 currentSessionId = data.session.session_id;
+                socket.emit('joinSession', currentSessionId);
                 if (questionText) questionText.disabled = false;
                 if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = '1'; }
                 if (questionText) questionText.placeholder = "What's on your mind?...";

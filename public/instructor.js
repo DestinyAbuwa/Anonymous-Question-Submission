@@ -1,7 +1,17 @@
 const urlParams = new URLSearchParams(window.location.search);
 const classId = urlParams.get('classId');
 let activeSessionId = null;
-let currentTagFilter = null; // Tracks our active filter
+let currentTagFilter = null;
+
+// Initialize the Socket connection
+const socket = io();
+
+// Whenever a student submits or upvotes, instantly reload our feed!
+socket.on('updateFeed', () => {
+    if (activeSessionId) {
+        fetchQuestions();
+    }
+});
 
 document.addEventListener('DOMContentLoaded', () => {
     const role = localStorage.getItem('role');
@@ -15,15 +25,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // THE FIX: Listeners for the Monday-Friday schedule buttons
     document.querySelectorAll('#schedule-days .tag-toggle').forEach(btn => {
         btn.addEventListener('click', () => btn.classList.toggle('selected'));
     });
 
     loadClassDetails();
-    recoverActiveSession(); // NEW: Try to rejoin active session if instructor returns
+    recoverActiveSession();
     fetchQuestions();
-    setInterval(fetchQuestions, 5000);
 });
 
 // Click-to-Filter Logic
@@ -33,34 +41,9 @@ function setTagFilter(tag) {
 
     const badge = document.getElementById('current-filter-badge');
     badge.textContent = tag;
-    badge.setAttribute('data-tag', tag); // Reuses your CSS colors!
+    badge.setAttribute('data-tag', tag);
 
-    fetchQuestions(); // Instantly reload feed with filter
-}
-
-// NEW: Recover active session if instructor returns to this page
-async function recoverActiveSession() {
-    const token = localStorage.getItem('token');
-    try {
-        const response = await fetch(`/api/classes/${classId}/active-session`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            if (data.active && data.session) {
-                // Session is still active! Rejoin it
-                activeSessionId = data.session.session_id;
-                document.getElementById('start-session-panel').style.display = 'none';
-                document.getElementById('active-session-panel').style.display = 'block';
-                document.getElementById('current-session-name').textContent = data.session.session_name;
-                showToast(`Rejoined active session: ${data.session.session_name}`, "success");
-                fetchQuestions();
-            }
-        }
-    } catch (error) {
-        console.error('Error recovering session:', error);
-    }
+    fetchQuestions();
 }
 
 function clearTagFilter() {
@@ -82,7 +65,30 @@ async function loadClassDetails() {
     }
 }
 
-// Update your fetchQuestions to include the new buttons and badges
+async function recoverActiveSession() {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch(`/api/classes/${classId}/active-session`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.active && data.session) {
+                activeSessionId = data.session.session_id;
+                socket.emit('joinSession', activeSessionId)
+                document.getElementById('start-session-panel').style.display = 'none';
+                document.getElementById('active-session-panel').style.display = 'block';
+                document.getElementById('current-session-name').textContent = data.session.session_name;
+                showToast(`Rejoined active session: ${data.session.session_name}`, "success");
+                fetchQuestions();
+            }
+        }
+    } catch (error) {
+        console.error('Error recovering session:', error);
+    }
+}
+
 async function fetchQuestions() {
     const container = document.getElementById('questions-container');
     if (!activeSessionId) return;
@@ -146,7 +152,26 @@ async function fetchQuestions() {
     }
 }
 
-// New action handlers for the buttons
+async function markAsAnswered(questionId) {
+    startLoader();
+    const token = localStorage.getItem('token'); // Grab the badge!
+    try {
+        const response = await fetch(`/api/questions/${questionId}/answer`, {
+            method: 'PATCH',
+            headers: { 'Authorization': `Bearer ${token}` } // Send the badge!
+        });
+        if (response.ok) {
+            showToast("Question marked answered!", "success");
+            fetchQuestions();
+        } else {
+            showToast("Failed to update question.", "error");
+        }
+    } catch (error) {
+        showToast("Error communicating with server.", "error");
+    }
+    stopLoader();
+}
+
 async function toggleLive(questionId, newStatus) {
     const token = localStorage.getItem('token');
     await fetch(`/api/questions/${questionId}/live`, {
@@ -166,61 +191,6 @@ async function togglePin(questionId) {
     fetchQuestions();
 }
 
-// Fixed Scheduling logic with SQL backend connection
-async function scheduleSession() {
-    const sessionName = document.getElementById('session-name-input').value;
-    const startTime = document.getElementById('session-start-time').value;
-    const endTime = document.getElementById('session-end-time').value;
-
-    let selectedDays = [];
-    document.querySelectorAll('#schedule-days .tag-toggle.selected').forEach(btn => {
-        selectedDays.push(btn.getAttribute('data-value'));
-    });
-
-    if (!sessionName || !startTime || !endTime || selectedDays.length === 0) {
-        return showToast('Please enter a name, time, and select at least one day.', "error");
-    }
-
-    startLoader();
-    const token = localStorage.getItem('token');
-    const response = await fetch('/api/sessions/schedule', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({
-            class_id: classId,
-            session_name: sessionName,
-            start_time: startTime,
-            end_time: endTime,
-            recurring_days: selectedDays.join(',')
-        })
-    });
-
-    if (response.ok) {
-        showToast(`Recurring schedule saved for ${selectedDays.join(', ')}!`, "success");
-        document.getElementById('session-name-input').value = '';
-        document.getElementById('session-start-time').value = '';
-        document.getElementById('session-end-time').value = '';
-        document.querySelectorAll('#schedule-days .tag-toggle').forEach(btn => btn.classList.remove('selected'));
-    } else {
-        showToast('Failed to save schedule.', "error");
-    }
-    stopLoader();
-}
-
-async function markAsAnswered(questionId) {
-    startLoader();
-    try {
-        const response = await fetch(`/api/questions/${questionId}/answer`, { method: 'PATCH' });
-        if (response.ok) {
-            showToast("Question marked answered!", "success");
-            fetchQuestions();
-        }
-    } catch (error) {
-        showToast("Error updating question.", "error");
-    }
-    stopLoader();
-}
-
 async function startSession() {
     const sessionName = document.getElementById('session-name-input').value;
     const token = localStorage.getItem('token');
@@ -237,7 +207,7 @@ async function startSession() {
     if (response.ok) {
         const data = await response.json();
         activeSessionId = data.session_id;
-
+        socket.emit('joinSession', activeSessionId)
         document.getElementById('start-session-panel').style.display = 'none';
         document.getElementById('active-session-panel').style.display = 'block';
         document.getElementById('current-session-name').textContent = sessionName;
@@ -286,12 +256,28 @@ async function scheduleSession() {
     }
 
     startLoader();
-    // This frontend logic is ready. We will attach the backend SQL insertion later.
-    showToast(`Recurring schedule saved for ${selectedDays.join(', ')}!`, "success");
-    document.getElementById('session-name-input').value = '';
-    document.getElementById('session-start-time').value = '';
-    document.getElementById('session-end-time').value = '';
-    document.querySelectorAll('#schedule-days .tag-toggle').forEach(btn => btn.classList.remove('selected'));
+    const token = localStorage.getItem('token');
+    const response = await fetch('/api/sessions/schedule', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({
+            class_id: classId,
+            session_name: sessionName,
+            start_time: startTime,
+            end_time: endTime,
+            recurring_days: selectedDays.join(',')
+        })
+    });
+
+    if (response.ok) {
+        showToast(`Recurring schedule saved for ${selectedDays.join(', ')}!`, "success");
+        document.getElementById('session-name-input').value = '';
+        document.getElementById('session-start-time').value = '';
+        document.getElementById('session-end-time').value = '';
+        document.querySelectorAll('#schedule-days .tag-toggle').forEach(btn => btn.classList.remove('selected'));
+    } else {
+        showToast('Failed to save schedule.', "error");
+    }
     stopLoader();
 }
 
