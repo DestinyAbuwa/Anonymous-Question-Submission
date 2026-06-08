@@ -103,7 +103,7 @@ async function fetchQuestions() {
         }
 
         if (questions.length === 0) {
-            container.innerHTML = `<div class="empty-state"><span>📭</span><h3>Waiting for questions...</h3></div>`;
+            container.innerHTML = `<div class="empty-state"><h3>Waiting for questions...</h3></div>`;
             return;
         }
 

@@ -52,7 +52,7 @@ async function checkActiveSession() {
                 if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = '1'; }
                 if (questionText) questionText.placeholder = "What's on your mind?...";
                 if (sessionInfo) {
-                    sessionInfo.innerHTML = `🟢 Live Session: <strong>${data.session.session_name}</strong>`;
+                    sessionInfo.innerHTML = `Live Session: <strong>${data.session.session_name}</strong>`;
                     sessionInfo.style.color = '#27ae60';
                 }
             } else {
@@ -124,7 +124,6 @@ async function loadStudentFeed() {
         if (questions.length === 0) {
             container.innerHTML = `
                 <div class="empty-state" style="padding: 20px;">
-                    <span>📭</span>
                     <p>No questions yet. Be the first to ask!</p>
                 </div>`;
             return;

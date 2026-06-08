@@ -61,7 +61,7 @@
     <div class="layout-container" style="max-width: 450px; margin-top: 5vh;">
         <section class="panel">
             <div style="text-align: center; margin-bottom: 20px;">
-                <h1 style="color: #3498db; font-size: 2.2em; margin-bottom: 5px;">📘 ClassQ&A</h1>
+                <h1 style="color: var(--primary-brand); font-size: 2.2em; margin-bottom: 5px; font-weight: 700;">ClassQ&A</h1>
             </div>
 
             <div class="auth-tabs">
@@ -146,8 +146,20 @@
                 <div style="margin-bottom: 20px;">
                     <label style="font-weight: bold; display: block; margin-bottom: 10px;">I am a...</label>
                     <div class="role-selector">
-                        <button type="button" class="role-btn active" data-role="Student">👨‍🎓 Student</button>
-                        <button type="button" class="role-btn" data-role="Instructor">👨‍🏫 Instructor</button>
+                        <button type="button" class="role-btn active" data-role="Student">
+                            <svg style="display: inline; width: 20px; height: 20px; margin-right: 8px; vertical-align: middle;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 10v6m0 0v4c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2v-4m20 0H2m20 0V8c0-1.1-.9-2-2-2h-4l-2-3h-4l-2 3H4c-1.1 0-2 .9-2 2v8"></path>
+                                <circle cx="12" cy="14" r="2"></circle>
+                            </svg>
+                            Student
+                        </button>
+                        <button type="button" class="role-btn" data-role="Instructor">
+                            <svg style="display: inline; width: 20px; height: 20px; margin-right: 8px; vertical-align: middle;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2z"></path>
+                                <polyline points="9 9 9 15 15 12"></polyline>
+                            </svg>
+                            Instructor
+                        </button>
                     </div>
                 </div>
                 <button type="submit" class="submit-btn" style="background-color: #27ae60;">Create Account</button>

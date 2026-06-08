@@ -1,83 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* ========================================== */
 /* GLOBAL COLOR VARIABLES                     */
 /* ========================================== */
 :root {
-    --bg-color: #f4f7f6;
-    --text-color: #333333;
+    --bg-color: #f9fafb;
+    --text-color: #111827;
     --panel-bg: #ffffff;
-    --border-color: #e2e8f0;
-    --navbar-bg: #2c3e50;
+    --border-color: #e5e7eb;
+    --navbar-bg: #111827;
     --navbar-text: #ffffff;
     --input-bg: #ffffff;
-    --heading-color: #2c3e50;
-    --muted-text: #7f8c8d;
+    --heading-color: #111827;
+    --muted-text: #6b7280;
+    --primary-brand: #2563eb;
     --active-btn-bg: #ebf5fb;
     --pinned-bg: #fffdf7;
     --action-hover-bg: #f1f2f6;
-    --action-text: #333333;
-
-
+    --action-text: #111827;
 }
 
 [data-theme="dark"] {
-    --bg-color: #1a202c;
-    --text-color: #e2e8f0;
-    --panel-bg: #2d3748;
-    --border-color: #4a5568;
+    --bg-color: #111827;
+    --text-color: #f3f4f6;
+    --panel-bg: #1f2937;
+    --border-color: #374151;
     --navbar-bg: #111827;
-    --navbar-text: #f7fafc;
-    --input-bg: #4a5568;
-    --heading-color: #f7fafc;
-    --muted-text: #a0aec0;
+    --navbar-text: #f3f4f6;
+    --input-bg: #374151;
+    --heading-color: #f3f4f6;
+    --muted-text: #9ca3af;
+    --primary-brand: #3b82f6;
     --active-btn-bg: #1e3a8a;
     --pinned-bg: #3b3522;
-    /* A dark, amber-tinted background */
-    --action-hover-bg: #4a5568;
-    --action-text: #e2e8f0;
+    --action-hover-bg: #374151;
+    --action-text: #f3f4f6;
 }
 
 body {
     background-color: var(--bg-color);
     color: var(--text-color);
     margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     transition: background-color 0.3s ease, color 0.3s ease;
-    /* Smooth fade effect! */
+    line-height: 1.6;
+    font-size: 16px;
 }
 
 .container {
     background-color: var(--panel-bg);
     border: 1px solid var(--border-color);
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 600px;
     margin: 0 auto;
-    /* THE FIX: This forces the box to center itself perfectly! */
 }
 
-header {
-    border-bottom: 2px solid #e2e8f0;
-    padding-bottom: 15px;
-    margin-bottom: 20px;
+h1, h2, h3, h4, h5, h6 {
+    line-height: 1.3;
+    letter-spacing: -0.5px;
 }
 
-header h1 {
-    color: var(--heading-color);
+h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
 }
 
-header p {
-    color: var(--muted-text);
-    font-weight: 500;
-    margin-top: 5px;
+h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
 }
 
 .submit-section h2 {
@@ -105,10 +113,13 @@ select {
     margin-bottom: 15px;
 }
 
-textarea:focus {
+textarea:focus,
+input:focus,
+select:focus {
     outline: none;
-    border-color: #3498db;
-    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+    border-color: var(--primary-brand);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .tags-container {
@@ -125,18 +136,18 @@ textarea:focus {
 .submit-btn {
     width: 100%;
     padding: 12px;
-    background-color: #3498db;
+    background-color: var(--primary-brand);
     color: white;
     border: none;
     border-radius: 8px;
     font-size: 1.1em;
-    font-weight: bold;
+    font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.2s;
 }
 
 .submit-btn:hover {
-    background-color: #2980b9;
+    background-color: #1d4ed8;
 }
 
 #status-message {
@@ -155,15 +166,26 @@ textarea:focus {
 }
 
 .question-card {
-    background: var(--panel-bg); /* FIXED: Was #ffffff */
-    border: 1px solid var(--border-color); /* FIXED: Was #e2e8f0 */
-    border-left: 5px solid #3498db;
-    padding: 15px 20px;
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--primary-brand);
+    padding: 20px;
     margin-bottom: 15px;
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
+/* Upvote Button Styles */
+.feed-card {
+    background-color: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    padding: 20px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    display: flex;
+    gap: 15px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
 
 .question-header {
     display: flex;
@@ -182,23 +204,11 @@ textarea:focus {
 
 .tag-badge {
     background-color: #f39c12;
-    /* Warning orange */
     color: white;
-    padding: 4px 10px;
+    padding: 6px 12px;
     border-radius: 12px;
     font-size: 0.8em;
-    font-weight: bold;
-}
-
-/* Upvote Button Styles */
-.feed-card {
-    background-color: var(--panel-bg);
-    border: 1px solid var(--border-color);
-    padding: 15px;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    display: flex;
-    gap: 15px;
+    font-weight: 600;
 }
 
 .upvote-column {
@@ -210,9 +220,9 @@ textarea:focus {
 
 .upvote-btn {
     background: none;
-    border: 2px solid #cbd5e1;
-    border-radius: 5px;
-    padding: 5px 10px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    padding: 6px 12px;
     cursor: pointer;
     font-size: 1.2em;
     color: var(--muted-text);
@@ -220,9 +230,9 @@ textarea:focus {
 }
 
 .upvote-btn:hover {
-    border-color: #3498db;
-    color: #3498db;
-    background-color: #ebf5fb;
+    border-color: var(--primary-brand);
+    color: var(--primary-brand);
+    background-color: rgba(0, 142, 84, 0.05);
 }
 
 .upvote-count {
@@ -319,11 +329,10 @@ textarea:focus {
 .panel {
     background-color: var(--panel-bg);
     border: 1px solid var(--border-color);
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
     flex: 1;
-    /* Makes both columns take up exactly 50% of the space */
 }
 
 /* The Scrollable Feed */
@@ -391,20 +400,19 @@ textarea:focus {
 
 /* Add this right below your .tag-toggle rule! */
 .tag-toggle:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    background-color: #f8fafc;
+    background-color: var(--bg-color);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 /* Make sure the colored tags get a slight brightness pop when hovered */
 .tag-toggle.selected:hover {
-    filter: brightness(1.1);
+    filter: brightness(0.95);
 }
 
 /* Generic selected state for Schedule Day buttons */
 #schedule-days .tag-toggle.selected {
-    background-color: #3498db;
-    border-color: #3498db;
+    background-color: var(--primary-brand);
+    border-color: var(--primary-brand);
     color: white;
 }
 
@@ -443,10 +451,11 @@ textarea:focus {
     justify-content: center;
     padding: 0;
     margin: 0;
+    transition: opacity 0.2s;
 }
 
 .theme-btn:hover {
-    transform: scale(1.1);
+    opacity: 0.7;
 }
 
 
@@ -509,11 +518,11 @@ textarea:focus {
 
 .role-btn {
     flex: 1;
-    padding: 15px;
+    padding: 16px;
     border: 2px solid var(--border-color);
     border-radius: 8px;
     background-color: var(--panel-bg);
-    font-weight: bold;
+    font-weight: 600;
     font-size: 1.1em;
     color: var(--muted-text);
     cursor: pointer;
@@ -521,15 +530,15 @@ textarea:focus {
 }
 
 .role-btn:hover {
-    border-color: #3498db;
-    background-color: #f8fafc;
+    border-color: var(--primary-brand);
+    background-color: var(--bg-color);
 }
 
 .role-btn.active {
-    border-color: #3498db;
-    background-color: var(--active-btn-bg);
+    border-color: var(--primary-brand);
+    background-color: rgba(0, 142, 84, 0.1);
     color: var(--heading-color);
-    box-shadow: 0 2px 5px rgba(52, 152, 219, 0.2);
+    box-shadow: 0 1px 3px rgba(0, 142, 84, 0.15);
 }
 
 /* --- Modern Class Cards --- */
@@ -541,51 +550,52 @@ textarea:focus {
 }
 
 .class-card {
-    background: #ffffff;
+    background: var(--panel-bg);
     border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
     overflow: hidden;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
     cursor: pointer;
-    border: 1px solid #eee;
+    border: 1px solid var(--border-color);
 }
 
 .class-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.12);
+    border-color: var(--primary-brand);
 }
 
 .class-card-header {
     height: 100px;
-    /* A sleek gradient that looks professional */
-    background: linear-gradient(135deg, #2c3e50, #3498db);
+    background: var(--panel-bg);
     display: flex;
     align-items: flex-end;
-    padding: 15px;
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .class-card-header h3 {
-    color: white;
+    color: var(--heading-color);
     margin: 0;
     font-size: 1.2rem;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    font-weight: 600;
 }
 
 .class-card-body {
-    padding: 15px;
-    color: #555;
+    padding: 25px;
+    color: var(--muted-text);
     font-size: 0.95rem;
 }
 
 .class-card-body .join-code-badge {
     display: inline-block;
-    background: #f1f2f6;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-weight: bold;
-    color: #2c3e50;
+    background: var(--bg-color);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+    color: var(--heading-color);
     margin-top: 10px;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
+    font-size: 0.85em;
 }
 
 /* --- Smooth Modals --- */
@@ -604,12 +614,12 @@ textarea:focus {
 }
 
 .modal-content {
-    background: white;
-    padding: 30px;
+    background: var(--panel-bg);
+    padding: 40px;
     border-radius: 12px;
     width: 90%;
     max-width: 400px;
-    box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
     animation: slideUp 0.3s ease-out;
 }
 
@@ -647,21 +657,21 @@ textarea:focus {
 }
 
 .btn-primary {
-    background: #3498db;
+    background: var(--primary-brand);
     color: white;
 }
 
 .btn-primary:hover {
-    background: #2980b9;
+    background: rgba(0, 142, 84, 0.9);
 }
 
 .btn-secondary {
-    background: #ecf0f1;
-    color: #333;
+    background: var(--bg-color);
+    color: var(--text-color);
 }
 
 .btn-secondary:hover {
-    background: #bdc3c7;
+    background: var(--border-color);
 }
 
 .nav-divider {
@@ -672,18 +682,18 @@ textarea:focus {
 }
 
 .nav-logout-btn {
-    background-color: #e74c3c;
+    background-color: #dc2626;
     color: white;
     border: none;
     padding: 8px 16px;
     border-radius: 6px;
-    font-weight: bold;
+    font-weight: 600;
     cursor: pointer;
     transition: background 0.2s;
 }
 
 .nav-logout-btn:hover {
-    background-color: #c0392b;
+    background-color: #991b1b;
 }
 
 /* Make the logo a clickable link */

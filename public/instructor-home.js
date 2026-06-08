@@ -82,7 +82,6 @@ function renderClasses(classes, activeSessionMap = {}) {
     if (classes.length === 0) {
         grid.innerHTML = `
             <div class="empty-state">
-                <span>📭</span>
                 <h3>No classes yet</h3>
                 <p>Create a class to generate a join code for your students.</p>
             </div>`;
@@ -109,7 +108,7 @@ function renderClasses(classes, activeSessionMap = {}) {
             cardContent += `
                 <div style="background: rgba(46, 204, 113, 0.1); border: 2px solid #27ae60; padding: 12px; border-radius: 8px; margin-top: 12px;">
                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
-                        <span style="font-size: 1.2em; animation: pulse 1s infinite;">🔴</span>
+                        <span style="font-size: 1.2em; width: 12px; height: 12px; background: #27ae60; border-radius: 50%; animation: pulse 1s infinite;"></span>
                         <span style="color: #27ae60; font-weight: bold; font-size: 0.9em;">LIVE: ${activeSession.session_name}</span>
                     </div>
                     <button 
