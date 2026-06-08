@@ -1,22 +1,39 @@
 let currentSessionId = null;
 const urlParams = new URLSearchParams(window.location.search);
 const classId = urlParams.get('classId');
-
-// Initialize the Socket connection
 const socket = io();
 
 // Whenever the server yells 'updateFeed', instantly reload our feed!
 socket.on('updateFeed', () => {
-    if (currentSessionId) {
-        loadStudentFeed();
+    if (currentSessionId) loadStudentFeed();
+});
+
+// Update the live viewer count
+socket.on('participantCount', (count) => {
+    const badge = document.getElementById('live-count-badge');
+    const countText = document.getElementById('participant-count');
+    if (badge && countText) {
+        badge.style.display = 'inline-flex';
+        countText.textContent = count;
     }
 });
 
+// Relative time formatting
+function timeAgo(dateInput) {
+    const date = new Date(dateInput);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - date) / 1000);
+    if (diffInSeconds < 60) return "Just now";
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return `${diffInHours}h ago`;
+    return date.toLocaleDateString();
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     loadClassDetails();
     checkActiveSession();
-    loadStudentFeed();
 });
 
 async function loadClassDetails() {
@@ -38,7 +55,6 @@ async function checkActiveSession() {
         const response = await fetch(`/api/classes/${classId}/active-session`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-
         const questionText = document.getElementById('question-text');
         const submitBtn = document.getElementById('submit-question-btn');
         const sessionInfo = document.getElementById('session-info');
@@ -50,23 +66,21 @@ async function checkActiveSession() {
                 socket.emit('joinSession', currentSessionId);
                 if (questionText) questionText.disabled = false;
                 if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = '1'; }
-                if (questionText) questionText.placeholder = "What's on your mind?...";
                 if (sessionInfo) {
-                    sessionInfo.innerHTML = `Live Session: <strong>${data.session.session_name}</strong>`;
+                    sessionInfo.innerHTML = `🟢 Live Session: <strong>${data.session.session_name}</strong>`;
                     sessionInfo.style.color = '#27ae60';
                 }
+                loadStudentFeed(); // Load feed once session is active
             } else {
                 currentSessionId = null;
-                if (questionText) questionText.disabled = true;
                 if (submitBtn) { submitBtn.disabled = true; submitBtn.style.opacity = '0.5'; }
-                if (questionText) questionText.placeholder = "Questions are paused. Waiting for instructor...";
                 if (sessionInfo) {
-                    sessionInfo.textContent = "No active session. Questions are currently disabled.";
+                    sessionInfo.textContent = "No active session.";
                     sessionInfo.style.color = '#e74c3c';
                 }
             }
         }
-    } catch (error) { console.error("Failed to check session status"); }
+    } catch (error) { console.error("Session check failed"); }
 }
 
 let selectedTags = [];
@@ -82,50 +96,18 @@ document.querySelectorAll('.tag-toggle').forEach(button => {
     });
 });
 
-document.getElementById('question-form').addEventListener('submit', async function (event) {
-    event.preventDefault();
-    const content = document.getElementById('question-text').value;
-    const token = localStorage.getItem('token');
-
-    startLoader();
-    try {
-        const response = await fetch('/api/questions', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-            body: JSON.stringify({ session_id: currentSessionId, content: content, tags: selectedTags })
-        });
-
-        if (response.ok) {
-            document.getElementById('question-text').value = '';
-            selectedTags = [];
-            document.querySelectorAll('.tag-toggle').forEach(btn => btn.classList.remove('selected'));
-            showToast("Question submitted successfully!", "success");
-            loadStudentFeed();
-        } else {
-            const errorData = await response.json();
-            showToast(errorData.error || "Failed to submit question.", "error");
-        }
-    } catch (error) {
-        showToast("Cannot connect to the server.", "error");
-    }
-    stopLoader();
-});
 
 async function loadStudentFeed() {
     const container = document.getElementById('student-feed-container');
     if (!currentSessionId) return;
 
     try {
-        // Inside loadStudentFeed()
-        const sortMode = document.getElementById('feed-sort-toggle') ? document.getElementById('feed-sort-toggle').value : 'upvotes';
+        const sortMode = document.getElementById('feed-sort-toggle')?.value || 'upvotes';
         const response = await fetch(`/api/questions/${currentSessionId}?sort=${sortMode}`);
         const questions = await response.json();
 
         if (questions.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state" style="padding: 20px;">
-                    <p>No questions yet. Be the first to ask!</p>
-                </div>`;
+            container.innerHTML = `<div class="empty-state"><p>No questions yet.</p></div>`;
             return;
         }
 
@@ -133,7 +115,7 @@ async function loadStudentFeed() {
         questions.forEach(q => {
             const card = document.createElement('div');
             card.className = `feed-card ${q.is_pinned ? 'pinned' : ''}`;
-
+            
             let tagsHTML = '';
             if (q.tags) {
                 q.tags.split(',').forEach(tag => {
@@ -143,7 +125,7 @@ async function loadStudentFeed() {
 
             const isLive = q.status === 'Displayed';
             const liveBadge = isLive ? `<div class="live-badge">Answering Live</div>` : '';
-            const pinIcon = q.is_pinned ? `<span style="color:#f39c12; font-size:1.2em; margin-right:5px;">📌</span>` : '';
+            const pinIcon = q.is_pinned ? `<span style="color:#f39c12; margin-right:5px;">📌</span>` : '';
 
             card.innerHTML = `
                 <div class="upvote-column">
@@ -151,42 +133,41 @@ async function loadStudentFeed() {
                     <span class="upvote-count">${q.upvotes || 0}</span>
                 </div>
                 <div class="question-body">
-                    <div class="question-header">
-                        <div>${pinIcon} ${tagsHTML}</div>
-                    </div>
-                    <div class="question-content" style="margin-top: 5px;">
-                        ${liveBadge} ${q.content}
-                    </div>
+                    <div>${pinIcon} ${tagsHTML}</div>
+                    <div class="question-content">${liveBadge} ${q.content}</div>
+                    <div style="font-size: 0.8em; color: var(--muted-text); margin-top:5px;">${timeAgo(q.timestamp)}</div>
                 </div>
             `;
             container.appendChild(card);
         });
-    } catch (error) {
-        if (container.innerHTML === '' || container.innerHTML.includes('Loading')) {
-            showToast("Failed to sync feed.", "error");
-        }
-    }
+    } catch (error) { showToast("Failed to sync feed.", "error"); }
 }
 
 async function handleUpvote(questionId) {
     const token = localStorage.getItem('token');
-    startLoader();
     try {
-        const response = await fetch(`/api/questions/${questionId}/upvote`, {
+        await fetch(`/api/questions/${questionId}/upvote`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+            headers: { 'Authorization': `Bearer ${token}` }
         });
-        if (response.ok) {
-            loadStudentFeed();
-        } else {
-            showToast("Your session expired. Please log in again.", "error");
-        }
-    } catch (error) {
-        showToast("Error processing upvote.", "error");
-    }
-    stopLoader();
+        loadStudentFeed();
+    } catch (error) { showToast("Error processing upvote.", "error"); }
 }
 
+document.getElementById('question-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const content = document.getElementById('question-text').value;
+    const token = localStorage.getItem('token');
+    const response = await fetch('/api/questions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ session_id: currentSessionId, content, tags: selectedTags })
+    });
+    if (response.ok) {
+        document.getElementById('question-text').value = '';
+        selectedTags = [];
+        showToast("Question submitted!", "success");
+    }
+});
+
 document.getElementById('feed-sort-toggle')?.addEventListener('change', loadStudentFeed);
-
-

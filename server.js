@@ -25,11 +25,25 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// NEW: Socket.io Connection Logic
+
+// NEW: Socket.io Connection Logic with Live Participant Counting
 io.on('connection', (socket) => {
-    // When a user opens a live feed, they join a specific "room" for that session
     socket.on('joinSession', (sessionId) => {
         socket.join(sessionId);
+        // Count how many people are in this specific room and broadcast it
+        const count = io.sockets.adapter.rooms.get(sessionId)?.size || 0;
+        io.to(sessionId).emit('participantCount', count);
+    });
+
+    // When a user closes the tab or logs out
+    socket.on('disconnecting', () => {
+        for (const room of socket.rooms) {
+            if (room !== socket.id) {
+                // Subtract 1 because they are currently disconnecting
+                const count = (io.sockets.adapter.rooms.get(room)?.size || 1) - 1;
+                io.to(room).emit('participantCount', count);
+            }
+        }
     });
 });
 
@@ -539,13 +553,13 @@ app.get('/api/instructor/active-sessions', authenticateToken, async (req, res) =
 // ==========================================
 app.post('/api/reset-password', async (req, res) => {
     const { email } = req.body;
-    
+
     try {
         // 1. Generate a secure, random 64-character token
         const resetToken = crypto.randomBytes(32).toString('hex');
-        
+
         // 2. Set expiration for 1 hour from now
-        const expireDate = new Date(Date.now() + 3600000); 
+        const expireDate = new Date(Date.now() + 3600000);
 
         // 3. Save it to the database
         const [result] = await pool.execute(

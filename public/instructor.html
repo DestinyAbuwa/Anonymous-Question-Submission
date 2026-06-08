@@ -105,6 +105,17 @@
         <section class="panel questions-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h2 style="margin: 0;">Student Questions</h2>
+                <div id="live-count-badge"
+                    style="display: none; align-items: center; gap: 5px; background: #e0f2fe; color: #1e40af; padding: 4px 10px; border-radius: 20px; font-size: 0.85em; font-weight: bold; width: fit-content; margin-top: 10px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>
+                    <span id="participant-count">1</span> Online
+                </div>
                 <select id="feed-sort-toggle"
                     style="width: auto; padding: 8px 12px; margin: 0; border-radius: 8px; cursor: pointer; font-weight: bold;">
                     <option value="upvotes">Top Voted</option>

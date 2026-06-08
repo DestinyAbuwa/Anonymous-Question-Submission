@@ -13,6 +13,30 @@ socket.on('updateFeed', () => {
     }
 });
 
+// Update the live viewer count
+socket.on('participantCount', (count) => {
+    const badge = document.getElementById('live-count-badge');
+    const countText = document.getElementById('participant-count');
+    if (badge && countText) {
+        badge.style.display = 'inline-flex';
+        countText.textContent = count;
+    }
+});
+
+// Relative time formatting
+function timeAgo(dateInput) {
+    const date = new Date(dateInput);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - date) / 1000);
+
+    if (diffInSeconds < 60) return "Just now";
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return `${diffInHours}h ago`;
+    return date.toLocaleDateString();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const role = localStorage.getItem('role');
     const token = localStorage.getItem('token');
@@ -111,7 +135,7 @@ async function fetchQuestions() {
         questions.forEach(q => {
             const card = document.createElement('div');
             card.className = `question-card ${q.is_pinned ? 'pinned' : ''}`;
-            const timeString = new Date(q.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const timeString = timeAgo(q.timestamp);
 
             let tagsHTML = '';
             if (q.tags) {

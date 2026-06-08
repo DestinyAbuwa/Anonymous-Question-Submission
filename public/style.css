@@ -921,3 +921,29 @@ select:focus {
     color: white;
     border-color: #e74c3c;
 }
+
+/* Better Form Focus Rings */
+input:focus, select:focus, textarea:focus {
+    outline: 2px solid #3498db;
+    outline-offset: 2px;
+    box-shadow: none; /* Removes the old, blurry glow */
+    transition: outline-offset 0.2s ease;
+}
+
+/* Question Card Hover Lift */
+.question-card, .feed-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.question-card:hover, .feed-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* Typography Polish */
+h1, h2, h3 {
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+p, div {
+    line-height: 1.6;
+}
