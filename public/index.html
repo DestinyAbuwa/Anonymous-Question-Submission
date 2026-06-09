@@ -4,119 +4,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClassQ&A - Anonymous Student Engagement</title>
+    <title>ClassQ&A - Real-Time Audience Interaction</title>
     <link rel="stylesheet" href="style.css">
     <script src="theme.js"></script>
-    <style>
-        /* A few specific styles just for the landing page */
-        .hero {
-            text-align: center;
-            padding: 80px 20px;
-            background: linear-gradient(135deg, #2563eb, #3b82f6);
-            color: white;
-            border-radius: 12px;
-            margin-bottom: 60px;
-        }
-
-        .hero h1 {
-            font-size: 3em;
-            margin-bottom: 15px;
-            color: white;
-            font-weight: 700;
-        }
-
-        .hero p {
-            font-size: 1.1em;
-            max-width: 600px;
-            margin: 0 auto 30px auto;
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 400;
-        }
-
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-
-        .feature-card {
-            text-align: center;
-            padding: 30px;
-        }
-
-        .feature-icon {
-            width: 60px;
-            height: 60px;
-            margin: 0 auto 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .feature-icon svg {
-            width: 100%;
-            height: 100%;
-            stroke: var(--primary-brand);
-            fill: none;
-            stroke-width: 1.5;
-        }
-    </style>
 </head>
 
 <body>
     <nav class="navbar">
-        <div class="nav-logo">ClassQ&A</div>
+        <a href="index.html" class="nav-logo-link">ClassQ&A</a>
         <div class="nav-links">
-            <button id="theme-toggle" class="theme-btn"
-                style="background:none; border:none; color:inherit; cursor:pointer; display:flex; align-items:center;"></button>
+            <button id="theme-toggle" class="theme-btn"></button>
+            <div class="nav-divider"></div>
+            <a style="color: white;" href="auth.html" id="nav-login-btn" class="nav-signup-btn">Log In / Sign Up</a>
         </div>
     </nav>
 
-    <div class="layout-container">
-        <section class="hero">
-            <h1>Never hesitate to ask.</h1>
-            <p>An anonymous question submission platform designed to improve classroom engagement, eliminate anxiety,
-                and help instructors identify exactly where students are stuck.</p>
-            <div>
-                <a href="auth.html" class="submit-btn"
-                    style="display: inline-block; width: auto; padding: 12px 30px; text-decoration: none;">Get
-                    Started for Free</a>
-            </div>
-        </section>
+    <div class="hero-section">
+        <h1 class="hero-title">Your audience has questions. <br><span style="color: #3498db;">Give them a voice.</span></h1>
+        <p class="hero-subtitle">
+            ClassQ&A is the ultimate platform for real-time, anonymous student questions. Manage live sessions, filter
+            by tags, and watch the best questions float to the top.
+        </p>
+        <div class="hero-buttons">
+            <a href="auth.html" id="hero-cta-btn" class="hero-btn-primary">Get Started for Free</a>
+        </div>
+    </div>
 
-        <section class="feature-grid">
-            <div class="panel feature-card">
-                <div class="feature-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="60" height="60">
-                        <path d="M12 1C6.48 1 2 5.48 2 11c0 4.25 2.67 7.9 6.44 9.49.3.59.71 1.12 1.19 1.56-.5.33-1.01.62-1.53.88l2.51 2.51c1.41 0 2.75.44 4.04 1.21.57-.29 1.1-.65 1.59-1.04l2.51 2.51c2.71-1.46 4.84-4.05 5.64-7.15.38-1.55.59-3.21.59-4.92C22 5.48 17.52 1 12 1m0 2c4.41 0 8 3.59 8 8s-3.59 8-8 8-8-3.59-8-8 3.59-8 8-8z"></path>
-                    </svg>
-                </div>
-                <h3>100% Anonymous</h3>
-                <p class="subtitle" style="margin-top: 10px;">Students submit questions to the live feed without fear of
-                    judgment. Only the system knows who you are.</p>
+    <div class="feature-grid">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4c0-1.1.9-2 2-2h8a2 2 0 0 1 2 2v5Z" />
+                    <path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1" />
+                </svg>
             </div>
-            <div class="panel feature-card">
-                <div class="feature-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="60" height="60">
-                        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm3.5-5c0 1.93-1.57 3.5-3.5 3.5S8.5 13.93 8.5 12 10.07 8.5 12 8.5s3.5 1.57 3.5 3.5z"></path>
-                    </svg>
-                </div>
-                <h3>Live Upvoting</h3>
-                <p class="subtitle" style="margin-top: 10px;">Have the exact same question as a classmate? Upvote it to
-                    push it to the top of the instructor's queue.</p>
+            <h3 style="color: var(--heading-color); margin-bottom: 10px;">Anonymous Q&A</h3>
+            <p style="color: var(--muted-text); font-size: 0.95rem; line-height: 1.5;">Remove the fear of speaking up.
+                Students can ask questions anonymously, ensuring every voice is heard.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m18 9-6-6-6 6" />
+                    <path d="M12 3v14" />
+                    <path d="m16 21-4-4-4 4" />
+                </svg>
             </div>
-            <div class="panel feature-card">
-                <div class="feature-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="60" height="60">
-                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.29 7.78-7 8.94V12H5V6.3l7-3.11v8.8z"></path>
-                    </svg>
-                </div>
-                <h3>Smart Moderation</h3>
-                <p class="subtitle" style="margin-top: 10px;">Built-in AI profanity filtering keeps the classroom
-                    environment professional and focused on learning.</p>
+            <h3 style="color: var(--heading-color); margin-bottom: 10px;">Live Upvoting</h3>
+            <p style="color: var(--muted-text); font-size: 0.95rem; line-height: 1.5;">Democratize your lectures. Let
+                the audience upvote the most pressing questions so you know exactly what to address.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                    <circle cx="12" cy="12" r="4" />
+                </svg>
             </div>
-        </section>
+            <h3 style="color: var(--heading-color); margin-bottom: 10px;">Smart Tags</h3>
+            <p style="color: var(--muted-text); font-size: 0.95rem; line-height: 1.5;">Keep the feed organized. Students
+                can tag questions as Urgent or Exam-Related for rapid instructor filtering.</p>
+        </div>
     </div>
 
     <script>
@@ -124,18 +75,17 @@
             const token = localStorage.getItem('token');
             const role = localStorage.getItem('role');
 
-            // If the user is already logged in, change the buttons to "Go to Dashboard"
             if (token && role) {
-                const loginLinks = document.querySelectorAll('a[href="auth.html"]');
-                loginLinks.forEach(link => {
-                    link.textContent = 'Go to Dashboard';
-                    link.href = role === 'instructor' ? 'instructor-home.html' : 'student-home.html';
-                });
+                const dashboardUrl = role === 'instructor' ? 'instructor-home.html' : 'student-home.html';
+                const navBtn = document.getElementById('nav-login-btn');
+                navBtn.textContent = 'Go to Dashboard';
+                navBtn.href = dashboardUrl;
+                const heroBtn = document.getElementById('hero-cta-btn');
+                heroBtn.textContent = 'Go to Dashboard';
+                heroBtn.href = dashboardUrl;
             }
         });
     </script>
-
-
 </body>
 
 </html>

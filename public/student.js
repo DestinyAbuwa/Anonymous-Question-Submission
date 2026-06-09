@@ -107,7 +107,11 @@ async function loadStudentFeed() {
         const questions = await response.json();
 
         if (questions.length === 0) {
-            container.innerHTML = `<div class="empty-state"><p>No questions yet.</p></div>`;
+            container.innerHTML = `
+                <div class="empty-state" style="padding: 20px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 15px auto; display: block; opacity: 0.5;"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                    <p>No questions yet. Be the first to ask!</p>
+                </div>`;
             return;
         }
 
@@ -115,7 +119,7 @@ async function loadStudentFeed() {
         questions.forEach(q => {
             const card = document.createElement('div');
             card.className = `feed-card ${q.is_pinned ? 'pinned' : ''}`;
-            
+
             let tagsHTML = '';
             if (q.tags) {
                 q.tags.split(',').forEach(tag => {
@@ -125,11 +129,13 @@ async function loadStudentFeed() {
 
             const isLive = q.status === 'Displayed';
             const liveBadge = isLive ? `<div class="live-badge">Answering Live</div>` : '';
-            const pinIcon = q.is_pinned ? `<span style="color:#f39c12; margin-right:5px;">📌</span>` : '';
+            const pinIcon = q.is_pinned ? `<span style="color:#f39c12; margin-right:5px; display:inline-flex; align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.6V6a3 3 0 0 0-6 0v4.6a2 2 0 0 1-1.11 1.95l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg></span>` : '';
 
             card.innerHTML = `
                 <div class="upvote-column">
-                    <button class="upvote-btn" onclick="handleUpvote(${q.question_id})">▲</button>
+                    <button class="upvote-btn" onclick="handleUpvote(${q.question_id})" style="display:flex; justify-content:center; align-items:center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+                    </button>
                     <span class="upvote-count">${q.upvotes || 0}</span>
                 </div>
                 <div class="question-body">
@@ -140,6 +146,7 @@ async function loadStudentFeed() {
             `;
             container.appendChild(card);
         });
+
     } catch (error) { showToast("Failed to sync feed.", "error"); }
 }
 

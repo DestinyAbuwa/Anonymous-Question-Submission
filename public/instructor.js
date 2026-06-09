@@ -127,7 +127,11 @@ async function fetchQuestions() {
         }
 
         if (questions.length === 0) {
-            container.innerHTML = `<div class="empty-state"><h3>Waiting for questions...</h3></div>`;
+            container.innerHTML = `
+                <div class="empty-state">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 15px auto; display: block; opacity: 0.5;"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                    <h3>Waiting for questions...</h3>
+                </div>`;
             return;
         }
 
@@ -147,12 +151,16 @@ async function fetchQuestions() {
             const isLive = q.status === 'Displayed';
             const liveBadge = isLive ? `<div class="live-badge">Answering Live</div>` : '';
 
+            // Notice the new SVG icons inside the buttons and header!
             card.innerHTML = `
                 <div class="question-header">
-                    <div>
-                        ${q.is_pinned ? '<span style="color:#f39c12; font-weight:bold; margin-right:10px;">📌 Pinned</span>' : ''}
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        ${q.is_pinned ? '<span style="color:#f39c12; font-weight:bold; display: flex; align-items: center; gap: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.6V6a3 3 0 0 0-6 0v4.6a2 2 0 0 1-1.11 1.95l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg> Pinned</span>' : ''}
                         <span class="timestamp">${timeString}</span>
-                        <span style="color: #3498db; font-weight: bold; margin-left: 15px;">▲ ${q.upvotes || 0}</span>
+                        <span style="color: var(--primary-brand); font-weight: bold; display: flex; align-items: center; gap: 4px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg> 
+                            ${q.upvotes || 0}
+                        </span>
                     </div>
                     <div>${tagsHTML}</div>
                 </div>
@@ -160,17 +168,23 @@ async function fetchQuestions() {
                     ${liveBadge} ${q.content}
                 </div>
                 <div style="display: flex; gap: 10px;">
-                    <button class="mark-answered-btn" onclick="markAsAnswered(${q.question_id})">✅ Answered</button>
-                    <button class="action-btn ${isLive ? 'active-live' : ''}" onclick="toggleLive(${q.question_id}, '${isLive ? 'Pending' : 'Displayed'}')">
-                        ${isLive ? 'Stop Live' : '🎙️ Answer Live'}
+                    <button class="mark-answered-btn" onclick="markAsAnswered(${q.question_id})" style="display: flex; align-items: center; gap: 6px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        Answered
                     </button>
-                    <button class="action-btn" onclick="togglePin(${q.question_id})">
-                        ${q.is_pinned ? 'Unpin' : '📌 Pin'}
+                    <button class="action-btn ${isLive ? 'active-live' : ''}" onclick="toggleLive(${q.question_id}, '${isLive ? 'Pending' : 'Displayed'})" style="display: flex; align-items: center; gap: 6px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+                        ${isLive ? 'Stop Live' : 'Answer Live'}
+                    </button>
+                    <button class="action-btn" onclick="togglePin(${q.question_id})" style="display: flex; align-items: center; gap: 6px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.6V6a3 3 0 0 0-6 0v4.6a2 2 0 0 1-1.11 1.95l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg>
+                        ${q.is_pinned ? 'Unpin' : 'Pin'}
                     </button>
                 </div>
             `;
             container.appendChild(card);
         });
+
     } catch (error) {
         if (container.innerHTML === '') showToast("Failed to sync questions.", "error");
     }
