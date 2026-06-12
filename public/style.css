@@ -257,7 +257,6 @@ select:focus {
     align-items: center;
     border-bottom: 1px solid var(--border-color);
     /* Added a subtle border */
-    margin-bottom: 30px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
     /* Very soft shadow */
 }
@@ -364,7 +363,8 @@ select:focus {
     color: var(--muted-text);
     border: 1px solid var(--border-color);
     padding: 4px 10px;
-    border-radius: 99px; /* Perfect pill shape */
+    border-radius: 99px;
+    /* Perfect pill shape */
     font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -374,22 +374,25 @@ select:focus {
 }
 
 /* Specific tag colors using soft backgrounds and colored text */
-.tag-badge[data-tag="Urgent"], .tag-toggle.selected[data-value="Urgent"] { 
-    background-color: rgba(239, 68, 68, 0.1); 
-    color: #ef4444; 
-    border-color: rgba(239, 68, 68, 0.2); 
+.tag-badge[data-tag="Urgent"],
+.tag-toggle.selected[data-value="Urgent"] {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.2);
 }
 
-.tag-badge[data-tag="Clarification"], .tag-toggle.selected[data-value="Clarification"] { 
-    background-color: rgba(59, 130, 246, 0.1); 
-    color: #3b82f6; 
-    border-color: rgba(59, 130, 246, 0.2); 
+.tag-badge[data-tag="Clarification"],
+.tag-toggle.selected[data-value="Clarification"] {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+    border-color: rgba(59, 130, 246, 0.2);
 }
 
-.tag-badge[data-tag="Exam-Related"], .tag-toggle.selected[data-value="Exam-Related"] { 
-    background-color: rgba(245, 158, 11, 0.1); 
-    color: #f59e0b; 
-    border-color: rgba(245, 158, 11, 0.2); 
+.tag-badge[data-tag="Exam-Related"],
+.tag-toggle.selected[data-value="Exam-Related"] {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+    border-color: rgba(245, 158, 11, 0.2);
 }
 
 /* Add this right below your .tag-toggle rule! */
@@ -960,26 +963,44 @@ div {
 /* LANDING PAGE & HERO STYLES                 */
 /* ========================================== */
 
+/* Top Banner - Vince's Overlay Method */
+.top-banner {
+    width: 100%;
+    min-height: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Layer 1: Dark semi-transparent overlay | Layer 2: The Unsplash Image */
+    background: linear-gradient(rgba(17, 24, 39, 0.75), rgba(17, 24, 39, 0.85)),
+        url('https://images.unsplash.com/photo-1606761568499-6d2451b23c66?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat;
+    margin-top: -1px;
+    /* Pulls it flush with the navbar */
+    /* NEW: Add padding to the bottom so the overlapping cards don't cover your text */
+    padding-bottom: 80px;
+}
+
 .hero-section {
     text-align: center;
-    padding: 6rem 20px;
+    padding: 2rem 20px;
     max-width: 800px;
-    margin: 0 auto;
 }
 
 .hero-title {
-    font-size: 3.5rem;
-    color: var(--heading-color);
-    line-height: 1.2;
+    font-size: 4rem;
+    color: #ffffff;
+    /* Forced white to pop against the dark overlay */
+    line-height: 1.15;
     margin-bottom: 1.5rem;
     letter-spacing: -1px;
 }
 
 .hero-subtitle {
     font-size: 1.25rem;
-    color: var(--muted-text);
+    color: #e5e7eb;
+    /* Soft off-white for high readability */
     line-height: 1.6;
     margin-bottom: 2.5rem;
+    font-weight: 400;
 }
 
 .hero-buttons {
@@ -1014,7 +1035,7 @@ div {
 /* Optional: Adds a tiny 'click' indentation effect */
 .nav-signup-btn:active,
 .hero-btn-primary:active {
-    transform: scale(0.98); 
+    transform: scale(0.98);
 }
 
 .feature-grid {
@@ -1024,6 +1045,14 @@ div {
     max-width: 1000px;
     margin: 0 auto 5rem auto;
     padding: 0 20px;
+
+    /* NEW: The -60px top margin pulls the grid UP over the banner */
+    margin: -60px auto 5rem auto;
+
+    /* NEW: Position and Z-index force the cards to sit physically on top of the image */
+    position: relative;
+    z-index: 10;
+
 }
 
 .feature-card {
@@ -1057,4 +1086,70 @@ div {
 .end-session-btn:hover {
     background: #ef4444;
     color: white;
+}
+
+/* ========================================== */
+/* FEATURE SHOWCASE SECTIONS                  */
+/* ========================================== */
+.showcase-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px 8rem 20px;
+}
+
+.showcase-row {
+    display: flex;
+    align-items: center;
+    gap: 60px;
+    margin-bottom: 6rem;
+}
+
+.showcase-row.reverse {
+    flex-direction: row-reverse;
+}
+
+.showcase-text {
+    flex: 1;
+}
+
+.showcase-image {
+    flex: 1;
+    border-radius: 16px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.showcase-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Make it stack nicely on mobile screens */
+@media (max-width: 768px) {
+
+    .showcase-row,
+    .showcase-row.reverse {
+        flex-direction: column;
+        gap: 30px;
+        text-align: center;
+        margin-bottom: 4rem;
+    }
+}
+
+
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    font-size: 1rem;
+    flex-shrink: 0;
 }

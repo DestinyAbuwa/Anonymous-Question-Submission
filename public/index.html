@@ -15,21 +15,24 @@
         <div class="nav-links">
             <button id="theme-toggle" class="theme-btn"></button>
             <div class="nav-divider"></div>
-            <a style="color: white;" href="auth.html" id="nav-login-btn" class="nav-signup-btn">Log In / Sign Up</a>
+            <a style="color: white" href="auth.html" id="nav-login-btn" class="nav-signup-btn">Log In / Sign Up</a>
         </div>
     </nav>
 
-    <div class="hero-section">
-        <h1 class="hero-title">Your audience has questions. <br><span style="color: #3498db;">Give them a voice.</span></h1>
-        <p class="hero-subtitle">
-            ClassQ&A is the ultimate platform for real-time, anonymous student questions. Manage live sessions, filter
-            by tags, and watch the best questions float to the top.
-        </p>
-        <div class="hero-buttons">
-            <a href="auth.html" id="hero-cta-btn" class="hero-btn-primary">Get Started for Free</a>
+    <div class="top-banner">
+        <div class="hero-section">
+            <h1 class="hero-title">Your audience has questions. <br><span style="color: #60a5fa;">Give them a voice.</span></h1>
+            <p class="hero-subtitle">
+                ClassQ&A is the ultimate platform for real-time, anonymous student questions. Manage live sessions, filter
+                by tags, and watch the best questions float to the top.
+            </p>
+            <div class="hero-buttons">
+                <a href="auth.html" id="hero-cta-btn" class="hero-btn-primary">Get Started for Free</a>
+            </div>
         </div>
     </div>
 
+    <!-- 3-Column Feature Grid -->
     <div class="feature-grid">
         <div class="feature-card">
             <div class="feature-icon">
@@ -60,7 +63,8 @@
             <div class="feature-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                    <path
+                        d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
                     <circle cx="12" cy="12" r="4" />
                 </svg>
             </div>
@@ -68,6 +72,45 @@
             <p style="color: var(--muted-text); font-size: 0.95rem; line-height: 1.5;">Keep the feed organized. Students
                 can tag questions as Urgent or Exam-Related for rapid instructor filtering.</p>
         </div>
+    </div>
+
+    <!-- NEW: Alternating Feature Showcase -->
+    <div class="showcase-container">
+
+        <!-- Row 1: Text Left, Image Right -->
+        <div class="showcase-row">
+            <div class="showcase-text">
+                <h2 style="color: var(--heading-color); font-size: 2.5rem; margin-bottom: 20px;">Control the flow of the
+                    classroom.</h2>
+                <p style="color: var(--muted-text); font-size: 1.1rem; margin-bottom: 20px;">
+                    Instructors have ultimate power over the live feed. Pin important questions to the top, mark them as
+                    answered, and trigger the glowing "Answering Live" badge so students know exactly what topic is
+                    currently being discussed.
+                </p>
+            </div>
+            <div class="showcase-image">
+                <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1000&auto=format&fit=crop"
+                    alt="Instructor managing a digital dashboard">
+            </div>
+        </div>
+
+        <!-- Row 2: Image Left, Text Right -->
+        <div class="showcase-row reverse">
+            <div class="showcase-text">
+                <h2 style="color: var(--heading-color); font-size: 2.5rem; margin-bottom: 20px;">Instant, real-time
+                    synchronization.</h2>
+                <p style="color: var(--muted-text); font-size: 1.1rem; margin-bottom: 20px;">
+                    Powered by blazing-fast WebSockets, the Q&A feed updates instantly for everyone in the room. No need
+                    to refresh the page. Watch upvotes climb in real-time and see new questions appear the millisecond
+                    they are submitted.
+                </p>
+            </div>
+            <div class="showcase-image">
+                <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1000&auto=format&fit=crop"
+                    alt="Students collaborating with technology">
+            </div>
+        </div>
+
     </div>
 
     <script>

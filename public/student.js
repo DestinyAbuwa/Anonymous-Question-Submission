@@ -18,6 +18,19 @@ socket.on('participantCount', (count) => {
     }
 });
 
+
+// Avatar Color & SVG Generator
+function getAvatar(id) {
+    const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#d35400', '#34495e'];
+    const color = colors[id % colors.length];
+
+    // Clean Lucide User Silhouette SVG
+    const userSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+
+    return `<div class="avatar" style="background-color: ${color};">${userSvg}</div>`;
+}
+
+
 // Relative time formatting
 function timeAgo(dateInput) {
     const date = new Date(dateInput);
@@ -34,6 +47,12 @@ function timeAgo(dateInput) {
 document.addEventListener('DOMContentLoaded', () => {
     loadClassDetails();
     checkActiveSession();
+});
+
+// Live Character Counter
+document.getElementById('question-text')?.addEventListener('input', function () {
+    const count = this.value.length;
+    document.getElementById('char-count').textContent = `${count} / 250`;
 });
 
 async function loadClassDetails() {
@@ -101,6 +120,15 @@ async function loadStudentFeed() {
     const container = document.getElementById('student-feed-container');
     if (!currentSessionId) return;
 
+    // NEW: Inject pulsing skeletons while we wait for the database!
+    if (container.innerHTML === '' || container.innerHTML.includes('Waiting') || container.innerHTML.includes('Loading')) {
+        container.innerHTML = `
+            <div class="skeleton-box" style="height: 120px; margin-bottom: 15px;"></div>
+            <div class="skeleton-box" style="height: 120px; margin-bottom: 15px; opacity: 0.7;"></div>
+            <div class="skeleton-box" style="height: 120px; margin-bottom: 15px; opacity: 0.4;"></div>
+        `;
+    }
+
     try {
         const sortMode = document.getElementById('feed-sort-toggle')?.value || 'upvotes';
         const response = await fetch(`/api/questions/${currentSessionId}?sort=${sortMode}`);
@@ -133,7 +161,8 @@ async function loadStudentFeed() {
 
             card.innerHTML = `
                 <div class="upvote-column">
-                    <button class="upvote-btn" onclick="handleUpvote(${q.question_id})" style="display:flex; justify-content:center; align-items:center;">
+                    ${getAvatar(q.question_id)}
+                <button class="upvote-btn" onclick="handleUpvote(${q.question_id})" style="display:flex; justify-content:center; align-items:center;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
                     </button>
                     <span class="upvote-count">${q.upvotes || 0}</span>
@@ -165,15 +194,25 @@ document.getElementById('question-form').addEventListener('submit', async (e) =>
     e.preventDefault();
     const content = document.getElementById('question-text').value;
     const token = localStorage.getItem('token');
+    
     const response = await fetch('/api/questions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ session_id: currentSessionId, content, tags: selectedTags })
     });
+    
     if (response.ok) {
         document.getElementById('question-text').value = '';
+        document.getElementById('char-count').textContent = '0 / 250';
+        
+        // Clear the array
         selectedTags = [];
+        
+        // THE FIX: Remove the visual 'selected' class from all tag buttons
+        document.querySelectorAll('.tag-toggle').forEach(btn => btn.classList.remove('selected'));
+        
         showToast("Question submitted!", "success");
+        loadStudentFeed(); // Instantly reload the feed so they see their question!
     }
 });
 

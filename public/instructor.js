@@ -23,6 +23,17 @@ socket.on('participantCount', (count) => {
     }
 });
 
+// Avatar Color & SVG Generator
+function getAvatar(id) {
+    const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#d35400', '#34495e'];
+    const color = colors[id % colors.length];
+    
+    // Clean Lucide User Silhouette SVG
+    const userSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+    
+    return `<div class="avatar" style="background-color: ${color};">${userSvg}</div>`;
+}
+
 // Relative time formatting
 function timeAgo(dateInput) {
     const date = new Date(dateInput);
@@ -117,6 +128,15 @@ async function fetchQuestions() {
     const container = document.getElementById('questions-container');
     if (!activeSessionId) return;
 
+    // NEW: Inject pulsing skeletons while we wait for the database!
+    if (container.innerHTML === '' || container.innerHTML.includes('Waiting') || container.innerHTML.includes('Loading')) {
+        container.innerHTML = `
+            <div class="skeleton-box" style="height: 120px; margin-bottom: 15px;"></div>
+            <div class="skeleton-box" style="height: 120px; margin-bottom: 15px; opacity: 0.7;"></div>
+            <div class="skeleton-box" style="height: 120px; margin-bottom: 15px; opacity: 0.4;"></div>
+        `;
+    }
+
     try {
         const sortMode = document.getElementById('feed-sort-toggle') ? document.getElementById('feed-sort-toggle').value : 'upvotes';
         const response = await fetch(`/api/questions/${activeSessionId}?sort=${sortMode}`);
@@ -155,6 +175,7 @@ async function fetchQuestions() {
             card.innerHTML = `
                 <div class="question-header">
                     <div style="display: flex; align-items: center; gap: 15px;">
+                        ${getAvatar(q.question_id)}
                         ${q.is_pinned ? '<span style="color:#f39c12; font-weight:bold; display: flex; align-items: center; gap: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.6V6a3 3 0 0 0-6 0v4.6a2 2 0 0 1-1.11 1.95l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg> Pinned</span>' : ''}
                         <span class="timestamp">${timeString}</span>
                         <span style="color: var(--primary-brand); font-weight: bold; display: flex; align-items: center; gap: 4px;">
