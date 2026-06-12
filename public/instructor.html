@@ -44,18 +44,21 @@
             <div style="padding: 25px;">
                 <!-- Active Session Controls -->
                 <div id="active-session-panel"
-                    style="display: none; background: rgba(39, 174, 96, 0.1); border: 1px solid #27ae60; padding: 20px; border-radius: 12px; margin-bottom: 15px; text-align: center;">
+                    style="display: none; padding: 25px; border-radius: 12px; margin-bottom: 20px; text-align: center; border: 1px solid var(--primary-brand); background: rgba(37, 99, 235, 0.03);">
+
                     <div
-                        style="display: inline-flex; align-items: center; gap: 10px; background: #27ae60; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9em; margin-bottom: 15px;">
+                        style="display: inline-flex; align-items: center; gap: 8px; color: #ef4444; font-weight: 700; font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">
                         <span
-                            style="display: inline-block; width: 10px; height: 10px; background: white; border-radius: 50%; animation: pulse 1.5s infinite;"></span>
-                        LIVE NOW
+                            style="display: inline-block; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; animation: pulse 1.5s infinite;"></span>
+                        Live Session Active
                     </div>
-                    <h3 style="margin: 0 0 15px 0; font-size: 1.5em; color: var(--heading-color);"
+
+                    <h3 style="margin: 0 0 20px 0; font-size: 1.5em; color: var(--heading-color);"
                         id="current-session-name">---</h3>
-                    <button onclick="endSession()" class="nav-logout-btn"
-                        style="padding: 12px 30px; font-size: 1.1em; border-radius: 30px; box-shadow: 0 4px 6px rgba(231, 76, 60, 0.3);">End
-                        Live Session</button>
+
+                    <button onclick="endSession()" class="end-session-btn">
+                        End Live Session
+                    </button>
                 </div>
 
                 <!-- Start / Schedule Session Controls -->

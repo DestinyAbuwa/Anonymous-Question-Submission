@@ -207,14 +207,6 @@ select:focus {
     font-weight: 500;
 }
 
-.tag-badge {
-    background-color: #f39c12;
-    color: white;
-    padding: 6px 12px;
-    border-radius: 12px;
-    font-size: 0.8em;
-    font-weight: 600;
-}
 
 .upvote-column {
     display: flex;
@@ -366,26 +358,38 @@ select:focus {
 }
 
 
-/* Selected states mapping directly to your requested colors! */
-.tag-toggle.selected[data-value="Urgent"],
-.tag-badge[data-tag="Urgent"] {
-    background-color: #e74c3c;
-    border-color: #e74c3c;
-    color: white;
+/* Base Tag Style */
+.tag-badge {
+    background-color: var(--bg-color);
+    color: var(--muted-text);
+    border: 1px solid var(--border-color);
+    padding: 4px 10px;
+    border-radius: 99px; /* Perfect pill shape */
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
 }
 
-.tag-toggle.selected[data-value="Clarification"],
-.tag-badge[data-tag="Clarification"] {
-    background-color: #2ecc71;
-    border-color: #2ecc71;
-    color: white;
+/* Specific tag colors using soft backgrounds and colored text */
+.tag-badge[data-tag="Urgent"], .tag-toggle.selected[data-value="Urgent"] { 
+    background-color: rgba(239, 68, 68, 0.1); 
+    color: #ef4444; 
+    border-color: rgba(239, 68, 68, 0.2); 
 }
 
-.tag-toggle.selected[data-value="Exam-Related"],
-.tag-badge[data-tag="Exam-Related"] {
-    background-color: #f39c12;
-    border-color: #f39c12;
-    color: white;
+.tag-badge[data-tag="Clarification"], .tag-toggle.selected[data-value="Clarification"] { 
+    background-color: rgba(59, 130, 246, 0.1); 
+    color: #3b82f6; 
+    border-color: rgba(59, 130, 246, 0.2); 
+}
+
+.tag-badge[data-tag="Exam-Related"], .tag-toggle.selected[data-value="Exam-Related"] { 
+    background-color: rgba(245, 158, 11, 0.1); 
+    color: #f59e0b; 
+    border-color: rgba(245, 158, 11, 0.2); 
 }
 
 /* Add this right below your .tag-toggle rule! */
@@ -1035,4 +1039,22 @@ div {
     font-size: 2.5rem;
     margin-bottom: 15px;
     color: #3498db;
+}
+
+/* Destructive Outline Button for Ending Sessions */
+.end-session-btn {
+    padding: 10px 24px;
+    font-size: 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: transparent;
+    border: 2px solid #ef4444;
+    color: #ef4444;
+}
+
+.end-session-btn:hover {
+    background: #ef4444;
+    color: white;
 }
