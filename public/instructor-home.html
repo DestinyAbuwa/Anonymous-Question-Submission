@@ -11,16 +11,16 @@
 
 <body>
     <nav class="navbar">
-    <!-- Links back to index.html -->
-    <a href="index.html" class="nav-logo-link">ClassQ&A</a>
-    
-    <div class="nav-links">
-        
-        <button id="theme-toggle" class="theme-btn" style="background:none; border:none; color:inherit; cursor:pointer; display:flex; align-items:center;"></button>
-        <div class="nav-divider"></div>
-        <button onclick="logout()" class="nav-logout-btn">Log Out</button>
-    </div>
-</nav>
+        <!-- Links back to index.html -->
+        <a href="index.html" class="nav-logo-link">Class<span>Q&A</span></a>
+
+        <div class="nav-links">
+
+            <button id="theme-toggle" class="theme-btn"></button>
+            <div class="nav-divider"></div>
+            <button onclick="logout()" class="nav-logout-btn">Log Out</button>
+        </div>
+    </nav>
 
     <div class="layout-container">
         <!-- Upgraded Header to match Student Dashboard -->
@@ -30,7 +30,8 @@
                 <p class="subtitle" id="welcome-message">Loading user...</p>
             </div>
             <!-- Moved the button here! -->
-            <button class="submit-btn" style="width: auto; padding: 10px 20px;" onclick="showCreateModal()">+ Create Class</button>
+            <button class="submit-btn" style="width: auto; padding: 10px 20px;" onclick="showCreateModal()">+ Create
+                Class</button>
         </header>
 
         <div class="class-grid" id="class-grid">
@@ -40,19 +41,19 @@
 
     <!-- Create Class Modal -->
     <div id="create-class-modal" class="modal-overlay">
-    <div class="modal-content">
-        <h3 style="margin-top:0; color:#2c3e50;">Create New Class</h3>
-        <p style="color:#7f8c8d; font-size:0.9rem;">Generate a unique code for your students to join.</p>
-        
-        <!-- WRAP IN A FORM AND USE onsubmit -->
-        <form onsubmit="event.preventDefault(); handleCreateClass();">
-            <input type="text" id="class-name-input" placeholder="e.g., CS 101: Intro to Programming" required>
-            <button type="submit" class="btn-primary">Create Class</button>
-            <button type="button" onclick="hideCreateModal()" class="btn-secondary">Cancel</button>
-        </form>
-        
+        <div class="modal-content">
+            <h3 style="margin-top:0; color:#2c3e50;">Create New Class</h3>
+            <p style="color:#7f8c8d; font-size:0.9rem;">Generate a unique code for your students to join.</p>
+
+            <!-- WRAP IN A FORM AND USE onsubmit -->
+            <form onsubmit="event.preventDefault(); handleCreateClass();">
+                <input type="text" id="class-name-input" placeholder="e.g., CS 101: Intro to Programming" required>
+                <button type="submit" class="btn-primary">Create Class</button>
+                <button type="button" onclick="hideCreateModal()" class="btn-secondary">Cancel</button>
+            </form>
+
+        </div>
     </div>
-</div>
 
     <script src="instructor-home.js"></script>
 </body>

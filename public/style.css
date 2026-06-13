@@ -20,7 +20,8 @@
     --input-bg: #ffffff;
     --heading-color: #111827;
     --muted-text: #6b7280;
-    --primary-brand: #2563eb;
+    --primary-brand: #3498db;
+    --primary-brand-hover: #2980b9;
     --active-btn-bg: #ebf5fb;
     --pinned-bg: #fffdf7;
     --action-hover-bg: #f1f2f6;
@@ -37,7 +38,8 @@
     --input-bg: #374151;
     --heading-color: #f3f4f6;
     --muted-text: #9ca3af;
-    --primary-brand: #3b82f6;
+    --primary-brand: #3498db;
+    --primary-brand-hover: #2980b9;
     --active-btn-bg: #1e3a8a;
     --pinned-bg: #3b3522;
     --action-hover-bg: #374151;
@@ -152,7 +154,7 @@ select:focus {
 }
 
 .submit-btn:hover {
-    background-color: #1d4ed8;
+    background-color: var(--primary-brand-hover);
 }
 
 #status-message {
@@ -534,10 +536,11 @@ select:focus {
 
 .role-btn.active {
     border-color: var(--primary-brand);
-    background-color: rgba(0, 142, 84, 0.1);
-    color: var(--heading-color);
+    background-color: var(--primary-brand-hover);
+    color: white;
     box-shadow: 0 1px 3px rgba(0, 142, 84, 0.15);
 }
+
 
 /* --- Modern Class Cards --- */
 .class-grid {
@@ -660,7 +663,7 @@ select:focus {
 }
 
 .btn-primary:hover {
-    background: rgba(0, 142, 84, 0.9);
+    background: var(--primary-brand-hover);
 }
 
 .btn-secondary {
@@ -683,9 +686,9 @@ select:focus {
     background-color: #dc2626;
     color: white;
     border: none;
-    padding: 8px 16px;
+    padding: 10px 20px;
     border-radius: 6px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     transition: background 0.2s;
 }
@@ -700,6 +703,11 @@ select:focus {
     font-weight: bold;
     text-decoration: none;
     color: inherit;
+}
+
+
+.nav-logo-link span {
+    color:var(--primary-brand);
 }
 
 @keyframes pulse {
@@ -721,9 +729,10 @@ select:focus {
 /* ========================================== */
 
 /* 1. CSS Page Transitions */
-.layout-container {
+.layout-container, .top-banner {
     animation: fadeIn 0.4s ease-out forwards;
 }
+
 
 @keyframes fadeIn {
     from {
@@ -1015,9 +1024,9 @@ div {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background-color: #3498db;
+    background-color: var(--primary-brand);
     color: white;
-    padding: 12px 25px;
+    padding: 10px 20px;
     border-radius: 8px;
     text-decoration: none;
     font-weight: bold;
@@ -1027,15 +1036,25 @@ div {
     cursor: pointer;
 }
 
+.nav-signup-btn {
+    padding: 5px 20px;
+   
+}
+
 .nav-signup-btn:hover,
 .hero-btn-primary:hover {
-    background-color: #2980b9;
+    background-color: var(--primary-brand-hover);
 }
 
 /* Optional: Adds a tiny 'click' indentation effect */
 .nav-signup-btn:active,
 .hero-btn-primary:active {
     transform: scale(0.98);
+}
+
+
+#nav-login-btn{
+    color: white;
 }
 
 .feature-grid {
@@ -1152,4 +1171,127 @@ div {
     color: white;
     font-size: 1rem;
     flex-shrink: 0;
+}
+
+
+/* Footer Base Styles */
+.cq-footer {
+  background-color: #0f172a; /* Deep modern navy */
+  color: #94a3b8; /* Soft slate gray for text */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  padding: 4rem 0 0 0;
+  margin-top: auto; /* Pushes footer to bottom if page content is short */
+  border-top: 1px solid #1e293b;
+}
+
+.cq-footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem 3rem 2rem;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 3rem;
+}
+
+/* Brand Section */
+.cq-footer-logo {
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 1rem 0;
+  letter-spacing: -0.025em;
+}
+
+.cq-footer-logo span {
+  color: var(--primary-brand); /* Vibrant blue accent */
+}
+
+.cq-footer-tagline {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+  max-width: 320px;
+}
+
+
+/* Link Columns */
+.cq-footer-links h3 {
+  color: #f8fafc;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 1.25rem 0;
+}
+
+.cq-footer-links ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.cq-footer-links li {
+  margin-bottom: 0.75rem;
+}
+
+.cq-footer-links a {
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.2s ease;
+}
+
+.cq-footer-links a:hover {
+  color: #3498db; /* Hover effect */
+}
+
+/* Bottom Bar */
+.cq-footer-bottom {
+  background-color: #020617; /* Darker bar for contrast */
+  padding: 1.5rem 0;
+  border-top: 1px solid #1e293b;
+}
+
+.cq-footer-bottom-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.cq-footer-bottom p {
+  margin: 0;
+}
+
+.cq-footer-legal a {
+  color: #64748b;
+  text-decoration: none;
+  margin-left: 1.5rem;
+  transition: color 0.2s ease;
+}
+
+.cq-footer-legal a:hover {
+  color: #94a3b8;
+}
+
+/* Responsive Mobile Layout */
+@media (max-width: 768px) {
+  .cq-footer-container {
+    grid-template-columns: 1fr; /* Stack into single column */
+    gap: 2.5rem;
+    padding-bottom: 2rem;
+  }
+  
+  .cq-footer-bottom-container {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+  
+  .cq-footer-legal a {
+    margin: 0 0.75rem;
+  }
 }
