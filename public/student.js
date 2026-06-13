@@ -90,9 +90,15 @@ async function checkActiveSession() {
                 socket.emit('joinSession', currentSessionId);
                 if (questionText) questionText.disabled = false;
                 if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = '1'; }
+
+                // NEW: Premium Live Badge
                 if (sessionInfo) {
-                    sessionInfo.innerHTML = `🟢 Live Session: <strong>${data.session.session_name}</strong>`;
-                    sessionInfo.style.color = '#27ae60';
+                    sessionInfo.innerHTML = `
+                        <span style=" margin-bottom: 10px; background: rgba(46, 204, 113, 0.1); color: #27ae60; border: 1px solid rgba(46, 204, 113, 0.2); padding: 4px 12px; border-radius: 20px; font-size: 0.85em; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                            <span style="display: inline-block; width: 8px; height: 8px; background: #27ae60; border-radius: 50%; animation: pulse 1.5s infinite;"></span>
+                            Live: ${data.session.session_name}
+                        </span>`;
+                    sessionInfo.style.color = ''; // Clears the old inline red/green color
                 }
                 loadStudentFeed(); // Load feed once session is active
             } else {
@@ -102,7 +108,7 @@ async function checkActiveSession() {
                 // 1. Change the red text to a professional "Paused" badge
                 if (sessionInfo) {
                     sessionInfo.innerHTML = `
-                        <span style="background: var(--bg-color); color: var(--muted-text); border: 1px solid var(--border-color); padding: 4px 12px; border-radius: 20px; font-size: 0.85em; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                        <span style=" margin-bottom: 10px; background: var(--bg-color); color: var(--muted-text); border: 1px solid var(--border-color); padding: 4px 12px; border-radius: 20px; font-size: 0.85em; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="4" height="16" x="6" y="4"/><rect width="4" height="16" x="14" y="4"/></svg> 
                             Session Paused
                         </span>`;

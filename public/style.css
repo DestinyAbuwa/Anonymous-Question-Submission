@@ -760,7 +760,7 @@ select:focus {
     box-shadow: 0 0 10px #2ecc71;
 }
 
-/* 3. Toast Notifications */
+/* 3. Toast Notifications (Premium SaaS Style) */
 #toast-container {
     position: fixed;
     bottom: 30px;
@@ -773,31 +773,27 @@ select:focus {
 
 .toast {
     min-width: 250px;
-    padding: 15px 20px;
+    padding: 14px 20px;
     border-radius: 8px;
-    color: white;
-    font-weight: bold;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    background-color: var(--panel-bg); /* Use the theme's panel color */
+    color: var(--heading-color); /* Use the theme's text color */
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     animation: slideInRight 0.3s ease-out forwards;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
-.toast.success {
-    background-color: #27ae60;
-    border-left: 5px solid #1e8449;
-}
+/* Color just the SVG icons instead of the whole background */
+.toast-icon.success { color: #2ecc71; }
+.toast-icon.error { color: #e74c3c; }
+.toast-icon.info { color: #3498db; }
 
-.toast.error {
-    background-color: #e74c3c;
-    border-left: 5px solid #c0392b;
-}
-
-.toast.info {
-    background-color: #3498db;
-    border-left: 5px solid #2980b9;
-}
+/* Optional: Add a subtle left border to match the icon color */
+.toast.success { border-left: 4px solid #2ecc71; }
+.toast.error { border-left: 4px solid #e74c3c; }
+.toast.info { border-left: 4px solid #3498db; }
 
 .toast-fade-out {
     animation: fadeOutRight 0.3s ease-in forwards;

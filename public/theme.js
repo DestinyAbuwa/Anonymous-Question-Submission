@@ -58,20 +58,26 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Toast Notification Engine
-window.showToast = function(message, type = 'info') {
+window.showToast = function (message, type = 'info') {
     const container = document.getElementById('toast-container');
     if (!container) return;
 
-    let icon = '💡';
-    if (type === 'success') icon = '✅';
-    if (type === 'error') icon = '❌';
+    // Default Info SVG
+    let icon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="toast-icon info"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`;
+
+    if (type === 'success') {
+        icon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="toast-icon success"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>`;
+    }
+    if (type === 'error') {
+        icon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="toast-icon error"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`;
+    }
 
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
-    
+    toast.innerHTML = `<span style="display: flex; align-items: center;">${icon}</span> <span style="font-weight: 500; font-size: 0.95rem;">${message}</span>`;
+
     container.appendChild(toast);
-    
+
     // Automatically dismiss after 3.5 seconds
     setTimeout(() => {
         toast.classList.add('toast-fade-out');
@@ -80,20 +86,20 @@ window.showToast = function(message, type = 'info') {
 };
 
 // Animated Network Loading Bar
-window.startLoader = function() {
+window.startLoader = function () {
     const loader = document.getElementById('top-loader');
-    if (loader) { 
-        loader.style.opacity = '1'; 
-        loader.style.width = '60%'; 
+    if (loader) {
+        loader.style.opacity = '1';
+        loader.style.width = '60%';
     }
 };
 
-window.stopLoader = function() {
+window.stopLoader = function () {
     const loader = document.getElementById('top-loader');
     if (loader) {
         loader.style.width = '100%';
-        setTimeout(() => { 
-            loader.style.opacity = '0'; 
+        setTimeout(() => {
+            loader.style.opacity = '0';
             setTimeout(() => { loader.style.width = '0'; }, 400); // Reset after fade
         }, 300);
     }
