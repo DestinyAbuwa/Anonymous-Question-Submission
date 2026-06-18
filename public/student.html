@@ -23,8 +23,12 @@
 
     <div class="layout-container">
         <header>
-            <h1 id="class-title">Loading Class...</h1>
-            <p id="session-info">Waiting for instructor to start a session...</p>
+            <h1 id="class-title">
+                <div class="skeleton-box" style="height: 40px; width: 280px; border-radius: 6px; margin: 0;"></div>
+            </h1>
+            <div id="session-info" style="margin-top: 10px;">
+                <div class="skeleton-box" style="height: 24px; width: 350px; border-radius: 4px; margin: 0;"></div>
+            </div>
         </header>
 
         <div class="two-column-grid">
@@ -34,7 +38,9 @@
                 <p class="subtitle">Submit anonymously to the instructor.</p>
                 <form id="question-form">
                     <textarea id="question-text" rows="4" placeholder="What's on your mind?..." required></textarea>
-                    <div id="char-count" style="text-align: right; font-size: 0.8rem; color: var(--muted-text); margin-top: -10px; margin-bottom: 15px; font-weight: 600;">0 / 250</div>
+                    <div id="char-count"
+                        style="text-align: right; font-size: 0.8rem; color: var(--muted-text); margin-top: -10px; margin-bottom: 15px; font-weight: 600;">
+                        0 / 250</div>
                     <div class="tags-container">
                         <label>Select Tags (Optional):</label>
                         <div id="tag-buttons" class="tag-buttons">
@@ -74,7 +80,9 @@
                     </select>
                 </div>
                 <div id="student-feed-container" class="scrollable-feed">
-                    <p>Loading class feed...</p>
+                    <div class="skeleton-box" style="height: 120px; margin-bottom: 15px;"></div>
+                    <div class="skeleton-box" style="height: 120px; margin-bottom: 15px; opacity: 0.7;"></div>
+                    <div class="skeleton-box" style="height: 120px; margin-bottom: 15px; opacity: 0.4;"></div>
                 </div>
             </section>
 

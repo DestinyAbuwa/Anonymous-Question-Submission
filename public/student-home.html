@@ -35,12 +35,12 @@
 
     <div id="join-class-modal" class="modal-overlay">
         <div class="modal-content">
-            <h3 style="margin-top:0; color:#2c3e50;">Join a Class</h3>
-            <p style="color:#7f8c8d; font-size:0.9rem;">Enter the 6-character code provided by your instructor.</p>
+            <h3>Join a Class</h3>
+            <p style="color: var(--muted-text);">Enter the 6-character code provided by your instructor.</p>
 
             <!-- WRAP IN A FORM AND USE onsubmit -->
             <form onsubmit="event.preventDefault(); handleJoinClass();">
-                <input type="text" id="join-code-input" placeholder="e.g., A1B2C3" style="text-transform: uppercase;"
+                <input style="color: var(--muted-text)" type="text" id="join-code-input" placeholder="e.g., A1B2C3" style="text-transform: uppercase;"
                     required>
                 <button type="submit" class="btn-primary">Join Class</button>
                 <button type="button" onclick="hideJoinModal()" class="btn-secondary">Cancel</button>

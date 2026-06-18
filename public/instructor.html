@@ -28,8 +28,12 @@
     <div class="layout-container">
         <!-- Dynamic Header -->
         <header style="margin-bottom: 20px;">
-            <h1 id="class-title">Loading Class...</h1>
-            <p class="subtitle" id="class-join-code">Join Code: ---</p>
+            <h1 id="class-title">
+                <div class="skeleton-box" style="height: 40px; width: 280px; border-radius: 6px; margin: 0;"></div>
+            </h1>
+            <div class="subtitle" id="class-join-code" style="margin-top: 10px;">
+                <div class="skeleton-box" style="height: 20px; width: 150px; border-radius: 4px; margin: 0;"></div>
+            </div>
         </header>
 
         <!-- Session Management Panel -->
@@ -136,7 +140,17 @@
             </div>
 
             <div id="questions-container">
-                <p class="subtitle">Start a session to see questions...</p>
+                <div class="empty-state" style="padding: 40px 20px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                        style="margin: 0 auto 15px auto; display: block; opacity: 0.3; color: var(--muted-text);">
+                        <rect width="20" height="14" x="2" y="7" rx="2" ry="2" />
+                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+                    </svg>
+                    <h3 style="color: var(--heading-color); margin-bottom: 5px;">Start a Session</h3>
+                    <p style="color: var(--muted-text); font-size: 0.95em;">Click 'Start Live' to open the floor to
+                        student questions.</p>
+                </div>
             </div>
         </section>
     </div>
