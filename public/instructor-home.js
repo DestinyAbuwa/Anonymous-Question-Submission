@@ -24,11 +24,11 @@ async function loadClasses() {
     const grid = document.getElementById('class-grid');
     // Show skeleton loaders before the data arrives
     grid.innerHTML = '<div class="skeleton-box"></div><div class="skeleton-box"></div>';
-    
+
     startLoader(); // Start the top progress bar
 
     const token = localStorage.getItem('token');
-    
+
     try {
         // Fetch classes
         const classResponse = await fetch('/api/my-classes', {
@@ -50,7 +50,7 @@ async function loadClasses() {
             const sessionsResponse = await fetch('/api/instructor/active-sessions', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
-            
+
             if (sessionsResponse.ok) {
                 activeSessions = await sessionsResponse.json();
             }
@@ -70,14 +70,14 @@ async function loadClasses() {
         showToast('Failed to load classes.', 'error');
         grid.innerHTML = '';
     }
-    
+
     stopLoader(); // Finish the progress bar
 }
 
 // 2. Render class cards with optional active session button
 function renderClasses(classes, activeSessionMap = {}) {
     const grid = document.getElementById('class-grid');
-    grid.innerHTML = ''; 
+    grid.innerHTML = '';
 
     if (classes.length === 0) {
         grid.innerHTML = `
@@ -91,9 +91,9 @@ function renderClasses(classes, activeSessionMap = {}) {
     classes.forEach(c => {
         const card = document.createElement('div');
         card.className = 'class-card';
-        
+
         const activeSession = activeSessionMap[c.class_id];
-        
+
         // Build the card content
         let cardContent = `
             <div class="class-card-header">
@@ -144,7 +144,7 @@ async function handleCreateClass() {
     }
 
     startLoader();
-    
+
     const response = await fetch('/api/create-class', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -153,12 +153,12 @@ async function handleCreateClass() {
 
     if (response.ok) {
         hideCreateModal();
-        nameInput.value = ''; 
-        loadClasses(); 
+        nameInput.value = '';
+        loadClasses();
         showToast('Class created successfully!', 'success'); // Look at that UX!
     } else {
         showToast('Error creating class.', 'error');
     }
-    
+
     stopLoader();
 }

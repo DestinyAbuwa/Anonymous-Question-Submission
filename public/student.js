@@ -1,27 +1,41 @@
 let currentSessionId = null;
 const urlParams = new URLSearchParams(window.location.search);
-const classId = urlParams.get('classId');
+const classId = urlParams.get("classId");
 const socket = io();
 
 // Whenever the server yells 'updateFeed', instantly reload our feed!
-socket.on('updateFeed', () => {
+socket.on("updateFeed", () => {
     if (currentSessionId) loadStudentFeed();
 });
 
 // Update the live viewer count
-socket.on('participantCount', (count) => {
-    const badge = document.getElementById('live-count-badge');
-    const countText = document.getElementById('participant-count');
+socket.on("participantCount", (count) => {
+    const badge = document.getElementById("live-count-badge");
+    const countText = document.getElementById("participant-count");
     if (badge && countText) {
-        badge.style.display = 'inline-flex';
+        badge.style.display = "inline-flex";
         countText.textContent = count;
     }
 });
 
+// Instantly lock the UI when the instructor ends the session
+socket.on("sessionEnded", () => {
+    showToast("The instructor has ended the live session.", "info");
+    checkActiveSession(); // This will re-run your logic and instantly show the "Paused" state!
+});
 
 // Avatar Color & SVG Generator
 function getAvatar(id) {
-    const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#d35400', '#34495e'];
+    const colors = [
+        "#e74c3c",
+        "#3498db",
+        "#2ecc71",
+        "#f39c12",
+        "#9b59b6",
+        "#1abc9c",
+        "#d35400",
+        "#34495e",
+    ];
     const color = colors[id % colors.length];
 
     // Clean Lucide User Silhouette SVG
@@ -29,7 +43,6 @@ function getAvatar(id) {
 
     return `<div class="avatar" style="background-color: ${color};">${userSvg}</div>`;
 }
-
 
 // Relative time formatting
 function timeAgo(dateInput) {
@@ -44,66 +57,74 @@ function timeAgo(dateInput) {
     return date.toLocaleDateString();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
     loadClassDetails();
     checkActiveSession();
 });
 
 // Robust Character Counter & Enforcer
-document.getElementById('question-text')?.addEventListener('input', function () {
-    const maxLength = 250;
-    // If the value is too long, cut it off at 250 characters
-    if (this.value.length > maxLength) {
-        this.value = this.value.substring(0, maxLength);
-    }
-    const count = this.value.length;
-    document.getElementById('char-count').textContent = `${count} / 250`;
-});
+document
+    .getElementById("question-text")
+    ?.addEventListener("input", function () {
+        const maxLength = 250;
+        // If the value is too long, cut it off at 250 characters
+        if (this.value.length > maxLength) {
+            this.value = this.value.substring(0, maxLength);
+        }
+        const count = this.value.length;
+        document.getElementById("char-count").textContent = `${count} / 250`;
+    });
 
 async function loadClassDetails() {
     if (!classId) return;
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     const response = await fetch(`/api/classes/${classId}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
     });
     if (response.ok) {
         const classData = await response.json();
-        document.getElementById('class-title').textContent = classData.class_name;
+        document.getElementById("class-title").textContent = classData.class_name;
     }
 }
 
 async function checkActiveSession() {
     if (!classId) return;
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     try {
         const response = await fetch(`/api/classes/${classId}/active-session`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: { Authorization: `Bearer ${token}` },
         });
-        const questionText = document.getElementById('question-text');
-        const submitBtn = document.getElementById('submit-question-btn');
-        const sessionInfo = document.getElementById('session-info');
+        const questionText = document.getElementById("question-text");
+        const submitBtn = document.getElementById("submit-question-btn");
+        const sessionInfo = document.getElementById("session-info");
 
         if (response.ok) {
             const data = await response.json();
             if (data.active) {
                 currentSessionId = data.session.session_id;
-                socket.emit('joinSession', currentSessionId);
+                socket.emit("joinSession", currentSessionId);
                 if (questionText) questionText.disabled = false;
-                if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = '1'; }
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.style.opacity = "1";
+                }
 
                 // NEW: Premium Live Badge
                 if (sessionInfo) {
-                    sessionInfo.innerHTML = `
-                        <span style=" margin-bottom: 10px; background: rgba(46, 204, 113, 0.1); color: #27ae60; border: 1px solid rgba(46, 204, 113, 0.2); padding: 4px 12px; border-radius: 20px; font-size: 0.85em; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
-                            <span style="display: inline-block; width: 8px; height: 8px; background: #27ae60; border-radius: 50%; animation: pulse 1.5s infinite;"></span>
-                            Live: ${data.session.session_name}
-                        </span>`;
-                    sessionInfo.style.color = ''; // Clears the old inline red/green color
+                    // Replace the green badge in student.js with this blue one:
+                    sessionInfo.innerHTML = `<span style=" margin-bottom: 10px; background: rgba(52, 152, 219, 0.1); color: var(--primary-brand); border: 1px solid rgba(52, 152, 219, 0.2); padding: 4px 12px; border-radius: 20px; font-size: 0.85em; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                    <span style="display: inline-block; width: 8px; height: 8px; background: var(--primary-brand); border-radius: 50%; animation: pulse 1.5s infinite;"></span>
+          Live: ${data.session.session_name}
+            </span>`;
+                    sessionInfo.style.color = ""; // Clears the old inline red/green color
                 }
                 loadStudentFeed(); // Load feed once session is active
             } else {
                 currentSessionId = null;
-                if (submitBtn) { submitBtn.disabled = true; submitBtn.style.opacity = '0.5'; }
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.style.opacity = "0.5";
+                }
 
                 // 1. Change the red text to a professional "Paused" badge
                 if (sessionInfo) {
@@ -115,7 +136,7 @@ async function checkActiveSession() {
                 }
 
                 // 2. Inject a custom empty state into the feed container
-                const feedContainer = document.getElementById('student-feed-container');
+                const feedContainer = document.getElementById("student-feed-container");
                 if (feedContainer) {
                     feedContainer.innerHTML = `
                         <div class="empty-state" style="padding: 40px 20px;">
@@ -126,29 +147,34 @@ async function checkActiveSession() {
                 }
             }
         }
-    } catch (error) { console.error("Session check failed"); }
+    } catch (error) {
+        console.error("Session check failed");
+    }
 }
 
 let selectedTags = [];
-document.querySelectorAll('.tag-toggle').forEach(button => {
-    button.addEventListener('click', () => {
-        button.classList.toggle('selected');
-        const tag = button.getAttribute('data-value');
+document.querySelectorAll(".tag-toggle").forEach((button) => {
+    button.addEventListener("click", () => {
+        button.classList.toggle("selected");
+        const tag = button.getAttribute("data-value");
         if (selectedTags.includes(tag)) {
-            selectedTags = selectedTags.filter(t => t !== tag);
+            selectedTags = selectedTags.filter((t) => t !== tag);
         } else {
             selectedTags.push(tag);
         }
     });
 });
 
-
 async function loadStudentFeed() {
-    const container = document.getElementById('student-feed-container');
+    const container = document.getElementById("student-feed-container");
     if (!currentSessionId) return;
 
     // NEW: Inject pulsing skeletons while we wait for the database!
-    if (container.innerHTML === '' || container.innerHTML.includes('Waiting') || container.innerHTML.includes('Loading')) {
+    if (
+        container.innerHTML === "" ||
+        container.innerHTML.includes("Waiting") ||
+        container.innerHTML.includes("Loading")
+    ) {
         container.innerHTML = `
             <div class="skeleton-box" style="height: 120px; margin-bottom: 15px;"></div>
             <div class="skeleton-box" style="height: 120px; margin-bottom: 15px; opacity: 0.7;"></div>
@@ -157,8 +183,11 @@ async function loadStudentFeed() {
     }
 
     try {
-        const sortMode = document.getElementById('feed-sort-toggle')?.value || 'upvotes';
-        const response = await fetch(`/api/questions/${currentSessionId}?sort=${sortMode}`);
+        const sortMode =
+            document.getElementById("feed-sort-toggle")?.value || "upvotes";
+        const response = await fetch(
+            `/api/questions/${currentSessionId}?sort=${sortMode}`,
+        );
         const questions = await response.json();
 
         if (questions.length === 0) {
@@ -170,21 +199,25 @@ async function loadStudentFeed() {
             return;
         }
 
-        container.innerHTML = '';
-        questions.forEach(q => {
-            const card = document.createElement('div');
-            card.className = `feed-card ${q.is_pinned ? 'pinned' : ''}`;
+        container.innerHTML = "";
+        questions.forEach((q) => {
+            const card = document.createElement("div");
+            card.className = `feed-card ${q.is_pinned ? "pinned" : ""}`;
 
-            let tagsHTML = '';
+            let tagsHTML = "";
             if (q.tags) {
-                q.tags.split(',').forEach(tag => {
+                q.tags.split(",").forEach((tag) => {
                     tagsHTML += `<span class="tag-badge" data-tag="${tag}">${tag}</span> `;
                 });
             }
 
-            const isLive = q.status === 'Displayed';
-            const liveBadge = isLive ? `<div class="live-badge">Answering Live</div>` : '';
-            const pinIcon = q.is_pinned ? `<span style="color:#f39c12; margin-right:5px; display:inline-flex; align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.6V6a3 3 0 0 0-6 0v4.6a2 2 0 0 1-1.11 1.95l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg></span>` : '';
+            const isLive = q.status === "Displayed";
+            const liveBadge = isLive
+                ? `<div class="live-badge">Answering Live</div>`
+                : "";
+            const pinIcon = q.is_pinned
+                ? `<span style="color:#f39c12; margin-right:5px; display:inline-flex; align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.6V6a3 3 0 0 0-6 0v4.6a2 2 0 0 1-1.11 1.95l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg></span>`
+                : "";
 
             card.innerHTML = `
                 <div class="upvote-column">
@@ -211,45 +244,61 @@ async function loadStudentFeed() {
             `;
             container.appendChild(card);
         });
-
-    } catch (error) { showToast("Failed to sync feed.", "error"); }
+    } catch (error) {
+        showToast("Failed to sync feed.", "error");
+    }
 }
 
 async function handleUpvote(questionId) {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     try {
         await fetch(`/api/questions/${questionId}/upvote`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${token}` }
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}` },
         });
         loadStudentFeed();
-    } catch (error) { showToast("Error processing upvote.", "error"); }
+    } catch (error) {
+        showToast("Error processing upvote.", "error");
+    }
 }
 
-document.getElementById('question-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const content = document.getElementById('question-text').value;
-    const token = localStorage.getItem('token');
+document
+    .getElementById("question-form")
+    .addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const content = document.getElementById("question-text").value;
+        const token = localStorage.getItem("token");
 
-    const response = await fetch('/api/questions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ session_id: currentSessionId, content, tags: selectedTags })
+        const response = await fetch("/api/questions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+                session_id: currentSessionId,
+                content,
+                tags: selectedTags,
+            }),
+        });
+
+        if (response.ok) {
+            document.getElementById("question-text").value = "";
+            document.getElementById("char-count").textContent = "0 / 250";
+
+            // Clear the array
+            selectedTags = [];
+
+            // THE FIX: Remove the visual 'selected' class from all tag buttons
+            document
+                .querySelectorAll(".tag-toggle")
+                .forEach((btn) => btn.classList.remove("selected"));
+
+            showToast("Question submitted!", "success");
+            loadStudentFeed(); // Instantly reload the feed so they see their question!
+        }
     });
 
-    if (response.ok) {
-        document.getElementById('question-text').value = '';
-        document.getElementById('char-count').textContent = '0 / 250';
-
-        // Clear the array
-        selectedTags = [];
-
-        // THE FIX: Remove the visual 'selected' class from all tag buttons
-        document.querySelectorAll('.tag-toggle').forEach(btn => btn.classList.remove('selected'));
-
-        showToast("Question submitted!", "success");
-        loadStudentFeed(); // Instantly reload the feed so they see their question!
-    }
-});
-
-document.getElementById('feed-sort-toggle')?.addEventListener('change', loadStudentFeed);
+document
+    .getElementById("feed-sort-toggle")
+    ?.addEventListener("change", loadStudentFeed);

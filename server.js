@@ -21,6 +21,8 @@ const io = new Server(server, {
     cors: { origin: "*" } // Allows frontend to connect
 });
 
+
+app.set('io', io);
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
@@ -447,21 +449,27 @@ app.post('/api/sessions/start', authenticateToken, async (req, res) => {
 // ==========================================
 // API ROUTE: End a Live Q&A Session
 // ==========================================
-app.patch('/api/sessions/:sessionId/end', authenticateToken, async (req, res) => {
-    const { sessionId } = req.params;
-
+app.patch('/api/sessions/:id/end', authenticateToken, async (req, res) => {
+    const sessionId = req.params.id;
+    // FETCH THE IO INSTANCE HERE:
+    const io = req.app.get('io'); 
+    
     try {
-        // Update the session to inactive and stamp the end time
-        await pool.execute(
-            'UPDATE Sessions SET is_active = FALSE, end_time = CURRENT_TIMESTAMP WHERE session_id = ?',
-            [sessionId]
+        const [result] = await pool.execute(
+            'UPDATE Sessions SET is_active = FALSE WHERE session_id = ? AND class_id IN (SELECT class_id FROM Classes WHERE instructor_id = ?)',
+            [sessionId, req.user.user_id] // Ensure this matches the property name in your JWT!
         );
 
-        res.status(200).json({ message: 'Session closed successfully. No more questions can be asked.' });
-
+        if (result.affectedRows > 0) {
+            // Now 'io' is defined and this will work!
+            io.to(sessionId).emit('sessionEnded');
+            res.status(200).json({ message: 'Session ended successfully' });
+        } else {
+            res.status(403).json({ error: 'Unauthorized or session not found' });
+        }
     } catch (error) {
-        console.error('❌ Error closing session:', error);
-        res.status(500).json({ error: 'Failed to close session.' });
+        console.error("Database error in endSession:", error);
+        res.status(500).json({ error: 'Failed to end session' });
     }
 });
 

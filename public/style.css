@@ -709,7 +709,7 @@ select:focus {
 
 
 .nav-logo-link span {
-    color:var(--primary-brand);
+    color: var(--primary-brand);
 }
 
 @keyframes pulse {
@@ -730,7 +730,8 @@ select:focus {
 /* UNIFIED 'LIVE SESSION' STYLES              */
 /* ========================================== */
 .active-session-card-banner {
-    background: rgba(52, 152, 219, 0.08); /* Soft primary blue */
+    background: rgba(52, 152, 219, 0.08);
+    /* Soft primary blue */
     border: 1px solid var(--primary-brand);
     padding: 15px;
     border-radius: 8px;
@@ -746,7 +747,6 @@ select:focus {
     font-weight: bold;
     font-size: 0.95em;
     letter-spacing: 0.5px;
-    text-transform: uppercase;
 }
 
 .pulse-dot {
@@ -764,7 +764,8 @@ select:focus {
 /* ========================================== */
 
 /* 1. CSS Page Transitions */
-.layout-container, .top-banner {
+.layout-container,
+.top-banner {
     animation: fadeIn 0.4s ease-out forwards;
 }
 
@@ -787,12 +788,12 @@ select:focus {
     top: 0;
     left: 0;
     height: 4px;
-    background: #2ecc71;
+    background: var(--primary-brand);
     /* Green loading bar */
     width: 0;
     z-index: 10000;
     transition: width 0.4s ease, opacity 0.4s ease;
-    box-shadow: 0 0 10px #2ecc71;
+    box-shadow: 0 0 10px var(--primary-brand);
 }
 
 /* 3. Toast Notifications (Premium SaaS Style) */
@@ -810,8 +811,10 @@ select:focus {
     min-width: 250px;
     padding: 14px 20px;
     border-radius: 8px;
-    background-color: var(--panel-bg); /* Use the theme's panel color */
-    color: var(--heading-color); /* Use the theme's text color */
+    background-color: var(--panel-bg);
+    /* Use the theme's panel color */
+    color: var(--heading-color);
+    /* Use the theme's text color */
     border: 1px solid var(--border-color);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     animation: slideInRight 0.3s ease-out forwards;
@@ -821,14 +824,30 @@ select:focus {
 }
 
 /* Color just the SVG icons instead of the whole background */
-.toast-icon.success { color: #2ecc71; }
-.toast-icon.error { color: #e74c3c; }
-.toast-icon.info { color: #3498db; }
+.toast-icon.success {
+    color: #2ecc71;
+}
+
+.toast-icon.error {
+    color: #e74c3c;
+}
+
+.toast-icon.info {
+    color: #3498db;
+}
 
 /* Optional: Add a subtle left border to match the icon color */
-.toast.success { border-left: 4px solid #2ecc71; }
-.toast.error { border-left: 4px solid #e74c3c; }
-.toast.info { border-left: 4px solid #3498db; }
+.toast.success {
+    border-left: 4px solid #2ecc71;
+}
+
+.toast.error {
+    border-left: 4px solid #e74c3c;
+}
+
+.toast.info {
+    border-left: 4px solid #3498db;
+}
 
 .toast-fade-out {
     animation: fadeOutRight 0.3s ease-in forwards;
@@ -1069,7 +1088,7 @@ div {
 
 .nav-signup-btn {
     padding: 5px 20px;
-   
+
 }
 
 .nav-signup-btn:hover,
@@ -1084,7 +1103,7 @@ div {
 }
 
 
-#nav-login-btn{
+#nav-login-btn {
     color: white;
 }
 
@@ -1120,7 +1139,7 @@ div {
     color: #3498db;
 }
 
-/* Destructive Outline Button for Ending Sessions */
+/* Clean, Neutral Button for Ending Sessions */
 .end-session-btn {
     padding: 10px 24px;
     font-size: 1rem;
@@ -1129,13 +1148,14 @@ div {
     cursor: pointer;
     transition: all 0.2s ease;
     background: transparent;
-    border: 2px solid #ef4444;
-    color: #ef4444;
+    border: 2px solid var(--border-color);
+    color: var(--muted-text);
 }
 
 .end-session-btn:hover {
-    background: #ef4444;
-    color: white;
+    background: var(--bg-color);
+    color: var(--heading-color);
+    border-color: var(--muted-text);
 }
 
 /* ========================================== */
@@ -1207,122 +1227,129 @@ div {
 
 /* Footer Base Styles */
 .cq-footer {
-  background-color: #0f172a; /* Deep modern navy */
-  color: #94a3b8; /* Soft slate gray for text */
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  padding: 4rem 0 0 0;
-  margin-top: auto; /* Pushes footer to bottom if page content is short */
-  border-top: 1px solid #1e293b;
+    background-color: #0f172a;
+    /* Deep modern navy */
+    color: #94a3b8;
+    /* Soft slate gray for text */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    padding: 4rem 0 0 0;
+    margin-top: auto;
+    /* Pushes footer to bottom if page content is short */
+    border-top: 1px solid #1e293b;
 }
 
 .cq-footer-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem 3rem 2rem;
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  gap: 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem 3rem 2rem;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 3rem;
 }
 
 /* Brand Section */
 .cq-footer-logo {
-  color: #ffffff;
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin: 0 0 1rem 0;
-  letter-spacing: -0.025em;
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 1rem 0;
+    letter-spacing: -0.025em;
 }
 
 .cq-footer-logo span {
-  color: var(--primary-brand); /* Vibrant blue accent */
+    color: var(--primary-brand);
+    /* Vibrant blue accent */
 }
 
 .cq-footer-tagline {
-  font-size: 0.95rem;
-  line-height: 1.5;
-  margin-bottom: 1.5rem;
-  max-width: 320px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+    max-width: 320px;
 }
 
 
 /* Link Columns */
 .cq-footer-links h3 {
-  color: #f8fafc;
-  font-size: 0.9rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin: 0 0 1.25rem 0;
+    color: #f8fafc;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 1.25rem 0;
 }
 
 .cq-footer-links ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 .cq-footer-links li {
-  margin-bottom: 0.75rem;
+    margin-bottom: 0.75rem;
 }
 
 .cq-footer-links a {
-  color: #94a3b8;
-  text-decoration: none;
-  font-size: 0.95rem;
-  transition: color 0.2s ease;
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.2s ease;
 }
 
 .cq-footer-links a:hover {
-  color: #3498db; /* Hover effect */
+    color: #3498db;
+    /* Hover effect */
 }
 
 /* Bottom Bar */
 .cq-footer-bottom {
-  background-color: #020617; /* Darker bar for contrast */
-  padding: 1.5rem 0;
-  border-top: 1px solid #1e293b;
+    background-color: #020617;
+    /* Darker bar for contrast */
+    padding: 1.5rem 0;
+    border-top: 1px solid #1e293b;
 }
 
 .cq-footer-bottom-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.85rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
 }
 
 .cq-footer-bottom p {
-  margin: 0;
+    margin: 0;
 }
 
 .cq-footer-legal a {
-  color: #64748b;
-  text-decoration: none;
-  margin-left: 1.5rem;
-  transition: color 0.2s ease;
+    color: #64748b;
+    text-decoration: none;
+    margin-left: 1.5rem;
+    transition: color 0.2s ease;
 }
 
 .cq-footer-legal a:hover {
-  color: #94a3b8;
+    color: #94a3b8;
 }
 
 /* Responsive Mobile Layout */
 @media (max-width: 768px) {
-  .cq-footer-container {
-    grid-template-columns: 1fr; /* Stack into single column */
-    gap: 2.5rem;
-    padding-bottom: 2rem;
-  }
-  
-  .cq-footer-bottom-container {
-    flex-direction: column;
-    text-align: center;
-    gap: 1rem;
-  }
-  
-  .cq-footer-legal a {
-    margin: 0 0.75rem;
-  }
+    .cq-footer-container {
+        grid-template-columns: 1fr;
+        /* Stack into single column */
+        gap: 2.5rem;
+        padding-bottom: 2rem;
+    }
+
+    .cq-footer-bottom-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .cq-footer-legal a {
+        margin: 0 0.75rem;
+    }
 }
