@@ -682,19 +682,21 @@ select:focus {
     margin: 0 10px;
 }
 
+/* Clean, subtle logout button */
 .nav-logout-btn {
-    background-color: #dc2626;
-    color: white;
-    border: none;
-    padding: 10px 20px;
+    background-color: transparent;
+    color: var(--muted-text);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
     border-radius: 6px;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.2s;
 }
 
 .nav-logout-btn:hover {
-    background-color: #991b1b;
+    background-color: var(--action-hover-bg);
+    color: var(--heading-color);
 }
 
 /* Make the logo a clickable link */
@@ -723,6 +725,39 @@ select:focus {
         opacity: 1;
     }
 }
+
+/* ========================================== */
+/* UNIFIED 'LIVE SESSION' STYLES              */
+/* ========================================== */
+.active-session-card-banner {
+    background: rgba(52, 152, 219, 0.08); /* Soft primary blue */
+    border: 1px solid var(--primary-brand);
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+.active-session-text {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    color: var(--primary-brand);
+    font-weight: bold;
+    font-size: 0.95em;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.pulse-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background: var(--primary-brand);
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+}
+
 
 /* ========================================== */
 /* PHASE 5: UI & UX POLISH                    */

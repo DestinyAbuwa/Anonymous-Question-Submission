@@ -106,15 +106,15 @@ function renderClasses(classes, activeSessionMap = {}) {
         // Add continue button if there's an active session
         if (activeSession) {
             cardContent += `
-                <div style="background: rgba(46, 204, 113, 0.1); border: 2px solid #27ae60; padding: 12px; border-radius: 8px; margin-top: 12px;">
-                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
-                        <span style="font-size: 1.2em; width: 12px; height: 12px; background: #27ae60; border-radius: 50%; animation: pulse 1s infinite;"></span>
-                        <span style="color: #27ae60; font-weight: bold; font-size: 0.9em;">LIVE: ${activeSession.session_name}</span>
+                <div class="active-session-card-banner">
+                    <div class="active-session-text">
+                        <span class="pulse-dot"></span>
+                        LIVE: ${activeSession.session_name}
                     </div>
                     <button 
                         onclick="event.stopPropagation(); window.location.href = 'instructor.html?classId=${c.class_id}'"
-                        style="width: 100%; padding: 10px; background: #27ae60; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.95em;">
-                        Continue Session →
+                        class="submit-btn" style="padding: 10px; font-size: 0.95em;">
+                        Continue Session &rarr;
                     </button>
                 </div>
             `;

@@ -47,12 +47,11 @@
             <div style="padding: 25px;">
                 <!-- Active Session Controls -->
                 <div id="active-session-panel"
-                    style="display: none; padding: 25px; border-radius: 12px; margin-bottom: 20px; text-align: center; border: 1px solid var(--primary-brand); background: rgba(37, 99, 235, 0.03);">
+                    style="display: none; padding: 25px; border-radius: 12px; margin-bottom: 20px; text-align: center; border: 1px solid var(--primary-brand); background: rgba(52, 152, 219, 0.05);">
 
                     <div
-                        style="display: inline-flex; align-items: center; gap: 8px; color: #ef4444; font-weight: 700; font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">
-                        <span
-                            style="display: inline-block; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; animation: pulse 1.5s infinite;"></span>
+                        style="display: inline-flex; align-items: center; gap: 8px; color: var(--primary-brand); font-weight: 700; font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">
+                        <span class="pulse-dot"></span>
                         Live Session Active
                     </div>
 
@@ -99,7 +98,7 @@
                     <!-- Action Buttons -->
                     <div style="display: flex; gap: 10px; align-self: flex-end; margin-bottom: 2px;">
                         <button onclick="startSession()" class="submit-btn"
-                            style="width: auto; padding: 15px 25px; margin: 0; background: #2ecc71;">Start Live</button>
+                            style="width: auto; padding: 15px 25px; margin: 0;">Start Live</button>
                         <button onclick="scheduleSession()" class="submit-btn"
                             style="width: auto; padding: 15px 25px; margin: 0; background: var(--border-color); color: var(--text-color);">Schedule</button>
                     </div>

@@ -195,13 +195,15 @@ async function loadStudentFeed() {
                 </div>
                 <div class="question-body">
                     <!-- NEW: Structured Header for Avatar, Timestamp, and Tags -->
-                    <div class="question-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="question-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; flex-wrap: wrap; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
                             ${getAvatar(q.question_id)}
                             ${pinIcon}
                             <span style="font-size: 0.85em; color: var(--muted-text); font-weight: 500;">${timeAgo(q.timestamp)}</span>
                         </div>
-                        <div>${tagsHTML}</div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end;">
+                            ${tagsHTML}
+                        </div>
                     </div>
                     
                     <div class="question-content">${liveBadge} ${q.content}</div>

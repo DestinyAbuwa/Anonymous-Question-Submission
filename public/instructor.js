@@ -27,10 +27,10 @@ socket.on('participantCount', (count) => {
 function getAvatar(id) {
     const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#d35400', '#34495e'];
     const color = colors[id % colors.length];
-    
+
     // Clean Lucide User Silhouette SVG
     const userSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
-    
+
     return `<div class="avatar" style="background-color: ${color};">${userSvg}</div>`;
 }
 
@@ -128,8 +128,8 @@ async function fetchQuestions() {
     const container = document.getElementById('questions-container');
     if (!activeSessionId) return;
 
-    // NEW: Inject pulsing skeletons while we wait for the database!
-    if (container.innerHTML === '' || container.innerHTML.includes('Waiting') || container.innerHTML.includes('Loading')) {
+    // Skeletons only trigger if the container is empty or showing the default waiting state
+    if (container.innerHTML === '' || container.innerHTML.includes('Start a Session') || container.innerHTML.includes('Waiting')) {
         container.innerHTML = `
             <div class="skeleton-box" style="height: 120px; margin-bottom: 15px;"></div>
             <div class="skeleton-box" style="height: 120px; margin-bottom: 15px; opacity: 0.7;"></div>
@@ -148,9 +148,10 @@ async function fetchQuestions() {
 
         if (questions.length === 0) {
             container.innerHTML = `
-                <div class="empty-state">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 15px auto; display: block; opacity: 0.5;"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-                    <h3>Waiting for questions...</h3>
+                <div class="empty-state" style="padding: 40px 20px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 15px auto; display: block; opacity: 0.3; color: var(--muted-text);"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                    <h3 style="color: var(--heading-color); margin-bottom: 5px;">Waiting for questions...</h3>
+                    <p style="color: var(--muted-text); font-size: 0.95em;">Questions will appear here as soon as students submit them.</p>
                 </div>`;
             return;
         }
@@ -169,31 +170,34 @@ async function fetchQuestions() {
             }
 
             const isLive = q.status === 'Displayed';
-            const liveBadge = isLive ? `<div class="live-badge">Answering Live</div>` : '';
 
-            // Notice the new SVG icons inside the buttons and header!
+            // Unified Blue "Live" Badge instead of harsh red/green
+            const liveBadge = isLive ? `<span style="background: rgba(52, 152, 219, 0.1); color: var(--primary-brand); border: 1px solid rgba(52, 152, 219, 0.2); padding: 4px 10px; border-radius: 20px; font-size: 0.8em; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; margin-right: 10px;"><span style="display: inline-block; width: 8px; height: 8px; background: var(--primary-brand); border-radius: 50%; animation: pulse 1.5s infinite;"></span> Answering Live</span>` : '';
+
             card.innerHTML = `
-                <div class="question-header">
-                    <div style="display: flex; align-items: center; gap: 15px;">
+                <div class="question-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; flex-wrap: wrap; gap: 12px;">
+                    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
                         ${getAvatar(q.question_id)}
                         ${q.is_pinned ? '<span style="color:#f39c12; font-weight:bold; display: flex; align-items: center; gap: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.6V6a3 3 0 0 0-6 0v4.6a2 2 0 0 1-1.11 1.95l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg> Pinned</span>' : ''}
-                        <span class="timestamp">${timeString}</span>
-                        <span style="color: var(--primary-brand); font-weight: bold; display: flex; align-items: center; gap: 4px;">
+                        <span style="font-size: 0.85em; color: var(--muted-text); font-weight: 500;">${timeString}</span>
+                        <span style="color: var(--primary-brand); font-weight: bold; display: flex; align-items: center; gap: 4px; margin-left: 5px;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg> 
                             ${q.upvotes || 0}
                         </span>
                     </div>
-                    <div>${tagsHTML}</div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end;">
+                        ${tagsHTML}
+                    </div>
                 </div>
-                <div class="question-content" style="margin-bottom: 15px;">
+                <div class="question-content" style="margin-bottom: 15px; line-height: 1.5;">
                     ${liveBadge} ${q.content}
                 </div>
-                <div style="display: flex; gap: 10px;">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                     <button class="mark-answered-btn" onclick="markAsAnswered(${q.question_id})" style="display: flex; align-items: center; gap: 6px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                         Answered
                     </button>
-                    <button class="action-btn ${isLive ? 'active-live' : ''}" onclick="toggleLive(${q.question_id}, '${isLive ? 'Pending' : 'Displayed'}')" style="display: flex; align-items: center; gap: 6px;">
+                    <button class="action-btn" onclick="toggleLive(${q.question_id}, '${isLive ? 'Pending' : 'Displayed'}')" style="display: flex; align-items: center; gap: 6px; ${isLive ? 'background: rgba(52, 152, 219, 0.1); color: var(--primary-brand); border-color: var(--primary-brand);' : ''}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
                         ${isLive ? 'Stop Live' : 'Answer Live'}
                     </button>
@@ -205,9 +209,9 @@ async function fetchQuestions() {
             `;
             container.appendChild(card);
         });
-
     } catch (error) {
-        if (container.innerHTML === '') showToast("Failed to sync questions.", "error");
+        console.error(error); // Logs the actual error to your F12 console
+        showToast("Failed to sync questions.", "error");
     }
 }
 
@@ -266,11 +270,14 @@ async function startSession() {
     if (response.ok) {
         const data = await response.json();
         activeSessionId = data.session_id;
-        socket.emit('joinSession', activeSessionId)
+        socket.emit('joinSession', activeSessionId);
         document.getElementById('start-session-panel').style.display = 'none';
         document.getElementById('active-session-panel').style.display = 'block';
         document.getElementById('current-session-name').textContent = sessionName;
-        document.getElementById('questions-container').innerHTML = '<p class="subtitle">Waiting for questions...</p>';
+
+        // Clear the container so the Skeletons trigger!
+        document.getElementById('questions-container').innerHTML = '';
+
         showToast("Live session started!", "success");
         fetchQuestions();
     } else {
@@ -294,7 +301,15 @@ async function endSession() {
         document.getElementById('start-session-panel').style.display = 'flex';
         document.getElementById('active-session-panel').style.display = 'none';
         document.getElementById('session-name-input').value = '';
-        document.getElementById('questions-container').innerHTML = '<p class="subtitle">Session closed. Start a new session to receive questions.</p>';
+
+        // Inject the pristine Empty State
+        document.getElementById('questions-container').innerHTML = `
+            <div class="empty-state" style="padding: 40px 20px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 15px auto; display: block; opacity: 0.3; color: var(--muted-text);"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                <h3 style="color: var(--heading-color); margin-bottom: 5px;">Start a Session</h3>
+                <p style="color: var(--muted-text); font-size: 0.95em;">Click 'Start Live' to open the floor to student questions.</p>
+            </div>`;
+
         showToast('Session closed. Submissions paused.', "info");
     }
     stopLoader();
