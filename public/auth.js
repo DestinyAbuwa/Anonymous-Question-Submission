@@ -21,10 +21,24 @@ tabRegister.addEventListener('click', () => {
 // 2. Role Selector Logic
 let selectedRole = 'Student';
 document.querySelectorAll('.role-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+        // Handle active button styling
         document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+
+        // Grab the exact role string to send to the server
         selectedRole = btn.getAttribute('data-role');
+
+        // Safely check the role for the UI toggle by forcing it to lowercase
+        const roleCheck = selectedRole.toLowerCase();
+        const nameGroup = document.getElementById('name-input-group');
+
+        // Show the name field only if they select instructor
+        if (roleCheck === 'instructor') {
+            nameGroup.style.display = 'block';
+        } else {
+            nameGroup.style.display = 'none';
+        }
     });
 });
 
@@ -46,6 +60,12 @@ async function handleAuth(url, bodyData) {
             localStorage.setItem('role', data.role.toLowerCase());
             localStorage.setItem('userId', data.user_id);
 
+            // NEW: Save the name if the server sends it back!
+            if (data.name) {
+                localStorage.setItem('name', data.name);
+            } else {
+                localStorage.removeItem('name'); // Clear it if they are just a student
+            }
 
             setTimeout(() => {
                 const role = String(data.role).toLowerCase();
@@ -77,7 +97,9 @@ formRegister.addEventListener('submit', (e) => {
     e.preventDefault();
     const email = document.getElementById('reg-email').value;
     const password = document.getElementById('reg-password').value;
-    handleAuth('/api/register', { email, password, role: selectedRole });
+    const full_name = document.getElementById('reg-name').value; // NEW: Grab the name!
+    // NEW: Include full_name in the data we send to the server
+    handleAuth('/api/register', { email, password, role: selectedRole, full_name });
 });
 
 // ==========================================

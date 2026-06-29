@@ -25,134 +25,159 @@
         </div>
     </nav>
 
-    <div class="layout-container">
-        <!-- Dynamic Header -->
-        <header style="margin-bottom: 20px;">
-            <h1 id="class-title">
-                <div class="skeleton-box" style="height: 40px; width: 280px; border-radius: 6px; margin: 0;"></div>
-            </h1>
-            <div class="subtitle" id="class-join-code" style="margin-top: 10px;">
-                <div class="skeleton-box" style="height: 20px; width: 150px; border-radius: 4px; margin: 0;"></div>
-            </div>
-        </header>
+    <div class="layout-container"
+        style="display: grid; grid-template-columns: 1fr 300px; gap: 20px; align-items: start;">
 
-        <!-- Session Management Panel -->
-        <section class="panel"
-            style="margin-bottom: 25px; padding: 0; overflow: hidden; border: 1px solid var(--border-color);">
-            <div
-                style="background: var(--navbar-bg); color: var(--navbar-text); padding: 20px 25px; display: flex; justify-content: space-between; align-items: center;">
-                <h2 style="margin: 0; font-size: 1.2em; font-weight: 600;">Session Management</h2>
-            </div>
+        <!-- MAIN CONTENT AREA -->
+        <main>
 
-            <div style="padding: 25px;">
-                <!-- Active Session Controls -->
-                <div id="active-session-panel"
-                    style="display: none; padding: 25px; border-radius: 12px; margin-bottom: 20px; text-align: center; border: 1px solid var(--primary-brand); background: rgba(52, 152, 219, 0.05);">
 
-                    <div
-                        style="display: inline-flex; align-items: center; gap: 8px; color: var(--primary-brand); font-weight: 700; font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">
-                        <span class="pulse-dot"></span>
-                        Live Session Active
-                    </div>
+            <!-- Dynamic Header -->
+            <header style="margin-bottom: 20px;">
+                <h1 id="class-title">
+                    <div class="skeleton-box" style="height: 40px; width: 280px; border-radius: 6px; margin: 0;"></div>
+                </h1>
+                <div class="subtitle" id="class-join-code" style="margin-top: 10px;">
+                    <div class="skeleton-box" style="height: 20px; width: 150px; border-radius: 4px; margin: 0;"></div>
+                </div>
+            </header>
 
-                    <h3 style="margin: 0 0 20px 0; font-size: 1.5em; color: var(--heading-color);"
-                        id="current-session-name">---</h3>
-
-                    <button onclick="endSession()" class="end-session-btn">
-                        End Live Session
-                    </button>
+            <!-- Session Management Panel -->
+            <section class="panel"
+                style="margin-bottom: 25px; padding: 0; overflow: hidden; border: 1px solid var(--border-color);">
+                <div
+                    style="background: var(--navbar-bg); color: var(--navbar-text); padding: 20px 25px; display: flex; justify-content: space-between; align-items: center;">
+                    <h2 style="margin: 0; font-size: 1.2em; font-weight: 600;">Session Management</h2>
                 </div>
 
-                <!-- Start / Schedule Session Controls -->
-                <div id="start-session-panel"
-                    style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start; margin-top: 15px;">
+                <div style="padding: 25px;">
+                    <!-- Active Session Controls -->
+                    <div id="active-session-panel"
+                        style="display: none; padding: 25px; border-radius: 12px; margin-bottom: 20px; text-align: center; border: 1px solid var(--primary-brand); background: rgba(52, 152, 219, 0.05);">
 
-                    <!-- Topic Input -->
-                    <div style="flex: 1; min-width: 200px;">
-                        <label style="font-weight: bold; font-size: 0.9rem; color: var(--muted-text);">Session
-                            Topic</label>
-                        <input type="text" id="session-name-input" placeholder="e.g., Week 2: Arrays"
-                            style="background: var(--bg-color); border: 2px solid var(--border-color); margin-bottom: 0; margin-top: 5px;">
-                    </div>
-
-                    <!-- Recurring Schedule Input -->
-                    <div style="flex: 2; min-width: 300px;">
-                        <label style="font-weight: bold; font-size: 0.9rem; color: var(--muted-text);">Class
-                            Schedule</label>
-                        <div style="display: flex; gap: 5px; margin-top: 5px; margin-bottom: 10px;" id="schedule-days">
-                            <button class="tag-toggle" type="button" data-value="M">M</button>
-                            <button class="tag-toggle" type="button" data-value="T">T</button>
-                            <button class="tag-toggle" type="button" data-value="W">W</button>
-                            <button class="tag-toggle" type="button" data-value="Th">Th</button>
-                            <button class="tag-toggle" type="button" data-value="F">F</button>
+                        <div
+                            style="display: inline-flex; align-items: center; gap: 8px; color: var(--primary-brand); font-weight: 700; font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">
+                            <span class="pulse-dot"></span>
+                            Live Session Active
                         </div>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <input type="time" id="session-start-time"
-                                style="background: var(--bg-color); border: 2px solid var(--border-color); margin-bottom: 0; padding: 10px;">
-                            <span style="font-weight:bold; color: var(--muted-text);">to</span>
-                            <input type="time" id="session-end-time"
-                                style="background: var(--bg-color); border: 2px solid var(--border-color); margin-bottom: 0; padding: 10px;">
+
+                        <h3 style="margin: 0 0 20px 0; font-size: 1.5em; color: var(--heading-color);"
+                            id="current-session-name">---</h3>
+
+                        <button onclick="endSession()" class="end-session-btn">
+                            End Live Session
+                        </button>
+                    </div>
+
+                    <!-- Start / Schedule Session Controls -->
+                    <div id="start-session-panel"
+                        style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start; margin-top: 15px;">
+
+                        <!-- Topic Input -->
+                        <div style="flex: 1; min-width: 200px;">
+                            <label style="font-weight: bold; font-size: 0.9rem; color: var(--muted-text);">Session
+                                Topic</label>
+                            <input type="text" id="session-name-input" placeholder="e.g., Week 2: Arrays"
+                                style="background: var(--bg-color); border: 2px solid var(--border-color); margin-bottom: 0; margin-top: 5px;">
+                        </div>
+
+                        <!-- Recurring Schedule Input -->
+                        <div style="flex: 2; min-width: 300px;">
+                            <label style="font-weight: bold; font-size: 0.9rem; color: var(--muted-text);">Class
+                                Schedule</label>
+                            <div style="display: flex; gap: 5px; margin-top: 5px; margin-bottom: 10px;"
+                                id="schedule-days">
+                                <button class="tag-toggle" type="button" data-value="M">M</button>
+                                <button class="tag-toggle" type="button" data-value="T">T</button>
+                                <button class="tag-toggle" type="button" data-value="W">W</button>
+                                <button class="tag-toggle" type="button" data-value="Th">Th</button>
+                                <button class="tag-toggle" type="button" data-value="F">F</button>
+                            </div>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="time" id="session-start-time"
+                                    style="background: var(--bg-color); border: 2px solid var(--border-color); margin-bottom: 0; padding: 10px;">
+                                <span style="font-weight:bold; color: var(--muted-text);">to</span>
+                                <input type="time" id="session-end-time"
+                                    style="background: var(--bg-color); border: 2px solid var(--border-color); margin-bottom: 0; padding: 10px;">
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div style="display: flex; gap: 10px; align-self: flex-end; margin-bottom: 2px;">
+                            <button onclick="startSession()" class="submit-btn"
+                                style="width: auto; padding: 15px 25px; margin: 0;">Start Live</button>
+                            <button onclick="scheduleSession()" class="submit-btn"
+                                style="width: auto; padding: 15px 25px; margin: 0; background: var(--border-color); color: var(--text-color);">Schedule</button>
                         </div>
                     </div>
+                </div>
+            </section>
 
-                    <!-- Action Buttons -->
-                    <div style="display: flex; gap: 10px; align-self: flex-end; margin-bottom: 2px;">
-                        <button onclick="startSession()" class="submit-btn"
-                            style="width: auto; padding: 15px 25px; margin: 0;">Start Live</button>
-                        <button onclick="scheduleSession()" class="submit-btn"
-                            style="width: auto; padding: 15px 25px; margin: 0; background: var(--border-color); color: var(--text-color);">Schedule</button>
+            <!-- Q&A Feed -->
+            <section class="panel questions-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h2 style="margin: 0;">Student Questions</h2>
+                    <div id="live-count-badge"
+                        style="display: none; align-items: center; gap: 5px; background: #e0f2fe; color: #1e40af; padding: 4px 10px; border-radius: 20px; font-size: 0.85em; font-weight: bold; width: fit-content; margin-top: 10px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
+                        <span id="participant-count">1</span> Online
+                    </div>
+                    <select id="feed-sort-toggle"
+                        style="width: auto; padding: 8px 12px; margin: 0; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                        <option value="upvotes">Top Voted</option>
+                        <option value="recent">Most Recent</option>
+                    </select>
+                </div>
+
+                <!-- NEW: Active Filter Bar -->
+                <div id="active-filters"
+                    style="display: none; margin-bottom: 15px; padding: 10px; background: var(--bg-color); border-radius: 8px; border: 1px dashed var(--border-color);">
+                    <span style="font-size: 0.9em; color: var(--muted-text); font-weight: bold;">Filtering by: </span>
+                    <span id="current-filter-badge" class="tag-badge" style="margin-left: 5px;"></span>
+                    <button onclick="clearTagFilter()"
+                        style="background: none; border: none; color: #e74c3c; font-weight: bold; cursor: pointer; margin-left: 15px;">✖
+                        Clear Filter</button>
+                </div>
+
+                <div id="questions-container">
+                    <div class="empty-state" style="padding: 40px 20px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                            style="margin: 0 auto 15px auto; display: block; opacity: 0.3; color: var(--muted-text);">
+                            <rect width="20" height="14" x="2" y="7" rx="2" ry="2" />
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+                        </svg>
+                        <h3 style="color: var(--heading-color); margin-bottom: 5px;">Start a Session</h3>
+                        <p style="color: var(--muted-text); font-size: 0.95em;">Click 'Start Live' to open the floor to
+                            student questions.</p>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- Q&A Feed -->
-        <section class="panel questions-section">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h2 style="margin: 0;">Student Questions</h2>
-                <div id="live-count-badge"
-                    style="display: none; align-items: center; gap: 5px; background: #e0f2fe; color: #1e40af; padding: 4px 10px; border-radius: 20px; font-size: 0.85em; font-weight: bold; width: fit-content; margin-top: 10px;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                        <circle cx="9" cy="7" r="4" />
-                        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                    </svg>
-                    <span id="participant-count">1</span> Online
+
+            <!-- Paste all your existing header, session management, and questions-container code here -->
+        </main>
+
+        <!-- SIDEBAR AREA -->
+        <aside>
+            <section class="panel" style="padding: 20px;">
+                <h3 style="margin-top: 0; margin-bottom: 15px;">Upcoming Schedules</h3>
+                <div id="schedules-container">
+                    <p style="color: var(--muted-text);">Loading schedules...</p>
                 </div>
-                <select id="feed-sort-toggle"
-                    style="width: auto; padding: 8px 12px; margin: 0; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                    <option value="upvotes">Top Voted</option>
-                    <option value="recent">Most Recent</option>
-                </select>
-            </div>
+            </section>
+        </aside>
 
-            <!-- NEW: Active Filter Bar -->
-            <div id="active-filters"
-                style="display: none; margin-bottom: 15px; padding: 10px; background: var(--bg-color); border-radius: 8px; border: 1px dashed var(--border-color);">
-                <span style="font-size: 0.9em; color: var(--muted-text); font-weight: bold;">Filtering by: </span>
-                <span id="current-filter-badge" class="tag-badge" style="margin-left: 5px;"></span>
-                <button onclick="clearTagFilter()"
-                    style="background: none; border: none; color: #e74c3c; font-weight: bold; cursor: pointer; margin-left: 15px;">✖
-                    Clear Filter</button>
-            </div>
-
-            <div id="questions-container">
-                <div class="empty-state" style="padding: 40px 20px;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
-                        style="margin: 0 auto 15px auto; display: block; opacity: 0.3; color: var(--muted-text);">
-                        <rect width="20" height="14" x="2" y="7" rx="2" ry="2" />
-                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-                    </svg>
-                    <h3 style="color: var(--heading-color); margin-bottom: 5px;">Start a Session</h3>
-                    <p style="color: var(--muted-text); font-size: 0.95em;">Click 'Start Live' to open the floor to
-                        student questions.</p>
-                </div>
-            </div>
-        </section>
     </div>
+
+
+
 
     <script src="instructor.js"></script>
 </body>

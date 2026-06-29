@@ -13,6 +13,17 @@ socket.on('updateFeed', () => {
     }
 });
 
+// NEW: Listen for the Cron Job to Auto-Start a session
+socket.on('sessionAutoStarted', (startedClassId) => {
+    // If the session that just started belongs to the class we are currently looking at...
+    if (String(startedClassId) === String(classId)) {
+        showToast("Scheduled session is starting!", "success");
+        setTimeout(() => {
+            window.location.reload(); // Magically refresh the page to show the Live UI!
+        }, 1500);
+    }
+});
+
 // Update the live viewer count
 socket.on('participantCount', (count) => {
     const badge = document.getElementById('live-count-badge');
@@ -67,6 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadClassDetails();
     recoverActiveSession();
     fetchQuestions();
+    loadSchedules(); // Add this!
 });
 
 // Click-to-Filter Logic
@@ -255,10 +267,14 @@ async function togglePin(questionId) {
 }
 
 async function startSession() {
-    const sessionName = document.getElementById('session-name-input').value;
+    let sessionName = document.getElementById('session-name-input').value;
     const token = localStorage.getItem('token');
 
-    if (!sessionName) return showToast('Please enter a session name.', "error");
+
+    // NEW: If they left it blank, give it a default name!
+    if (!sessionName) {
+        sessionName = 'Live Session';
+    }
 
     startLoader();
     const response = await fetch('/api/sessions/start', {
@@ -315,10 +331,43 @@ async function endSession() {
     stopLoader();
 }
 
+async function loadSchedules() {
+    const token = localStorage.getItem('token');
+    const response = await fetch('/api/instructor/schedules', {
+        headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (response.ok) {
+        const schedules = await response.json();
+        const container = document.getElementById('schedules-container');
+        container.innerHTML = ''; // Clear existing
+
+        if (schedules.length === 0) {
+            container.innerHTML = '<p style="color: var(--muted-text);">No upcoming scheduled sessions.</p>';
+            return;
+        }
+
+        schedules.forEach(s => {
+            container.innerHTML += `
+                <div style="background: var(--bg-color); padding: 10px; border-radius: 8px; margin-bottom: 5px; border-left: 4px solid var(--primary-brand);">
+                    <strong>${s.session_name}</strong> - ${s.class_name}<br>
+                    <small>Days: ${s.recurring_days} | Starts: ${s.start_time}</small>
+                </div>
+            `;
+        });
+    }
+}
+
 async function scheduleSession() {
-    const sessionName = document.getElementById('session-name-input').value;
+    let sessionName = document.getElementById('session-name-input').value;
     const startTime = document.getElementById('session-start-time').value;
     const endTime = document.getElementById('session-end-time').value;
+
+    // NEW: Default name for scheduling too
+    if (!sessionName) {
+        sessionName = 'Scheduled Session';
+    }
+
 
     let selectedDays = [];
     document.querySelectorAll('#schedule-days .tag-toggle.selected').forEach(btn => {
@@ -356,3 +405,5 @@ async function scheduleSession() {
 }
 
 document.getElementById('feed-sort-toggle')?.addEventListener('change', fetchQuestions);
+
+

@@ -17,7 +17,10 @@ DROP TABLE IF EXISTS Users;
 CREATE TABLE Users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
+    full_name varchar(100) DEFAULT NULL,
     password_hash VARCHAR(255) NOT NULL,
+    reset_token VARCHAR(255) NULL,
+    reset_expires DATETIME NULL,
     role ENUM('Student', 'Instructor') NOT NULL
 );
 

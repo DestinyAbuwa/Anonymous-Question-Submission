@@ -7,6 +7,8 @@ const jwt = require('jsonwebtoken');
 // Add this near the top of server.js with your other requires
 const crypto = require('crypto');
 
+const cron = require('node-cron');
+
 // NEW: Import HTTP and Socket.io
 const http = require('http');
 const { Server } = require('socket.io');
@@ -258,29 +260,28 @@ app.post('/api/questions/:questionId/upvote', authenticateToken, async (req, res
 // API ROUTE: User Registration (WITH AUTO-LOGIN)
 // ==========================================
 app.post('/api/register', async (req, res) => {
-    const { email, password, role } = req.body;
+    const { email, password, role, full_name } = req.body;
     const finalRole = role || 'Student';
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const [result] = await pool.execute(
-            `INSERT INTO Users (email, password_hash, role) VALUES (?, ?, ?)`,
-            [email, hashedPassword, finalRole]
+            `INSERT INTO Users (email, password_hash, role, full_name) VALUES (?, ?, ?, ?)`,
+            [email, hashedPassword, finalRole, full_name || null] // Insert name or NULL
         );
 
-        // NEW: Generate the ID badge immediately!
         const token = jwt.sign(
-            { user_id: result.insertId, role: finalRole, email: email },
+            { user_id: result.insertId, role: finalRole, email: email, name: full_name },
             JWT_SECRET,
             { expiresIn: '24h' }
         );
 
-        // Send the badge back just like the login route does
         res.status(201).json({
             message: 'Account created securely!',
             token: token,
-            role: finalRole
+            role: finalRole,
+            name: full_name // Send it back to the client
         });
 
     } catch (error) {
@@ -320,7 +321,12 @@ app.post('/api/login', async (req, res) => {
 
         // 4. Generate Token (Ensure JWT_SECRET is loaded from .env)
         const token = jwt.sign(
-            { user_id: user.user_id, role: user.role, email: user.email },
+            {
+                user_id: user.user_id,
+                role: user.role,
+                email: user.email,
+                name: user.full_name // NEW: Pack the name into the badge!
+            },
             process.env.JWT_SECRET, // Make sure this isn't undefined!
             { expiresIn: '24h' }
         );
@@ -330,7 +336,8 @@ app.post('/api/login', async (req, res) => {
             message: 'Login successful!',
             token: token,
             role: user.role,
-            user_id: user.user_id // Add this!
+            user_id: user.user_id, // Add this!
+            name: user.full_name // NEW: Send the name back to the client!
         });
 
     } catch (error) {
@@ -357,6 +364,44 @@ app.post('/api/create-class', authenticateToken, async (req, res) => {
     }
 });
 
+
+// ==========================================
+// API ROUTE: Delete a Class (Fixed Transaction)
+// ==========================================
+app.delete('/api/classes/:classId', authenticateToken, async (req, res) => {
+    const classId = req.params.classId;
+    const instructorId = req.user.user_id;
+
+    // 1. Get a connection from the pool instead of using pool.execute directly
+    const connection = await pool.getConnection();
+
+    try {
+        // 1. Verify ownership
+        const [authCheck] = await connection.execute('SELECT * FROM Classes WHERE class_id = ? AND instructor_id = ?', [classId, instructorId]);
+        if (authCheck.length === 0) {
+            connection.release();
+            return res.status(403).json({ error: 'Unauthorized.' });
+        }
+
+        // 2. Use the connection object to manage the transaction
+        await connection.beginTransaction();
+
+        await connection.execute('DELETE FROM Enrollments WHERE class_id = ?', [classId]);
+        await connection.execute('DELETE FROM Sessions WHERE class_id = ?', [classId]);
+        await connection.execute('DELETE FROM Classes WHERE class_id = ?', [classId]);
+
+        await connection.commit();
+        res.status(200).json({ message: 'Class deleted successfully.' });
+
+    } catch (error) {
+        await connection.rollback();
+        console.error('❌ Database error during delete:', error);
+        res.status(500).json({ error: 'Database failed to delete the class.' });
+    } finally {
+        // 3. Always release the connection back to the pool!
+        connection.release();
+    }
+});
 // 2. Student joins a class (SECURE + ENROLLMENT LOGIC)
 app.post('/api/join-class', authenticateToken, async (req, res) => {
     const { join_code } = req.body;
@@ -401,10 +446,13 @@ app.get('/api/my-classes', authenticateToken, async (req, res) => {
 app.get('/api/enrolled-classes', authenticateToken, async (req, res) => {
     try {
         const [classes] = await pool.execute(`
-            SELECT c.* FROM Classes c 
+            SELECT c.*, u.full_name AS instructor_name 
+            FROM Classes c 
             JOIN Enrollments e ON c.class_id = e.class_id 
+            JOIN Users u ON c.instructor_id = u.user_id
             WHERE e.user_id = ? ORDER BY c.class_id DESC
         `, [req.user.user_id]);
+
         res.status(200).json(classes);
     } catch (err) {
         console.error(err);
@@ -452,8 +500,8 @@ app.post('/api/sessions/start', authenticateToken, async (req, res) => {
 app.patch('/api/sessions/:id/end', authenticateToken, async (req, res) => {
     const sessionId = req.params.id;
     // FETCH THE IO INSTANCE HERE:
-    const io = req.app.get('io'); 
-    
+    const io = req.app.get('io');
+
     try {
         const [result] = await pool.execute(
             'UPDATE Sessions SET is_active = FALSE WHERE session_id = ? AND class_id IN (SELECT class_id FROM Classes WHERE instructor_id = ?)',
@@ -629,12 +677,67 @@ app.post('/api/update-password', async (req, res) => {
 });
 
 
+// ==========================================
+// BACKGROUND WORKER: Robust Auto-Scheduler
+// ==========================================
+cron.schedule('* * * * *', async () => {
+    console.log(`⏰ Scheduler tick: Checking database at ${new Date().toLocaleTimeString()}`);
+
+    try {
+        const now = new Date();
+        const daysMap = ['Su', 'M', 'T', 'W', 'Th', 'F', 'Sa'];
+        const currentDay = daysMap[now.getDay()];
+        const currentTime = now.getHours().toString().padStart(2, '0') + ":" +
+            now.getMinutes().toString().padStart(2, '0');
+
+        // Fetch ONLY inactive, scheduled sessions
+        const [sessions] = await pool.execute(
+            'SELECT * FROM Sessions WHERE is_active = FALSE AND start_time IS NOT NULL'
+        );
+
+        for (let session of sessions) {
+            // THE FIX: Chop off the ":00" seconds if MySQL added them!
+            // This safely forces "14:30:00" to become "14:30"
+            let dbTime = session.start_time ? String(session.start_time).substring(0, 5) : null;
+
+            const isToday = session.recurring_days?.includes(currentDay);
+
+            // X-RAY LOG: See exactly what the server is comparing
+            console.log(`🔍 Inspecting "${session.session_name}": Today=${currentDay} (Needs ${session.recurring_days}), Now=${currentTime} (Needs ${dbTime})`);
+
+            if (isToday && dbTime === currentTime) {
+                console.log(`🚀 AUTO-STARTING: ${session.session_name}`);
+
+                await pool.execute('UPDATE Sessions SET is_active = TRUE WHERE session_id = ?', [session.session_id]);
+
+                // THE FIX: Use the global 'io' object directly, and broadcast an auto-start event
+                io.emit('sessionAutoStarted', session.class_id);
+            }
+        }
+    } catch (error) {
+        console.error('❌ Scheduler Critical Error:', error);
+    }
+});
 
 
+// ==========================================
+// API ROUTE: Get Scheduled Sessions
+// ==========================================
+app.get('/api/instructor/schedules', authenticateToken, async (req, res) => {
+    try {
+        const [schedules] = await pool.execute(`
+            SELECT s.*, c.class_name 
+            FROM Sessions s
+            JOIN Classes c ON s.class_id = c.class_id
+            WHERE c.instructor_id = ? AND s.is_active = FALSE
+            ORDER BY s.start_time ASC
+        `, [req.user.user_id]);
 
-
-
-
+        res.status(200).json(schedules);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch schedules.' });
+    }
+});
 
 
 // Start the server and listen on the port defined in our .env file (4000)

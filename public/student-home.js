@@ -51,7 +51,10 @@ function renderClasses(classes) {
         card.innerHTML = `
             <div class="class-card-header"><h3>${c.class_name}</h3></div>
             <div class="class-card-body">
-                <p>Instructor ID: ${c.instructor_id}</p>
+                <!-- Use the new name, fallback to "Instructor" if they didn't set one -->
+                <p style="color: var(--muted-text); font-weight: 500;">
+                    Instructor: ${c.instructor_name || 'Instructor'}
+                </p>
                 <div class="join-code-badge">Joined</div>
             </div>
         `;

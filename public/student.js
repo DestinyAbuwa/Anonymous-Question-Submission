@@ -8,6 +8,17 @@ socket.on("updateFeed", () => {
     if (currentSessionId) loadStudentFeed();
 });
 
+// NEW: Listen for the Cron Job to Auto-Start a session
+socket.on('sessionAutoStarted', (startedClassId) => {
+    // If the session that just started belongs to the class we are currently looking at...
+    if (String(startedClassId) === String(classId)) {
+        showToast("Scheduled session is starting!", "success");
+        setTimeout(() => {
+            window.location.reload(); // Magically refresh the page to show the Live UI!
+        }, 1500);
+    }
+});
+
 // Update the live viewer count
 socket.on("participantCount", (count) => {
     const badge = document.getElementById("live-count-badge");

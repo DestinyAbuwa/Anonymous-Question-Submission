@@ -1353,3 +1353,10 @@ div {
         margin: 0 0.75rem;
     }
 }
+
+
+@media (max-width: 900px) {
+    .layout-container {
+        grid-template-columns: 1fr !important;
+    }
+}

@@ -15,7 +15,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Now you can safely write Instructor-only code here
-    document.getElementById('welcome-message').textContent = `Welcome, Instructor!`;
+    const instructorName = localStorage.getItem('name');
+
+    // Check if they have a name, and make sure it isn't the string "null"
+    if (instructorName && instructorName !== 'null') {
+        document.getElementById('welcome-message').textContent = `Welcome, ${instructorName}!`;
+    } else {
+        document.getElementById('welcome-message').textContent = `Welcome, Instructor!`;
+    }
+
     loadClasses(); // Load the cards with active session indicators
 });
 
@@ -94,10 +102,16 @@ function renderClasses(classes, activeSessionMap = {}) {
 
         const activeSession = activeSessionMap[c.class_id];
 
-        // Build the card content
+        // Build the card content with a Delete button in the header
         let cardContent = `
-            <div class="class-card-header">
+            <div class="class-card-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
                 <h3>${c.class_name}</h3>
+                <button onclick="event.stopPropagation(); deleteClass(${c.class_id})" 
+                        style="background: transparent; border: none; color: var(--text-color); opacity: 0.7; cursor: pointer; font-size: 1.2rem; transition: 0.2s;" 
+                        onmouseover="this.style.opacity='1'; this.style.color='#e74c3c';" 
+                        onmouseout="this.style.opacity='0.7'; this.style.color='var(--text-color)';">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                </button>
             </div>
             <div class="class-card-body">
                 <div class="join-code-badge">Code: ${c.join_code}</div>
@@ -161,4 +175,49 @@ async function handleCreateClass() {
     }
 
     stopLoader();
+}
+
+
+async function deleteClass(classId) {
+    // Call the custom modal instead of 'confirm()'
+    showConfirmModal("Are you sure? This will remove the class and all associated data.", async () => {
+        startLoader();
+        const token = localStorage.getItem('token');
+        
+        try {
+            const response = await fetch(`/api/classes/${classId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                showToast("Class deleted.", "success");
+                loadClasses(); 
+            } else {
+                showToast("Failed to delete class.", "error");
+            }
+        } catch (error) {
+            showToast("Server connection error.", "error");
+        }
+        stopLoader();
+    });
+}
+
+function showConfirmModal(message, onConfirm) {
+    const modal = document.getElementById('confirm-modal');
+    const msgEl = document.getElementById('confirm-message');
+    const yesBtn = document.getElementById('confirm-yes-btn');
+
+    msgEl.textContent = message;
+    modal.style.display = 'flex';
+
+    // Set the click action
+    yesBtn.onclick = () => {
+        onConfirm();
+        hideConfirmModal();
+    };
+}
+
+function hideConfirmModal() {
+    document.getElementById('confirm-modal').style.display = 'none';
 }
